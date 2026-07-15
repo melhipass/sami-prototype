@@ -1,0 +1,58 @@
+<svg
+  width="32"
+  height="32"
+  viewBox="0 0 32 32"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- State 5: Camera disconnected with red prohibition sign -->
+  
+  <!-- Camera body -->
+  <path
+    d="M27 22.3333C27 22.7754 26.8244 23.1993 26.5118 23.5118C26.1993 23.8244 25.7754 24 25.3333 24H6.66667C6.22464 24 5.80072 23.8244 5.48816 23.5118C5.17559 23.1993 5 22.7754 5 22.3333V12.6667C5 12.2246 5.17559 11.8007 5.48816 11.4882C5.80072 11.1756 6.22464 11 6.66667 11H10.3333L12.3333 8H19.6667L21.6667 11H25.3333C25.7754 11 26.1993 11.1756 26.5118 11.4882C26.8244 11.8007 27 12.2246 27 12.6667V22.3333Z"
+    stroke="white"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  
+  <!-- Lens outer circle -->
+  <circle
+    cx="16"
+    cy="17"
+    r="4.5"
+    stroke="white"
+    stroke-width="2"
+    fill="none"
+  />
+  
+  <!-- Lens inner circle -->
+  <circle
+    cx="16"
+    cy="17"
+    r="2.2"
+    fill="white"
+  />
+  
+  <!-- Red prohibition circle -->
+  <circle
+    cx="16"
+    cy="16"
+    r="14"
+    stroke="#E74C3C"
+    stroke-width="3"
+    fill="none"
+  />
+  
+  <!-- Red diagonal line -->
+  <line
+    x1="6"
+    y1="6"
+    x2="26"
+    y2="26"
+    stroke="#E74C3C"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+</svg>

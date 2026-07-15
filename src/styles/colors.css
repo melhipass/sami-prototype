@@ -1,0 +1,102 @@
+/* Baby Monitor App Custom Color Classes */
+
+/* Green Accent Colors */
+.bg-app-green {
+  background-color: var(--app-accent-green);
+}
+
+.text-app-green {
+  color: var(--app-accent-green);
+}
+
+.border-app-green {
+  border-color: var(--app-accent-green);
+}
+
+.border-app-green-60 {
+  border-color: rgba(123, 200, 164, 0.6); /* Green border with 60% opacity */
+}
+
+/* Yellow Accent Colors */
+.bg-app-yellow {
+  background-color: var(--app-accent-yellow);
+}
+
+.text-app-yellow {
+  color: var(--app-accent-yellow);
+}
+
+/* Red Accent Colors */
+.bg-app-red {
+  background-color: var(--app-accent-red);
+}
+
+.bg-app-red-dark {
+  background-color: var(--app-accent-red-dark);
+}
+
+.text-app-red {
+  color: var(--app-accent-red);
+}
+
+/* Blue Accent Colors */
+.bg-app-blue {
+  background-color: var(--app-accent-blue);
+}
+
+.hover\:bg-app-blue-hover:hover {
+  background-color: var(--app-accent-blue-hover);
+}
+
+.text-app-blue {
+  color: var(--app-accent-blue);
+}
+
+/* Night Vision Overlay */
+.bg-app-night-vision {
+  background-color: var(--app-night-vision-overlay);
+}
+
+/* Cyan Accent Colors */
+.bg-app-cyan {
+  background-color: var(--app-accent-cyan);
+}
+
+.text-app-cyan {
+  color: var(--app-accent-cyan);
+}
+
+.border-app-cyan {
+  border-color: var(--app-accent-cyan);
+}
+
+.border-app-cyan-60 {
+  border-color: rgba(107, 163, 212, 0.6); /* Blue border with 60% opacity */
+}
+
+/* Teal Accent Colors */
+.bg-app-teal {
+  background-color: var(--app-accent-teal);
+}
+
+.text-app-teal {
+  color: var(--app-accent-teal);
+}
+
+/* Orange Accent Colors */
+.bg-app-orange {
+  background-color: var(--app-accent-yellow);
+}
+
+.text-app-orange {
+  color: var(--app-accent-yellow);
+}
+
+/* Coral Red Accent Colors */
+.bg-app-coral {
+  background-color: var(--app-accent-red);
+}
+
+.text-app-coral {
+  color: var(--app-accent-red);
+}
