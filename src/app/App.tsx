@@ -1,10 +1,12 @@
+'use client';
+
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import splashLogo from 'figma:asset/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
-import homeScreenIcon from 'figma:asset/4fcc62f32178f39d03a6f997dc02af74d60bdc02.png';
-import homeScreenWallpaper from 'figma:asset/fa13dc602b6247ed34afd5c7fccebfbdd8fd81e2.png';
+const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
+const homeScreenIcon = '/assets/4fcc62f32178f39d03a6f997dc02af74d60bdc02.png';
+const homeScreenWallpaper = '/assets/fa13dc602b6247ed34afd5c7fccebfbdd8fd81e2.png';
 import { MotionDetectionIcon } from '@/app/components/MotionDetectionIcon';
 import { AnimatedWifiIcon } from '@/app/components/AnimatedWifiIcon';
 import { RecordingIcon } from '@/app/components/RecordingIcon';

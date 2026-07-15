@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Bell, History, Trash2, HardDrive, Lock, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, RotateCcw, Check, Camera, Activity, Share2 } from 'lucide-react';
-import splashLogo from 'figma:asset/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
+const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
 
 const SETTINGS_ACCENT_COLOR = '#5A8BBF';
 
