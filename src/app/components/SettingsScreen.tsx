@@ -2232,7 +2232,7 @@ export function SettingsScreen({
                   </div>
 
                   {/* Camera Password */}
-                  <div className="flex items-center justify-between py-4">
+                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
                     <span className="text-white text-base">Camera Password</span>
                     <div className="flex items-center gap-4">
                       <span className="text-gray-300 text-base">{savedCameraPassword || 'Not set'}</span>
@@ -2248,6 +2248,27 @@ export function SettingsScreen({
                         className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
                         style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                       >Edit</button>
+                    </div>
+                  </div>
+
+                  {/* Camera Wi-Fi */}
+                  <div className="flex items-center justify-between py-4">
+                    <span className="text-white text-base">Camera Wi-Fi [{cameraWifiNetwork}]</span>
+                    <div className="flex items-center gap-4">
+                      <button onClick={cycleCameraSignal} className="flex items-center gap-2 hover:opacity-70 transition-opacity" title="Tap to cycle signal states (demo)">
+                        {cameraSignal !== 'Wired' && cameraSignal !== 'NONE' && (
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            {(cameraSignal === 'Excellent' || cameraSignal === 'Ok') && <path d="M1 11C1 11 5.5 6.5 12 6.5C18.5 6.5 23 11 23 11" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
+                            {cameraSignal === 'Excellent' && <path d="M5 14C5 14 8 11 12 11C16 11 19 14 19 14" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
+                            <path d="M8.5 16.5C8.5 16.5 10 15 12 15C14 15 15.5 16.5 15.5 16.5" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />
+                            <circle cx="12" cy="20" r="1.5" fill={cameraSignalColor} />
+                          </svg>
+                        )}
+                        <span className="text-sm font-medium" style={{ color: cameraSignalColor }}>
+                          {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
+                        </span>
+                      </button>
+                      <button onClick={() => { setCameraWifiPickerStep('select'); setShowCameraWifiPicker(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
                     </div>
                   </div>
                 </div>
@@ -2337,7 +2358,7 @@ export function SettingsScreen({
                     <span className="text-white text-base">Record Schedule</span>
                     <div className="flex items-center gap-4">
                       {(() => { const s = overallScheduleSummary(); return <span className="text-base font-medium" style={{ color: s.color }}>{s.text}</span>; })()}
-                      <button onClick={() => setShowScheduleList(true)} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
+                      <button onClick={() => { setEditingScheduleIdx(0); setEditingSchedule({ ...schedules[0], days: [...schedules[0].days] as Schedule['days'] }); setShowScheduleList(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
                     </div>
                   </div>
 
@@ -2383,27 +2404,6 @@ export function SettingsScreen({
               <div>
                 <h3 className="text-white text-xl font-bold mb-3 px-4">Internet connection</h3>
                 <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
-                  {/* Camera Wi-Fi */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">Camera Wi-Fi [{cameraWifiNetwork}]</span>
-                    <div className="flex items-center gap-4">
-                      <button onClick={cycleCameraSignal} className="flex items-center gap-2 hover:opacity-70 transition-opacity" title="Tap to cycle signal states (demo)">
-                        {cameraSignal !== 'Wired' && cameraSignal !== 'NONE' && (
-                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            {(cameraSignal === 'Excellent' || cameraSignal === 'Ok') && <path d="M1 11C1 11 5.5 6.5 12 6.5C18.5 6.5 23 11 23 11" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
-                            {cameraSignal === 'Excellent' && <path d="M5 14C5 14 8 11 12 11C16 11 19 14 19 14" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
-                            <path d="M8.5 16.5C8.5 16.5 10 15 12 15C14 15 15.5 16.5 15.5 16.5" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />
-                            <circle cx="12" cy="20" r="1.5" fill={cameraSignalColor} />
-                          </svg>
-                        )}
-                        <span className="text-sm font-medium" style={{ color: cameraSignalColor }}>
-                          {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
-                        </span>
-                      </button>
-                      <button onClick={() => { setCameraWifiPickerStep('select'); setShowCameraWifiPicker(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
-                    </div>
-                  </div>
-
                   {/* Internet Viewing */}
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
                     <span className="text-white text-base">Internet Viewing</span>
@@ -2947,44 +2947,6 @@ export function SettingsScreen({
         </div>
       )}
 
-      {/* Record Schedule — Schedule List */}
-      {showScheduleList && editingScheduleIdx === null && (
-        <div className="absolute inset-0 bg-black z-40 flex flex-col">
-          <div className="bg-black py-4 flex items-center justify-between">
-            <button
-              onClick={() => setShowScheduleList(false)}
-              className="ml-6 flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              <span>Back</span>
-            </button>
-            <span className="text-white text-lg font-medium">Record Schedule</span>
-            <div className="mr-6 w-[72px]" />
-          </div>
-          <div className="flex-1 overflow-y-auto px-4 py-4">
-            <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
-              {schedules.map((s, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center justify-between py-4 ${i < 3 ? 'border-b border-gray-700' : ''}`}
-                >
-                  <span className="text-white text-base">Schedule {i + 1}</span>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: !s.enabled ? '#FFC7BD' : (s.allDay && s.days.every(Boolean) ? '#BFE3D9' : '#FCEAAD') }}>{scheduleSummary(s)}</span>
-                    <button
-                      onClick={() => { setEditingScheduleIdx(i); setEditingSchedule({ ...s, days: [...s.days] as Schedule['days'] }); }}
-                      className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                      style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Record Schedule — Schedule Editor */}
       {showScheduleList && editingScheduleIdx !== null && editingSchedule && (() => {
@@ -3004,6 +2966,7 @@ export function SettingsScreen({
           setSchedules(updated);
           setEditingScheduleIdx(null);
           setEditingSchedule(null);
+          setShowScheduleList(false);
         };
 
         return (
@@ -3016,7 +2979,7 @@ export function SettingsScreen({
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
               </button>
-              <span className="text-white text-lg font-medium">Schedule {editingScheduleIdx + 1}</span>
+              <span className="text-white text-lg font-medium">Record Schedule</span>
               <div className="mr-6 w-[72px]" />
             </div>
 
