@@ -3468,7 +3468,7 @@ export function SettingsScreen({
                               const num = Number(ivPortNumber);
                               if (!ivPortNumber || num < 2 || num > 65535) {
                                 setIvPortNumber(ivSavedPortNumber);
-                                ivCheckStatus();
+                                ivCheckStatusManual(ivRouterMode);
                               } else {
                                 setIvSavedPortNumber(ivPortNumber);
                                 const next = ivEnableAttempt + 1;
