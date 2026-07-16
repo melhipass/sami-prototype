@@ -2287,9 +2287,9 @@ export function SettingsScreen({
                 </div>
               </div>
 
-              {/* ── Internet connection ── */}
+              {/* ── Network Connection ── */}
               <div>
-                <h3 className="text-white text-xl font-bold mb-3 px-4">Internet connection</h3>
+                <h3 className="text-white text-xl font-bold mb-3 px-4">Network Connection</h3>
                 <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
                   {/* Internet Viewing */}
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
