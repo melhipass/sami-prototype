@@ -14,7 +14,7 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
     <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 relative">
       <button
         onClick={onSkip}
-        className="absolute top-6 left-20 text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+        className="absolute top-16 left-6 text-gray-400 hover:text-white transition-colors flex items-center gap-2"
       >
         <X className="w-6 h-6" />
         <span className="text-lg">Skip</span>

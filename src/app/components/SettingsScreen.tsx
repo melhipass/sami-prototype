@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Wifi, Check, Eye, EyeOff, Lock, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { WiFiSelection } from '@/app/components/onboarding/WiFiSelection';
 import { NetworkPassword } from '@/app/components/onboarding/NetworkPassword';
@@ -476,18 +475,6 @@ export function SettingsScreen({
   const [sdPopup, setSdPopup] = useState<SDPopup>(null);
   const [sdFormatting, setSdFormatting] = useState(false);
 
-  // Logout
-  const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await fetch('/api/logout', { method: 'POST' });
-    } finally {
-      router.replace('/login');
-      router.refresh();
-    }
-  };
 
   // Factory Reset
   type FactoryResetPopup = 'confirm' | 'done' | null;
@@ -1836,25 +1823,6 @@ export function SettingsScreen({
                         enableSentData ? 'right-1' : 'left-1'
                       }`}
                     />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Account Section */}
-          <div>
-            <h3 className="text-white text-xl font-bold mb-3 px-4">Account</h3>
-            <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
-              <div className="space-y-0">
-                <div className="flex items-center justify-between py-4">
-                  <span className="text-white">Cerrar sesión</span>
-                  <button
-                    onClick={handleLogout}
-                    disabled={isLoggingOut}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-60 rounded-lg text-white transition-colors"
-                  >
-                    {isLoggingOut ? 'Saliendo...' : 'Cerrar sesión'}
                   </button>
                 </div>
               </div>
