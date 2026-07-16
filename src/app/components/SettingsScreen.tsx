@@ -411,37 +411,6 @@ export function SettingsScreen({
   if (!showSettings) return null;
 
   const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
-  const [allow5kRecordings, setAllow5kRecordings] = useState(false);
-
-  // Max Recording Length (seconds; 0 = infinite)
-  const MAX_REC_MAX = 1200; // 20 minutes
-  const [maxRecordingLength, setMaxRecordingLength] = useState(300); // default 5 min
-
-  const formatMaxRecLen = (s: number) => {
-    if (s === 0) return 'inf';
-    if (s < 60) return `${s}s`;
-    return `${Math.round(s / 60)}min`;
-  };
-
-  const stepMaxRecLen = (s: number, dir: 1 | -1): number => {
-    if (s < 60) {
-      const next = s + dir;
-      if (next < 0) return 0;
-      if (next >= 60) return 60;
-      return next;
-    } else {
-      const next = s + dir * 60;
-      if (next < 60) return 59;
-      if (next > MAX_REC_MAX) return MAX_REC_MAX;
-      return next;
-    }
-  };
-
-  const sliderToSec = (raw: number): number => {
-    // raw 0-1200; snap to 1s below 60, 60s above
-    if (raw < 60) return Math.round(raw);
-    return Math.round(raw / 60) * 60;
-  };
   const [editedPassword, setEditedPassword] = useState('');
   const [editedConfirmPassword, setEditedConfirmPassword] = useState('');
   const [editedPasswordHint, setEditedPasswordHint] = useState('');
@@ -785,63 +754,6 @@ export function SettingsScreen({
     'Off':  { title: "Infrared Illuminators Off",  message: "The infrared illuminators will always be off. WARNING: the camera will not alarm or record in a dark room.", hasCancel: true },
     'On':   { title: "Infrared Illuminators On",   message: "The infrared illuminators will always be on. This may improve the image in a partially lit room. This may also reduce the infrared illuminator lifespan.", hasCancel: false },
     'Auto': { title: "Infrared Illuminators Auto", message: "The infrared illuminators will automatically switch on when the room is dark and off when lit.", hasCancel: false },
-  };
-
-  // Browser Viewer
-  const [showBVScreen, setShowBVScreen] = useState(false);
-  const [showBVNoInternetPopup, setShowBVNoInternetPopup] = useState(false);
-  const [bvEnableBrowserAccess, setBvEnableBrowserAccess] = useState(false);
-  const [bvInternetName, setBvInternetName] = useState('');
-  const [bvUsername, setBvUsername] = useState('');
-  const [bvPassword, setBvPassword] = useState('');
-  const [bvShowPassword, setBvShowPassword] = useState(false);
-  const [bvNameDraft, setBvNameDraft] = useState('');
-  const [bvUsernameDraft, setBvUsernameDraft] = useState('');
-  const [bvPasswordDraft, setBvPasswordDraft] = useState('');
-  const [bvNameSaveAttempt, setBvNameSaveAttempt] = useState(0);
-  const [bvRetryName, setBvRetryName] = useState('');
-  type BVPopup = 'name-too-short' | 'name-in-use' | 'network-problem' | 'password-too-short' | null;
-  const [bvPopup, setBvPopup] = useState<BVPopup>(null);
-
-  const BV_NAME_ALLOWED = /^[a-z0-9]*$/;
-  const BV_FIELD_ALLOWED = /^[a-zA-Z0-9@#$\\*()'%\-+=;:!?,._]*$/;
-
-  const bvDoSaveName = (name: string, attempt: number) => {
-    setBvRetryName(name);
-    if (attempt % 3 === 1) {
-      setBvPopup('name-in-use');
-    } else if (attempt % 3 === 2) {
-      setBvPopup('network-problem');
-    } else {
-      setBvInternetName(name);
-    }
-  };
-
-  const handleBvNameBlur = () => {
-    const name = bvNameDraft;
-    if (name.length === 0) return;
-    if (name.length < 4) { setBvPopup('name-too-short'); return; }
-    const next = bvNameSaveAttempt + 1;
-    setBvNameSaveAttempt(next);
-    bvDoSaveName(name, next);
-  };
-
-  const handleBvNameRetry = () => {
-    setBvPopup(null);
-    const next = bvNameSaveAttempt + 1;
-    setBvNameSaveAttempt(next);
-    bvDoSaveName(bvRetryName, next);
-  };
-
-  const handleBvUsernameBlur = () => {
-    setBvUsername(bvUsernameDraft);
-  };
-
-  const handleBvPasswordBlur = () => {
-    const pw = bvPasswordDraft;
-    if (pw.length === 0) return;
-    if (pw.length < 8) { setBvPopup('password-too-short'); return; }
-    setBvPassword(pw);
   };
 
   // Camera WiFi picker (separate from app WiFi in Network section)
@@ -2363,38 +2275,13 @@ export function SettingsScreen({
                   </div>
 
                   {/* SD Card */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between py-4">
                     <span className="text-white text-base">SD Card</span>
                     <div className="flex items-center gap-4">
                       <button onClick={cycleSDStatus} className="hover:opacity-70 transition-opacity" title="Tap to cycle SD states (demo)">
                         <span className="text-base font-medium" style={{ color: sdStatus === 'Missing!' ? '#FFC7BD' : sdStatus === 'Reading...' ? '#FCEAAD' : sdStatus === 'Blank' ? '#FCEAAD' : '#BFE3D9' }}>{sdStatus}</span>
                       </button>
                       <button onClick={() => setSdPopup('confirm-format')} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Format</button>
-                    </div>
-                  </div>
-
-                  {/* *Allow up to 5K recordings */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">*Allow up to 5K recordings</span>
-                    <button onClick={() => setAllow5kRecordings(v => !v)} className={`w-14 h-8 rounded-full transition-colors relative ${!allow5kRecordings ? 'bg-gray-400' : ''}`} style={allow5kRecordings ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}>
-                      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${allow5kRecordings ? 'right-1' : 'left-1'}`} />
-                    </button>
-                  </div>
-
-                  {/* *Max Recording Length */}
-                  <div className="flex items-center py-4">
-                    <span className="text-white text-base w-48 flex-shrink-0">*Max Recording Length</span>
-                    <div className="flex items-center gap-3 flex-1 justify-end">
-                      <button onClick={() => setMaxRecordingLength(s => stepMaxRecLen(s, -1))} className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center text-white flex-shrink-0">−</button>
-                      <div className="relative w-48">
-                        <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
-                          <div className="h-full transition-all duration-100" style={{ width: `${(maxRecordingLength / MAX_REC_MAX) * 100}%`, backgroundColor: SETTINGS_ACCENT_COLOR }} />
-                        </div>
-                        <input type="range" min={0} max={MAX_REC_MAX} step={1} value={maxRecordingLength} onChange={e => setMaxRecordingLength(sliderToSec(Number(e.target.value)))} className="absolute top-0 left-0 w-full h-1 opacity-0 cursor-pointer" style={{ margin: 0 }} />
-                        <div className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full border-2 pointer-events-none shadow-lg" style={{ left: `calc(${(maxRecordingLength / MAX_REC_MAX) * 100}% - 10px)`, borderColor: SETTINGS_ACCENT_COLOR }} />
-                      </div>
-                      <button onClick={() => setMaxRecordingLength(s => stepMaxRecLen(s, 1))} className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center text-white flex-shrink-0">+</button>
-                      <span className="text-white w-16 text-right flex-shrink-0">{formatMaxRecLen(maxRecordingLength)}</span>
                     </div>
                   </div>
                 </div>
@@ -2430,7 +2317,7 @@ export function SettingsScreen({
                   </div>
 
                   {/* IP Address */}
-                  <div className="flex flex-col py-4 border-b border-gray-700">
+                  <div className="flex flex-col py-4">
                     <div className="flex items-center justify-between">
                       <span className="text-white text-base">IP Address</span>
                       <div className="flex items-center gap-4">
@@ -2439,19 +2326,6 @@ export function SettingsScreen({
                       </div>
                     </div>
                     {ipRestartMsg && <p className="text-sm mt-2" style={{ color: '#BFE3D9' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
-                  </div>
-
-                  {/* *Browser Viewer */}
-                  <div className="flex items-center justify-between py-4">
-                    <span className="text-white text-base">*Browser Viewer</span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-base" style={{ color: bvEnableBrowserAccess ? '#BFE3D9' : '#FFC7BD' }}>{bvEnableBrowserAccess ? 'Enabled' : 'Disabled'}</span>
-                      <button
-                        onClick={() => { if (!internetViewingEnabled) { setShowBVNoInternetPopup(true); } else { setBvNameDraft(bvInternetName); setBvUsernameDraft(bvUsername); setBvPasswordDraft(bvPassword); setShowBVScreen(true); } }}
-                        className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                        style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                      >{bvEnableBrowserAccess ? 'Edit' : 'Enable'}</button>
-                    </div>
                   </div>
                 </div>
               </div>
