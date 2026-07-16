@@ -541,111 +541,6 @@ export function SettingsScreen({
     : cameraSignal === 'Wired' ? '#BFE3D9'
     : '#FFC7BD'; // Bad, Poor, NONE
 
-  // Firmware
-  const LATEST_FIRMWARE = '1.43';
-  const [firmwareVersion, setFirmwareVersion] = useState('1.3');
-  const firmwareUpToDate = firmwareVersion === LATEST_FIRMWARE;
-  // dedicated signal-check counter for firmware flow (separate from Camera Wi-Fi row)
-  const [fwSignalCheckAttempt, setFwSignalCheckAttempt] = useState(0);
-
-  type FWPopup = 'confirm-update' | 'confirm-downgrade' | 'signal-poor' | 'upload-failed' | 'update-failed' | 'complete' | 'firmware-ok' | 'needs-update' | null;
-  type FWProgress = 'uploading' | 'updating' | 'preparing' | null;
-  const [showFWScreen, setShowFWScreen] = useState(false);
-  const [fwIsDowngrade, setFwIsDowngrade] = useState(false);
-  const [fwAttempt, setFwAttempt] = useState(0);
-  const [fwProgress, setFwProgress] = useState<FWProgress>(null);
-  const [fwPercent, setFwPercent] = useState(0);
-  const [fwPopup, setFwPopup] = useState<FWPopup>(null);
-  const [fwNeedsUpdateSource, setFwNeedsUpdateSource] = useState<'internet-viewing' | 'power-light' | null>(null);
-
-  const openFWScreen = (isDowngrade = false) => {
-    const next = fwSignalCheckAttempt + 1;
-    setFwSignalCheckAttempt(next);
-    if (next === 1) {
-      // 1st attempt: always treat as bad signal
-      setFwPopup('signal-poor');
-      return;
-    }
-    setFwIsDowngrade(isDowngrade);
-    setFwAttempt(0);
-    setFwProgress(null);
-    setFwPopup('confirm-update');
-    setShowFWScreen(true);
-  };
-
-  const handleFirmwareUpdateBtn = () => {
-    if (firmwareUpToDate) {
-      setFwPopup('firmware-ok');
-    } else {
-      setFwPopup('confirm-update');
-    }
-  };
-
-  const startFWUpdate = () => {
-    setFwPopup(null);
-    const attempt = fwAttempt + 1;
-    setFwAttempt(attempt);
-
-    if (attempt === 1) {
-      setFwProgress('uploading');
-      setTimeout(() => {
-        setFwProgress(null);
-        setFwPopup('upload-failed');
-      }, 2500);
-    } else if (attempt === 2) {
-      setFwProgress('uploading');
-      setTimeout(() => {
-        setFwProgress('updating');
-        setFwPercent(0);
-        let pct = 0;
-        const iv = setInterval(() => {
-          pct += 12;
-          setFwPercent(Math.min(pct, 65));
-          if (pct >= 65) {
-            clearInterval(iv);
-            setFwProgress(null);
-            setFwPercent(0);
-            setFwPopup('update-failed');
-          }
-        }, 400);
-      }, 2000);
-    } else {
-      setFwProgress('uploading');
-      setTimeout(() => {
-        setFwProgress('updating');
-        setFwPercent(0);
-        let pct = 0;
-        const iv = setInterval(() => {
-          pct += 7;
-          setFwPercent(Math.min(pct, 99));
-          if (pct >= 99) {
-            clearInterval(iv);
-            setFwProgress('preparing');
-            setTimeout(() => {
-              setFwProgress(null);
-              setFwPercent(0);
-              setFwPopup('complete');
-            }, 1500);
-          }
-        }, 350);
-      }, 2000);
-    }
-  };
-
-  const completeFWUpdate = () => {
-    setFwPopup(null);
-    setShowFWScreen(false);
-    setFwSignalCheckAttempt(0); // reset so next open starts fresh
-    setFirmwareVersion(fwIsDowngrade ? '1.3' : LATEST_FIRMWARE);
-  };
-
-  const closeFWScreen = () => {
-    setShowFWScreen(false);
-    setFwPopup(null);
-    setFwProgress(null);
-    setFwSignalCheckAttempt(0);
-  };
-
   // Internet Viewing screen
   type IVStatus = '---' | 'Checking...' | 'No Internet Connection' | 'Router uPnP Disabled' | 'Online' | 'Camera Not Reachable';
   type IVProgress = 'configuring-port' | 'connecting' | 'disabling' | null;
@@ -2359,21 +2254,6 @@ export function SettingsScreen({
                     </div>
                   </div>
 
-                  {/* Firmware */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">Firmware</span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-base font-medium" style={{ color: firmwareUpToDate ? '#BFE3D9' : '#FCEAAD' }}>
-                        Version {firmwareVersion}
-                      </span>
-                      <button
-                        onClick={handleFirmwareUpdateBtn}
-                        className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                        style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                      >Update</button>
-                    </div>
-                  </div>
-
                   {/* Restart Camera */}
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
                     <span className="text-white text-base">Restart Camera</span>
@@ -2553,7 +2433,7 @@ export function SettingsScreen({
                     <div className="flex items-center gap-4">
                       <span className="font-medium text-base" style={{ color: internetViewingEnabled ? '#BFE3D9' : '#FFC7BD' }}>{internetViewingEnabled ? 'Enabled' : 'Disabled'}</span>
                       <button
-                        onClick={() => { if (!firmwareUpToDate) { setFwNeedsUpdateSource('internet-viewing'); setFwPopup('needs-update'); } else { openIVScreen(); } }}
+                        onClick={openIVScreen}
                         className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
                         style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                       >{internetViewingEnabled ? 'Edit' : 'Enable'}</button>
@@ -2564,7 +2444,7 @@ export function SettingsScreen({
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
                     <span className="text-white text-base">Power Light Flash on Internet Viewer</span>
                     <button
-                      onClick={() => { if (!firmwareUpToDate) { setFwNeedsUpdateSource('power-light'); setFwPopup('needs-update'); } else { setPowerLightFlash(!powerLightFlash); } }}
+                      onClick={() => setPowerLightFlash(!powerLightFlash)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${powerLightFlash ? '' : 'bg-gray-400'}`}
                       style={powerLightFlash ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
@@ -2607,7 +2487,7 @@ export function SettingsScreen({
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
                     <span className="text-white text-base">*Power Light</span>
                     <button
-                      onClick={() => { if (!firmwareUpToDate) { setFwNeedsUpdateSource('power-light'); setFwPopup('needs-update'); } else { setPowerLight(v => !v); } }}
+                      onClick={() => setPowerLight(v => !v)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${!powerLight ? 'bg-gray-400' : ''}`}
                       style={powerLight ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
@@ -3648,166 +3528,6 @@ export function SettingsScreen({
           </div>
         </div>
       )}
-
-      {/* ── Firmware ──────────────────────────────────────────────── */}
-
-      {/* Firmware: "Camera Needs Update" gate popup */}
-      {fwPopup === 'needs-update' && (
-        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-            <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Camera Needs Update</h2></div>
-            <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">This feature requires updated camera firmware.</p></div>
-            <div className="border-t border-gray-700 flex">
-              <button onClick={() => { setFwPopup(null); setFwNeedsUpdateSource(null); }} className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-r border-gray-700" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-              <button onClick={() => { setFwPopup(null); setFwNeedsUpdateSource(null); handleFirmwareUpdateBtn(); }} className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>Update Firmware</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Firmware: "Firmware OK" popup (already up to date) */}
-      {fwPopup === 'firmware-ok' && (
-        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-            <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Firmware OK</h2></div>
-            <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">Your Sami camera is running the latest firmware.</p></div>
-            <div className="border-t border-gray-700 flex">
-              <button onClick={() => setFwPopup(null)} className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-r border-gray-700" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-              <button onClick={() => { setFwPopup(null); openFWScreen(true); }} className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold" style={{ color: '#FCEAAD' }}>Load previous version</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Firmware: "Update Available" popup */}
-      {fwPopup === 'confirm-update' && !showFWScreen && (
-        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-            <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Update Available</h2></div>
-            <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">There is newer firmware available for your camera. Update now?</p></div>
-            <div className="border-t border-gray-700 flex">
-              <button onClick={() => setFwPopup(null)} className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-r border-gray-700" style={{ color: SETTINGS_ACCENT_COLOR }}>No</button>
-              <button onClick={() => openFWScreen(false)} className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>Yes</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Firmware: poor signal popup */}
-      {fwPopup === 'signal-poor' && (
-        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-            <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Cannot Update</h2></div>
-            <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">Your Wi-Fi signal quality is not good enough to perform an update. Either move your camera closer to the router or connect it with an Ethernet cable.</p></div>
-            <div className="border-t border-gray-700"><button onClick={() => setFwPopup(null)} className="w-full text-lg py-4 hover:bg-gray-700 transition-colors font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>Ok</button></div>
-          </div>
-        </div>
-      )}
-
-      {/* Firmware Update Screen */}
-      {showFWScreen && (
-        <div className="absolute inset-0 bg-black z-50 flex flex-col" style={{ animation: 'slideInRight 0.3s ease-out forwards' }}>
-          {/* Header */}
-          <div className="bg-black py-4 flex items-center justify-between flex-shrink-0">
-            <button onClick={closeFWScreen} className="ml-6 flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
-              <ChevronLeft className="w-5 h-5" />
-              <span>Camera Settings</span>
-            </button>
-            <span className="text-white text-lg font-medium">Firmware Update</span>
-            <div className="mr-6 w-[150px]" />
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-6" style={{ backgroundColor: SETTINGS_BG_COLOR }}>
-            {/* Confirmation step */}
-            {fwPopup === 'confirm-update' && (
-              <div className="py-6 space-y-4">
-                <h2
-                  className="text-xl font-semibold"
-                  style={{ color: fwIsDowngrade ? '#FFC7BD' : '#fff' }}
-                >
-                  {fwIsDowngrade ? 'Downgrade Firmware' : 'Update Firmware'}
-                </h2>
-                <p className="text-gray-300 text-base leading-relaxed">
-                  This should take less than 5 minutes. Do not exit the app or allow the camera&apos;s power to become disconnected.
-                </p>
-                <div className="flex gap-3 pt-2">
-                  <button onClick={closeFWScreen} className="flex-1 py-3 rounded-lg text-white text-base font-medium bg-gray-700 hover:bg-gray-600 transition-colors">Cancel Update</button>
-                  <button onClick={startFWUpdate} className="flex-1 py-3 rounded-lg text-white text-base font-medium hover:opacity-90 transition-colors" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Start Update</button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Progress overlay — spinner for uploading/preparing, progress bar for updating */}
-          {fwProgress && (
-            <div className="absolute inset-0 bg-black/70 z-10 flex items-center justify-center">
-              <div className="bg-gray-800 rounded-lg w-[480px] overflow-hidden border border-gray-700">
-                <div className="px-8 pt-6 pb-2">
-                  <h2 className="text-white text-xl font-semibold text-center">
-                    {fwProgress === 'uploading' && 'Uploading Firmware...'}
-                    {fwProgress === 'updating' && 'Updating...'}
-                    {fwProgress === 'preparing' && 'Preparing to restart...'}
-                  </h2>
-                </div>
-                <div className="px-8 py-6 flex flex-col items-center gap-4">
-                  {fwProgress === 'updating' ? (
-                    <>
-                      <p className="text-gray-300 text-base text-center">Installing firmware update, please wait...</p>
-                      <div className="w-full bg-gray-900 rounded-full h-3 overflow-hidden border border-gray-700">
-                        <div
-                          className="h-full rounded-full transition-none"
-                          style={{ width: `${fwPercent}%`, backgroundColor: SETTINGS_ACCENT_COLOR }}
-                        />
-                      </div>
-                      <p className="text-sm text-center font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>{fwPercent}%</p>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center border-2 border-[#BFE3D9]">
-                        <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
-                      </div>
-                      {fwProgress === 'uploading' && (
-                        <p className="text-gray-400 text-sm text-center">Do not exit the app or allow the camera&apos;s power to become disconnected.</p>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FW popups within screen */}
-          {fwPopup === 'upload-failed' && (
-            <div className="absolute inset-0 bg-black/70 z-20 flex items-center justify-center">
-              <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-                <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Failed</h2></div>
-                <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">The upload failed.</p></div>
-                <div className="border-t border-gray-700"><button onClick={() => setFwPopup('confirm-update')} className="w-full text-lg py-4 hover:bg-gray-700 transition-colors font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>Ok</button></div>
-              </div>
-            </div>
-          )}
-          {fwPopup === 'update-failed' && (
-            <div className="absolute inset-0 bg-black/70 z-20 flex items-center justify-center">
-              <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-                <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Failed</h2></div>
-                <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">The update failed. Power cycle the camera and try again.</p></div>
-                <div className="border-t border-gray-700"><button onClick={() => setFwPopup('confirm-update')} className="w-full text-lg py-4 hover:bg-gray-700 transition-colors font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>Ok</button></div>
-              </div>
-            </div>
-          )}
-          {fwPopup === 'complete' && (
-            <div className="absolute inset-0 bg-black/70 z-20 flex items-center justify-center">
-              <div className="bg-gray-800 rounded-lg w-[520px] overflow-hidden border border-gray-700">
-                <div className="px-8 pt-6 pb-2"><h2 className="text-white text-xl font-semibold text-center">Update complete!</h2></div>
-                <div className="px-8 py-5"><p className="text-gray-300 text-base leading-relaxed text-center">The camera is now restarting and will automatically reconnect in about two minutes. If it does not automatically reconnect unplug it, wait 15 seconds, and plug it back in.</p></div>
-                <div className="border-t border-gray-700"><button onClick={completeFWUpdate} className="w-full text-lg py-4 hover:bg-gray-700 transition-colors font-semibold" style={{ color: SETTINGS_ACCENT_COLOR }}>Ok</button></div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── end Firmware ───────────────────────────────────────────── */}
 
       {/* ── Factory Reset ─────────────────────────────────────────── */}
 
