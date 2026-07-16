@@ -1,4 +1,6 @@
 import { Camera, Info, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface WelcomeScreenProps {
   onLearnMore: () => void;
@@ -9,16 +11,37 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'ios' }: WelcomeScreenProps) {
   const isAndroid = platform === 'android';
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/logout', { method: 'POST' });
+    } finally {
+      router.replace('/login');
+      router.refresh();
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 relative">
-      <button
-        onClick={onSkip}
-        className="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors flex items-center gap-2"
-      >
-        <X className="w-6 h-6" />
-        <span className="text-base">Skip</span>
-      </button>
+      <div className="absolute top-6 left-6 flex flex-col items-start gap-2">
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="text-gray-500 hover:text-white transition-colors text-xs disabled:opacity-60"
+        >
+          {isLoggingOut ? 'Saliendo...' : 'Logout'}
+        </button>
+        <button
+          onClick={onSkip}
+          className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+        >
+          <X className="w-6 h-6" />
+          <span className="text-base">Skip Onboarding</span>
+        </button>
+      </div>
       <div className="flex flex-col items-center max-w-md text-center">
         <div className="w-32 h-32 bg-gray-800 rounded-3xl flex items-center justify-center mb-8 border-2 border-[#FCEAAD]">
           <Camera className="w-16 h-16 text-[#FCEAAD]" />
