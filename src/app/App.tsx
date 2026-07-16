@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
 const homeScreenIcon = '/assets/4fcc62f32178f39d03a6f997dc02af74d60bdc02.png';
