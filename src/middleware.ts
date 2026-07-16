@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Runs on every route except the login page itself, the login API,
+  // Runs on every route except the login page itself, the login/logout API,
   // static/build assets, and files under /public/assets.
-  matcher: ['/((?!login|api/login|_next/static|_next/image|favicon.ico|assets/).*)'],
+  matcher: ['/((?!login|api/login|api/logout|_next/static|_next/image|favicon.ico|assets/).*)'],
 };
