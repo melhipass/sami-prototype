@@ -411,8 +411,6 @@ export function SettingsScreen({
   if (!showSettings) return null;
 
   const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
-  const [powerLight, setPowerLight] = useState(true);
-  const [micMute, setMicMute] = useState(false);
   const [allow5kRecordings, setAllow5kRecordings] = useState(false);
 
   // Max Recording Length (seconds; 0 = infinite)
@@ -2454,36 +2452,6 @@ export function SettingsScreen({
                         style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                       >{bvEnableBrowserAccess ? 'Edit' : 'Enable'}</button>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── Hardware ── */}
-              <div>
-                <h3 className="text-white text-xl font-bold mb-3 px-4">Hardware</h3>
-                <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
-                  {/* *Power Light */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">*Power Light</span>
-                    <button
-                      onClick={() => setPowerLight(v => !v)}
-                      className={`w-14 h-8 rounded-full transition-colors relative ${!powerLight ? 'bg-gray-400' : ''}`}
-                      style={powerLight ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
-                    >
-                      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${powerLight ? 'right-1' : 'left-1'}`} />
-                    </button>
-                  </div>
-
-                  {/* *Mute Browser Viewer and Recorded Audio */}
-                  <div className="flex items-center justify-between py-4">
-                    <span className="text-white text-base">*Mute Browser Viewer and Recorded Audio</span>
-                    <button
-                      onClick={() => setMicMute(v => !v)}
-                      className={`w-14 h-8 rounded-full transition-colors relative ${!micMute ? 'bg-gray-400' : ''}`}
-                      style={micMute ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
-                    >
-                      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${micMute ? 'right-1' : 'left-1'}`} />
-                    </button>
                   </div>
                 </div>
               </div>
