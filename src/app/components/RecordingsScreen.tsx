@@ -39,7 +39,7 @@ export interface RecordingsScreenProps {
   isDownloadingRecording: boolean;
   setIsDownloadingRecording: (v: boolean) => void;
   downloadProgress: number;
-  setDownloadProgress: (v: number) => void;
+  setDownloadProgress: React.Dispatch<React.SetStateAction<number>>;
   downloadedRecordingIds: Set<number>;
   setDownloadedRecordingIds: React.Dispatch<React.SetStateAction<Set<number>>>;
   downloadingRecordingIds: Map<number, number>;
