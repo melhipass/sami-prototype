@@ -857,7 +857,7 @@ export function SettingsScreen({
   type RMPopup = { mode: 'Never' | 'Motion Only' | 'Everything'; title: string; message: string; hasCancel: boolean } | null;
   const [rmPopup, setRmPopup] = useState<RMPopup>(null);
 
-  const rmMessages: Record<'Never' | 'Motion Only' | 'Everything', { message: string; hasCancel: boolean }> = {
+  const rmMessages: Record<'Never' | 'Motion Only' | 'Everything', { title: string; message: string; hasCancel: boolean }> = {
     'Never':       { title: "Record Never",       message: "No recordings will be made.", hasCancel: true },
     'Motion Only': { title: "Record Motion Only", message: "Recordings will be made whenever there is motion and enabled by recording schedule.", hasCancel: false },
     'Everything':  { title: "Record Always",      message: "Everything will be recorded when enabled by recording schedule.", hasCancel: false },
