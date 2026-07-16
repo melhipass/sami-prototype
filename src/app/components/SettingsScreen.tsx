@@ -2218,9 +2218,8 @@ export function SettingsScreen({
           <div className="flex-1 overflow-y-auto px-6" style={{ backgroundColor: SETTINGS_BG_COLOR }}>
             <div className="py-6 space-y-8">
 
-              {/* ── General ── */}
+              {/* ── Camera Status / Password (no category header) ── */}
               <div>
-                <h3 className="text-white text-xl font-bold mb-3 px-4">General</h3>
                 <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
                   {/* Camera Status */}
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
@@ -2235,7 +2234,7 @@ export function SettingsScreen({
                   </div>
 
                   {/* Camera Password */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between py-4">
                     <span className="text-white text-base">Camera Password</span>
                     <div className="flex items-center gap-4">
                       <span className="text-gray-300 text-base">{savedCameraPassword || 'Not set'}</span>
@@ -2252,26 +2251,6 @@ export function SettingsScreen({
                         style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                       >Edit</button>
                     </div>
-                  </div>
-
-                  {/* Restart Camera */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">Restart Camera</span>
-                    <button
-                      onClick={() => setRebootPopup('confirm')}
-                      className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                      style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                    >Reboot</button>
-                  </div>
-
-                  {/* Factory Reset */}
-                  <div className="flex items-center justify-between py-4">
-                    <span className="text-white text-base">Factory Reset</span>
-                    <button
-                      onClick={() => setFactoryResetPopup('confirm')}
-                      className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                      style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                    >Reset</button>
                   </div>
                 </div>
               </div>
@@ -2505,6 +2484,32 @@ export function SettingsScreen({
                     >
                       <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${micMute ? 'right-1' : 'left-1'}`} />
                     </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── General ── */}
+              <div>
+                <h3 className="text-white text-xl font-bold mb-3 px-4">General</h3>
+                <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
+                  {/* Restart Camera */}
+                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
+                    <span className="text-white text-base">Restart Camera</span>
+                    <button
+                      onClick={() => setRebootPopup('confirm')}
+                      className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
+                      style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
+                    >Reboot</button>
+                  </div>
+
+                  {/* Factory Reset */}
+                  <div className="flex items-center justify-between py-4">
+                    <span className="text-white text-base">Factory Reset</span>
+                    <button
+                      onClick={() => setFactoryResetPopup('confirm')}
+                      className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
+                      style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
+                    >Reset</button>
                   </div>
                 </div>
               </div>
