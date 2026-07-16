@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import '@/styles/index.css';
 
 export const metadata: Metadata = {
-  title: 'Sami 5 v6 (Pairing process)',
+  title: 'Sami Prototype',
   description:
     'This baby monitor application offers real-time audio and video monitoring for parents, ensuring peace of mind while keeping an eye on their little ones.',
   robots: {
