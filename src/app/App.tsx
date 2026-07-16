@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -28,7 +29,7 @@ const SETTINGS_ACCENT_COLOR = '#5A8BBF';
 const SETTINGS_BG_COLOR = '#000000';
 const SETTINGS_SECTION_BG = '#1F2937'; // gray-800
 
-export default function App() {
+function AppContent() {
   const [selectedOS, setSelectedOS] = useState<'ios' | 'android' | null>(null);
   const [showHomeScreen, setShowHomeScreen] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
@@ -3903,6 +3904,42 @@ IP is Dynamic`}
         }}
       />
     </div>
+  );
+}
+
+// Prototype-only control — not part of the designed app itself.
+// Stays fixed in the top-left corner across every screen of the prototype.
+function PrototypeLogoutButton() {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/logout', { method: 'POST' });
+    } finally {
+      router.replace('/login');
+      router.refresh();
+    }
+  };
+
+  return (
+    <button
+      onClick={handleLogout}
+      disabled={isLoggingOut}
+      className="fixed top-6 left-6 z-[9999] text-gray-500 hover:text-white transition-colors text-lg disabled:opacity-60"
+    >
+      {isLoggingOut ? 'Saliendo...' : 'Logout'}
+    </button>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <PrototypeLogoutButton />
+      <AppContent />
+    </>
   );
 }
 
