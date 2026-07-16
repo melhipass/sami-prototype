@@ -411,7 +411,6 @@ export function SettingsScreen({
   if (!showSettings) return null;
 
   const [showEditPasswordModal, setShowEditPasswordModal] = useState(false);
-  const [cameraLocation, setCameraLocation] = useState('');
   const [powerLight, setPowerLight] = useState(true);
   const [micMute, setMicMute] = useState(false);
   const [allow5kRecordings, setAllow5kRecordings] = useState(false);
@@ -445,8 +444,6 @@ export function SettingsScreen({
     if (raw < 60) return Math.round(raw);
     return Math.round(raw / 60) * 60;
   };
-  const [showLocationEditor, setShowLocationEditor] = useState(false);
-  const [locationDraft, setLocationDraft] = useState('');
   const [editedPassword, setEditedPassword] = useState('');
   const [editedConfirmPassword, setEditedConfirmPassword] = useState('');
   const [editedPasswordHint, setEditedPasswordHint] = useState('');
@@ -2356,19 +2353,6 @@ export function SettingsScreen({
                           setShowPassword(false);
                           setShowEditPasswordModal(true);
                         }}
-                        className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                        style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                      >Edit</button>
-                    </div>
-                  </div>
-
-                  {/* *Camera Location */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">*Camera Location</span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-gray-300 text-base">{cameraLocation}</span>
-                      <button
-                        onClick={() => { setLocationDraft(cameraLocation); setShowLocationEditor(true); }}
                         className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
                         style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                       >Edit</button>
@@ -4314,40 +4298,6 @@ export function SettingsScreen({
                 style={{ color: SETTINGS_ACCENT_COLOR }}
               >Ok</button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Camera Location Editor */}
-      {showLocationEditor && (
-        <div className="absolute inset-0 bg-black z-50 flex flex-col" style={{ animation: 'slideInRight 0.3s ease-out forwards' }}>
-          <div className="bg-black py-4 flex items-center justify-between flex-shrink-0">
-            <button
-              onClick={() => setShowLocationEditor(false)}
-              className="ml-6 flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              <span>Camera Settings</span>
-            </button>
-            <span className="text-white text-lg font-medium">Camera Location</span>
-            <button
-              onClick={() => { setCameraLocation(locationDraft); setShowLocationEditor(false); }}
-              className="mr-6 px-4 py-2 text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-colors"
-              style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-            >Save</button>
-          </div>
-          <div className="flex-1 px-6 py-4" style={{ backgroundColor: SETTINGS_BG_COLOR }}>
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">
-              Give your camera a name to help you identify it, like the room it&apos;s in (e.g., &apos;Nursery&apos; or &apos;LivingRoom&apos;).
-            </p>
-            <input
-              type="text"
-              value={locationDraft}
-              onChange={e => setLocationDraft(e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12))}
-              placeholder="e.g. Nursery"
-              className="w-full px-4 py-3 rounded-lg bg-gray-900 text-white border border-gray-600 focus:border-[#5A8BBF] focus:outline-none text-base"
-            />
-            <p className="text-gray-600 text-xs mt-1 text-right">{locationDraft.length}/12</p>
           </div>
         </div>
       )}
