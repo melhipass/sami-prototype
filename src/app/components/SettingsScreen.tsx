@@ -3592,7 +3592,7 @@ export function SettingsScreen({
             </div>
 
             {ipEditorMode === 'manual' && (() => {
-              const ipField = (label: string, key: keyof IpConfig, placeholder: string) => (
+              const ipField = (label: string, key: 'ip' | 'subnet' | 'gateway' | 'dns1' | 'dns2', placeholder: string) => (
                 <div key={key}>
                   <label className="text-gray-400 text-sm mb-1 block">{label}</label>
                   <input
