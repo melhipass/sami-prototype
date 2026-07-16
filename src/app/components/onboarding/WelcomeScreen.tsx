@@ -30,7 +30,7 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className="text-gray-500 hover:text-white transition-colors text-xs disabled:opacity-60"
+          className="text-gray-500 hover:text-white transition-colors text-lg disabled:opacity-60"
         >
           {isLoggingOut ? 'Saliendo...' : 'Logout'}
         </button>
@@ -39,7 +39,7 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
           className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
         >
           <X className="w-6 h-6" />
-          <span className="text-base">Skip Onboarding</span>
+          <span className="text-lg">Skip</span>
         </button>
       </div>
       <div className="flex flex-col items-center max-w-md text-center">
