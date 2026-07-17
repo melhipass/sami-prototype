@@ -384,7 +384,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <h1 className="text-3xl mb-4 text-white">Permissions Required</h1>
             <p className="text-base text-gray-300 mb-8 leading-relaxed">
               Sami needs Location and Network permissions to discover and connect to your Sami camera.
-              Please go to your device's Settings &gt; Sami &gt; Permissions and enable Location and Local Network access.
+              Please go to your device's Settings &gt; Sami &gt; Permissions and enable Location and Local Network access, then close and reopen the app.
             </p>
 
             <div className="space-y-3 w-full">
