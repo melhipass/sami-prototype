@@ -190,8 +190,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     } else {
       if (step === 1) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 0 };
       if (step === 2 || step === 3) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 1 };
-      if (step === 4 || step === 5 || step === 6 || step === 7 || step === 12) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 2 };
-      if (step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 3 };
+      if (step === 4 || step === 5 || step === 6 || step === 12) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 2 };
+      if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 3 };
     }
     return null; // Hide on welcome screen
   };
