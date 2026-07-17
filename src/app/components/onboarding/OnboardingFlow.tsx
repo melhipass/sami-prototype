@@ -50,6 +50,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const [selectedWifi, setSelectedWifi] = useState('');
   const [wifiPasswordAttempt, setWifiPasswordAttempt] = useState(0);
   const [wifiShowErrorOnReturn, setWifiShowErrorOnReturn] = useState(false);
+  const [cameraPasswordAttempt, setCameraPasswordAttempt] = useState(0);
 
   const handleLearnMore = () => {
     // Open Sami website or info page
@@ -116,10 +117,12 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const handleCameraConfirm = () => {
     if (skipPermissions) {
       // Coming from Device settings, skip Create Password
+      setCameraPasswordAttempt(0); // Reset: first attempt at entering the existing password
       setStep(10); // Password Management
     } else if (isNewCamera) {
       setStep(9); // Create Password
     } else {
+      setCameraPasswordAttempt(0); // Reset: first attempt at entering the existing password
       setStep(10); // Password Management
     }
   };
@@ -128,6 +131,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     setCreatedPassword(pwd);
     setPasswordHint(hint);
     setPassword(pwd); // Use the created password directly
+    setCameraPasswordAttempt(1); // A freshly created password always connects successfully
 
     // Save the password hint to parent component
     if (onPasswordHintSaved) {
@@ -152,6 +156,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   };
 
   const handleRetry = () => {
+    setCameraPasswordAttempt(1); // First attempt always fails; retry always succeeds
     setStep(10); // Go back to Password Management
   };
 
@@ -171,8 +176,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       if (isAndroid) {
         // Labels: Wi-Fi, Verify, Connect
         if (step === 13 || step === 14 || step === 15) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 0 };
-        if (step === 3 || step === 7 || step === 8) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 1 };
-        if (step === 9 || step === 10 || step === 11) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 2 };
+        if (step === 3) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 1 };
+        if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 2 };
       } else {
         // Labels: Guide, Connect
         if (step === 2 || step === 3) return { labels: ['Guide', 'Connect'], index: 0 };
@@ -185,8 +190,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     if (isAndroid) {
       if (step === 1) return { labels: ['Disclaimers', 'Wi-Fi', 'Verify', 'Connect'], index: 0 };
       if (step === 13 || step === 14 || step === 15) return { labels: ['Disclaimers', 'Wi-Fi', 'Verify', 'Connect'], index: 1 };
-      if (step === 3 || step === 7 || step === 8) return { labels: ['Disclaimers', 'Wi-Fi', 'Verify', 'Connect'], index: 2 };
-      if (step === 9 || step === 10 || step === 11) return { labels: ['Disclaimers', 'Wi-Fi', 'Verify', 'Connect'], index: 3 };
+      if (step === 3) return { labels: ['Disclaimers', 'Wi-Fi', 'Verify', 'Connect'], index: 2 };
+      if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Disclaimers', 'Wi-Fi', 'Verify', 'Connect'], index: 3 };
     } else {
       if (step === 1) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 0 };
       if (step === 2 || step === 3) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 1 };
@@ -321,7 +326,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         <ConnectivityTest
           onComplete={handleTestComplete}
           onRetry={handleRetry}
-          password={password}
+          shouldFail={cameraPasswordAttempt === 0}
         />
       )}
       {step === 13 && (

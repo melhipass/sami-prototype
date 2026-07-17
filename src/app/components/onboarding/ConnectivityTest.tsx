@@ -4,14 +4,13 @@ import { Loader2, AlertCircle } from 'lucide-react';
 interface ConnectivityTestProps {
   onComplete: (success: boolean) => void;
   onRetry: () => void;
-  password: string;
+  shouldFail: boolean;
 }
 
-export function ConnectivityTest({ onComplete, onRetry, password }: ConnectivityTestProps) {
+export function ConnectivityTest({ onComplete, onRetry, shouldFail }: ConnectivityTestProps) {
   const [attempt, setAttempt] = useState(1);
   const [hasError, setHasError] = useState(false);
   const maxAttempts = 5;
-  const shouldFail = password === '00000';
 
   useEffect(() => {
     const timer = setInterval(() => {
