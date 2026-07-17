@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, HelpCircle, Lock } from 'lucide-react';
+import { HelpCircle, Lock } from 'lucide-react';
 
 interface PasswordManagementProps {
   isNewCamera: boolean;
@@ -25,7 +25,6 @@ function getPasswordStrength(password: string): { label: string; color: string }
 
 export function PasswordManagement({ isNewCamera, passwordHint, onSubmit, onCancel }: PasswordManagementProps) {
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
 
@@ -61,27 +60,14 @@ export function PasswordManagement({ isNewCamera, passwordHint, onSubmit, onCanc
         <div className="mb-8 w-full">
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type="text"
               value={password}
               onChange={handlePasswordChange}
-              className={`w-full px-4 py-3 border rounded-xl pr-24 focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
                 error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
               }`}
               placeholder="Enter password"
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-              <button
-                onClick={() => setShowPassword(!showPassword)}
-                className="p-2 hover:bg-gray-700 rounded-lg"
-                type="button"
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5 text-[#BFE3D9]" />
-                ) : (
-                  <Eye className="w-5 h-5 text-[#BFE3D9]" />
-                )}
-              </button>
-            </div>
           </div>
 
           {error && (

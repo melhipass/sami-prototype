@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 interface CreatePasswordProps {
   onSubmit: (password: string, passwordHint: string) => void;
@@ -27,8 +27,6 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordHint, setPasswordHint] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = () => {
@@ -104,7 +102,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
         <div className="mb-6 w-full space-y-4">
           <div className="relative">
             <input
-              type={showPassword ? 'password' : 'text'}
+              type="text"
               value={password}
               onChange={handlePasswordChange}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
@@ -116,7 +114,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
 
           <div className="relative">
             <input
-              type={showConfirmPassword ? 'password' : 'text'}
+              type="text"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${

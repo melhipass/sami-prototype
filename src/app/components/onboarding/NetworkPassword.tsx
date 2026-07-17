@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Wifi } from 'lucide-react';
+import { Wifi } from 'lucide-react';
 
 interface NetworkPasswordProps {
   ssid: string;
@@ -11,7 +11,6 @@ interface NetworkPasswordProps {
 
 export function NetworkPassword({ ssid, onSubmit, onCancel, firstAttemptFails = false, showErrorOnMount = false }: NetworkPasswordProps) {
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [showError, setShowError] = useState(showErrorOnMount);
 
   const handleSubmit = () => {
@@ -50,25 +49,14 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, firstAttemptFails = 
           </label>
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-              className={`w-full px-4 py-3 border rounded-xl pr-12 focus:outline-none bg-gray-900 text-white placeholder-gray-600 ${showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-gray-600 focus:border-[#5B8BBF]'}`}
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-900 text-white placeholder-gray-600 ${showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-gray-600 focus:border-[#5B8BBF]'}`}
               placeholder="Enter password"
               autoFocus
             />
-            <button
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-700 rounded-lg"
-              type="button"
-            >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5 text-gray-400" />
-              ) : (
-                <Eye className="w-5 h-5 text-gray-400" />
-              )}
-            </button>
           </div>
         </div>
 
