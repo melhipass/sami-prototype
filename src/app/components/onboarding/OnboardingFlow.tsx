@@ -51,6 +51,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const [wifiPasswordAttempt, setWifiPasswordAttempt] = useState(0);
   const [wifiShowErrorOnReturn, setWifiShowErrorOnReturn] = useState(false);
   const [cameraPasswordAttempt, setCameraPasswordAttempt] = useState(0);
+  const [cameraShowErrorOnReturn, setCameraShowErrorOnReturn] = useState(false);
 
   const handleLearnMore = () => {
     // Open Sami website or info page
@@ -118,11 +119,13 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     if (skipPermissions) {
       // Coming from Device settings, skip Create Password
       setCameraPasswordAttempt(0); // Reset: first attempt at entering the existing password
+      setCameraShowErrorOnReturn(false);
       setStep(10); // Password Management
     } else if (isNewCamera) {
       setStep(9); // Create Password
     } else {
       setCameraPasswordAttempt(0); // Reset: first attempt at entering the existing password
+      setCameraShowErrorOnReturn(false);
       setStep(10); // Password Management
     }
   };
@@ -148,16 +151,18 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
 
   const handlePasswordSubmit = (pwd: string) => {
     setPassword(pwd);
+    setCameraShowErrorOnReturn(false);
     setStep(11); // Connectivity Test
   };
 
   const handleTestComplete = (success: boolean) => {
-    onComplete(); // Go directly to main app
-  };
-
-  const handleRetry = () => {
-    setCameraPasswordAttempt(1); // First attempt always fails; retry always succeeds
-    setStep(10); // Go back to Password Management
+    if (success) {
+      onComplete(); // Go directly to main app
+    } else {
+      setCameraPasswordAttempt(1); // First attempt always fails; retry always succeeds
+      setCameraShowErrorOnReturn(true);
+      setStep(10); // Back to Password Management, with the error shown
+    }
   };
 
   const handleSearchAgain = () => {
@@ -318,6 +323,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 10 && (
         <PasswordManagement
           passwordHint={passwordHint}
+          showErrorOnMount={cameraShowErrorOnReturn}
           onSubmit={handlePasswordSubmit}
           onCancel={() => setStep(8)}
         />
@@ -325,7 +331,6 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 11 && (
         <ConnectivityTest
           onComplete={handleTestComplete}
-          onRetry={handleRetry}
           shouldFail={cameraPasswordAttempt === 0}
         />
       )}

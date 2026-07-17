@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 interface ConnectivityTestProps {
   onComplete: (success: boolean) => void;
-  onRetry: () => void;
   shouldFail: boolean;
 }
 
-export function ConnectivityTest({ onComplete, onRetry, shouldFail }: ConnectivityTestProps) {
+export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestProps) {
   const [attempt, setAttempt] = useState(1);
-  const [hasError, setHasError] = useState(false);
   const maxAttempts = 5;
 
   useEffect(() => {
@@ -24,42 +22,11 @@ export function ConnectivityTest({ onComplete, onRetry, shouldFail }: Connectivi
 
   useEffect(() => {
     if (attempt > maxAttempts) {
-      if (shouldFail) {
-        setHasError(true);
-      } else {
-        onComplete(true);
-      }
+      onComplete(!shouldFail);
     }
   }, [attempt, maxAttempts, shouldFail, onComplete]);
 
   const progress = (attempt / maxAttempts) * 100;
-
-  if (hasError) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6">
-        <div className="flex flex-col items-center max-w-md text-center">
-          <div className="w-32 h-32 bg-gray-800 rounded-3xl flex items-center justify-center mb-6 border-2 border-[#FFC7BD]">
-            <AlertCircle className="w-16 h-16 text-[#FFC7BD]" />
-          </div>
-
-          <h2 className="text-2xl mb-4 text-white">Connection Failed</h2>
-
-          <p className="text-base text-gray-300 mb-8">
-            Error connecting to the camera. Please verify your password and try again.
-          </p>
-
-          <div className="space-y-3 w-full">
-            <button
-              onClick={onRetry}
-              className="w-full bg-[#5B8BBF] text-white py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6">

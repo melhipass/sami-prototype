@@ -3,6 +3,7 @@ import { Lock } from 'lucide-react';
 
 interface PasswordManagementProps {
   passwordHint?: string;
+  showErrorOnMount?: boolean;
   onSubmit: (password: string) => void;
   onCancel: () => void;
 }
@@ -22,24 +23,20 @@ function getPasswordStrength(password: string): { label: string; color: string }
   return { label: 'Strong', color: 'text-green-500' };
 }
 
-export function PasswordManagement({ passwordHint, onSubmit, onCancel }: PasswordManagementProps) {
+export function PasswordManagement({ passwordHint, showErrorOnMount = false, onSubmit, onCancel }: PasswordManagementProps) {
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [showError, setShowError] = useState(showErrorOnMount);
   const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
 
   const handleSubmit = () => {
     if (password.length >= 5) {
-      if (password === '66666') {
-        setError('Wrong password. Please try again.');
-        return;
-      }
       onSubmit(password);
     }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setError('');
+    setShowError(false);
   };
 
   const strength = getPasswordStrength(password);
@@ -52,9 +49,15 @@ export function PasswordManagement({ passwordHint, onSubmit, onCancel }: Passwor
         </div>
 
         <h1 className="text-3xl mb-3 text-white">Camera Password</h1>
-        <p className="text-xl text-gray-300 mb-12">
+        <p className="text-xl text-gray-300 mb-8">
           Enter camera password
         </p>
+
+        {showError && (
+          <div className="mb-4 px-4 py-3 bg-[#B85555]/20 border border-[#B85555]/50 rounded-xl w-full">
+            <p className="text-[#F08080] text-sm text-center">Wrong password. Please try again.</p>
+          </div>
+        )}
 
         <div className="mb-8 w-full">
           <div className="relative">
@@ -63,15 +66,11 @@ export function PasswordManagement({ passwordHint, onSubmit, onCancel }: Passwor
               value={password}
               onChange={handlePasswordChange}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
-                error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
+                showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
               }`}
               placeholder="Enter password"
             />
           </div>
-
-          {error && (
-            <p className="mt-2 text-sm text-[#FFC7BD] text-left">{error}</p>
-          )}
 
           {passwordHint && (
             <button
