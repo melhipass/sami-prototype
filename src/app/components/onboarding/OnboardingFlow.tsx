@@ -312,7 +312,6 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       )}
       {step === 10 && (
         <PasswordManagement
-          isNewCamera={isNewCamera}
           passwordHint={passwordHint}
           onSubmit={handlePasswordSubmit}
           onCancel={() => setStep(8)}

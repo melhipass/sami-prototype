@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { HelpCircle, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 interface PasswordManagementProps {
-  isNewCamera: boolean;
   passwordHint?: string;
   onSubmit: (password: string) => void;
   onCancel: () => void;
@@ -23,7 +22,7 @@ function getPasswordStrength(password: string): { label: string; color: string }
   return { label: 'Strong', color: 'text-green-500' };
 }
 
-export function PasswordManagement({ isNewCamera, passwordHint, onSubmit, onCancel }: PasswordManagementProps) {
+export function PasswordManagement({ passwordHint, onSubmit, onCancel }: PasswordManagementProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
@@ -72,13 +71,6 @@ export function PasswordManagement({ isNewCamera, passwordHint, onSubmit, onCanc
 
           {error && (
             <p className="mt-2 text-sm text-[#FFC7BD] text-left">{error}</p>
-          )}
-
-          {!isNewCamera && !error && (
-            <button className="mt-2 text-sm text-[#BFE3D9] flex items-center gap-1 hover:text-[#BFE3D9]/80">
-              <HelpCircle className="w-4 h-4" />
-              Where do I find this?
-            </button>
           )}
 
           {passwordHint && (

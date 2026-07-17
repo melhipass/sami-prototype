@@ -100,31 +100,37 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
         </p>
 
         <div className="mb-6 w-full space-y-4">
-          <div className="relative">
-            <input
-              type="text"
-              value={password}
-              onChange={handlePasswordChange}
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
-                error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
-              }`}
-              placeholder="Enter password"
-            />
-          </div>
+          <div>
+            <label className="block text-sm mb-2 text-gray-400 text-left">Password:</label>
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
+                    error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
+                  }`}
+                  placeholder="Enter password"
+                />
+              </div>
 
-          <div className="relative">
-            <input
-              type="text"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
-                error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
-              }`}
-              placeholder="Confirm password"
-            />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
+                    error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
+                  }`}
+                  placeholder="Confirm password"
+                />
+              </div>
+            </div>
           </div>
 
           <div>
+            <label className="block text-sm mb-2 text-gray-400 text-left">Password Hint:</label>
             <input
               type="text"
               value={passwordHint}
