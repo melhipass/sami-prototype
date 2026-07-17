@@ -32,6 +32,7 @@ interface CameraDevice {
   id: string;
   name: string;
   status: string;
+  isNewCamera: boolean;
 }
 
 export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, skipPermissions = false, platform = 'ios', currentWifi, savedPasswordHint = '', onPasswordHintSaved, onPasswordSaved }: OnboardingFlowProps) {
@@ -115,13 +116,12 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     setStep(8); // Camera Identified (always go here, even if no cameras found)
   };
 
-  const handleCameraConfirm = () => {
-    if (skipPermissions) {
-      // Coming from Device settings, skip Create Password
-      setCameraPasswordAttempt(0); // Reset: first attempt at entering the existing password
-      setCameraShowErrorOnReturn(false);
-      setStep(10); // Password Management
-    } else if (isNewCamera) {
+  const handleCameraConfirm = (isNew: boolean) => {
+    setIsNewCamera(isNew);
+    // Whether the camera is new (default password) or already has a user-set password
+    // determines the next screen, regardless of whether this is first-time onboarding
+    // or re-pairing from Settings.
+    if (isNew) {
       setStep(9); // Create Password
     } else {
       setCameraPasswordAttempt(0); // Reset: first attempt at entering the existing password

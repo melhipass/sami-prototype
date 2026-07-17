@@ -5,6 +5,7 @@ interface CameraDevice {
   id: string;
   name: string;
   status: string;
+  isNewCamera: boolean;
 }
 
 interface NetworkCheckProps {
@@ -32,9 +33,9 @@ export function NetworkCheck({ onComplete, onError, isFirstAttempt = false, sele
         if (!isMounted) return;
 
         const mockCameras: CameraDevice[] = isFirstAttempt ? [] : [
-          { id: 'Sami-3c: 7812FFA01839', name: 'Sami-3c: 7812FFA01839', status: 'online' },
-          { id: 'Sami-3c: 7812FFA01840', name: 'Sami-3c: 7812FFA01840', status: 'offline' },
-          { id: 'Sami-3c: 7812FFA01841', name: 'Sami-3c: 7812FFA01841', status: 'online' },
+          { id: 'Sami-3c: 7812FFA01839', name: 'Sami-3c: 7812FFA01839', status: 'online', isNewCamera: true },
+          { id: 'Sami-3c: 7812FFA01840', name: 'Sami-3c: 7812FFA01840', status: 'offline', isNewCamera: false },
+          { id: 'Sami-3c: 7812FFA01841', name: 'Sami-3c: 7812FFA01841', status: 'online', isNewCamera: true },
         ];
 
         // Simulate finding a camera
