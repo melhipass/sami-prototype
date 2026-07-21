@@ -386,7 +386,6 @@ function AppContent() {
   const [showSmartBorderPopup2, setShowSmartBorderPopup2] = useState(false);
   const [screenTimeoutToClock, setScreenTimeoutToClock] = useState(false);
   const [timeoutDelay, setTimeoutDelay] = useState(60);
-  const [largeThumbnails, setLargeThumbnails] = useState(false);
   const [enableAutoRecording, setEnableAutoRecording] = useState(true);
   const [storageLimit, setStorageLimit] = useState(250);
   const [hideShorterThan, setHideShorterThan] = useState('15sec');
@@ -2725,8 +2724,6 @@ IP is Dynamic`}
           setScreenTimeoutToClock={setScreenTimeoutToClock}
           timeoutDelay={timeoutDelay}
           setTimeoutDelay={setTimeoutDelay}
-          largeThumbnails={largeThumbnails}
-          setLargeThumbnails={setLargeThumbnails}
           timeoutDelayValues={timeoutDelayValues}
           incrementTimeoutDelay={incrementTimeoutDelay}
           decrementTimeoutDelay={decrementTimeoutDelay}

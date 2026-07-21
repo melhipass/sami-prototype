@@ -123,8 +123,6 @@ export interface SettingsScreenProps {
   setScreenTimeoutToClock: (v: boolean) => void;
   timeoutDelay: number;
   setTimeoutDelay: (v: number) => void;
-  largeThumbnails: boolean;
-  setLargeThumbnails: (v: boolean) => void;
   timeoutDelayValues: number[];
   incrementTimeoutDelay: (v: number) => number;
   decrementTimeoutDelay: (v: number) => number;
@@ -320,8 +318,6 @@ export function SettingsScreen({
   setScreenTimeoutToClock,
   timeoutDelay,
   setTimeoutDelay,
-  largeThumbnails,
-  setLargeThumbnails,
   timeoutDelayValues,
   incrementTimeoutDelay,
   decrementTimeoutDelay,
@@ -1434,23 +1430,6 @@ export function SettingsScreen({
                   </div>
                 </div>
 
-                {/* Large Thumbnails */}
-                <div className="flex items-center justify-between py-4">
-                  <span className="text-white">Large Thumbnails</span>
-                  <button
-                    onClick={() => setLargeThumbnails(!largeThumbnails)}
-                    className={`w-14 h-8 rounded-full transition-colors relative ${
-                      largeThumbnails ? '' : 'bg-gray-400'
-                    }`}
-                    style={largeThumbnails ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
-                  >
-                    <div
-                      className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                        largeThumbnails ? 'right-1' : 'left-1'
-                      }`}
-                    />
-                  </button>
-                </div>
               </div>
             </div>
           </div>
