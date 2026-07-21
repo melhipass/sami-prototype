@@ -392,8 +392,6 @@ function AppContent() {
   const [hideShorterThan, setHideShorterThan] = useState('15sec');
   const [autoDeleteOlderVideos, setAutoDeleteOlderVideos] = useState(false);
   const [showAutoDeletePopup, setShowAutoDeletePopup] = useState(false);
-  const [backupLockedVideos, setBackupLockedVideos] = useState(false);
-  const [showBackupPopup, setShowBackupPopup] = useState(false);
   const [iCloudBackup, setICloudBackup] = useState('None');
   const [disableTelemetry, setDisableTelemetry] = useState(false);
   const [alwaysAllowMobileData, setAlwaysAllowMobileData] = useState(false);
@@ -2743,10 +2741,6 @@ IP is Dynamic`}
           setAutoDeleteOlderVideos={setAutoDeleteOlderVideos}
           showAutoDeletePopup={showAutoDeletePopup}
           setShowAutoDeletePopup={setShowAutoDeletePopup}
-          backupLockedVideos={backupLockedVideos}
-          setBackupLockedVideos={setBackupLockedVideos}
-          showBackupPopup={showBackupPopup}
-          setShowBackupPopup={setShowBackupPopup}
           setShowStorageNotification={setShowStorageNotification}
           alwaysAllowMobileData={alwaysAllowMobileData}
           setAlwaysAllowMobileData={setAlwaysAllowMobileData}
@@ -3054,39 +3048,6 @@ IP is Dynamic`}
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Backup Locked Videos Popup */}
-        {showBackupPopup && (
-          <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
-              {/* Title */}
-              <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Backup Locked Videos</h2>
-              </div>
-
-              {/* Description */}
-              <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
-                  Locked videos will be backed up localy in your mobile files and also to your cloud backup.
-                </p>
-              </div>
-
-              {/* Button */}
-              <div className="border-t border-gray-700">
-                <button
-                  onClick={() => {
-                    setBackupLockedVideos(true);
-                    setShowBackupPopup(false);
-                  }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full"
-                  style={{ color: SETTINGS_ACCENT_COLOR }}
-                >
-                  OK
                 </button>
               </div>
             </div>

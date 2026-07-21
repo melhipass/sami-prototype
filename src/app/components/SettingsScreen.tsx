@@ -141,10 +141,6 @@ export interface SettingsScreenProps {
   setAutoDeleteOlderVideos: (v: boolean) => void;
   showAutoDeletePopup: boolean;
   setShowAutoDeletePopup: (v: boolean) => void;
-  backupLockedVideos: boolean;
-  setBackupLockedVideos: (v: boolean) => void;
-  showBackupPopup: boolean;
-  setShowBackupPopup: (v: boolean) => void;
   setShowStorageNotification: (v: boolean) => void;
 
   // Mobile data / analytics
@@ -340,10 +336,6 @@ export function SettingsScreen({
   setAutoDeleteOlderVideos,
   showAutoDeletePopup,
   setShowAutoDeletePopup,
-  backupLockedVideos,
-  setBackupLockedVideos,
-  showBackupPopup,
-  setShowBackupPopup,
   setShowStorageNotification,
   alwaysAllowMobileData,
   setAlwaysAllowMobileData,
@@ -1552,29 +1544,6 @@ export function SettingsScreen({
                   </button>
                 </div>
 
-                {/* Backup Locked Videos */}
-                <div className="flex items-center justify-between py-4">
-                  <span className="text-white">Backup Locked Videos</span>
-                  <button
-                    onClick={() => {
-                      if (!backupLockedVideos) {
-                        setShowBackupPopup(true);
-                      } else {
-                        setBackupLockedVideos(false);
-                      }
-                    }}
-                    className={`w-14 h-8 rounded-full transition-colors relative ${
-                      backupLockedVideos ? '' : 'bg-gray-400'
-                    }`}
-                    style={backupLockedVideos ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
-                  >
-                    <div
-                      className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                        backupLockedVideos ? 'right-1' : 'left-1'
-                      }`}
-                    />
-                  </button>
-                </div>
               </div>
             </div>
           </div>
