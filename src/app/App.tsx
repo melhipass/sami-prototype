@@ -54,7 +54,6 @@ function AppContent() {
   const [downloadedRecordingIds, setDownloadedRecordingIds] = useState<Set<number>>(new Set());
   const [downloadingRecordingIds, setDownloadingRecordingIds] = useState<Map<number, number>>(new Map());
   const [activeDownloadInterval, setActiveDownloadInterval] = useState<NodeJS.Timeout | null>(null);
-  const [showDownloadError, setShowDownloadError] = useState(false);
   const [swipedRecordingId, setSwipedRecordingId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const swipeStartX = useRef(0);
@@ -2565,8 +2564,6 @@ IP is Dynamic`}
           setDownloadingRecordingIds={setDownloadingRecordingIds}
           activeDownloadInterval={activeDownloadInterval}
           setActiveDownloadInterval={setActiveDownloadInterval}
-          showDownloadError={showDownloadError}
-          setShowDownloadError={setShowDownloadError}
           isEditingRecordings={isEditingRecordings}
           setIsEditingRecordings={setIsEditingRecordings}
           selectedRecordingIds={selectedRecordingIds}

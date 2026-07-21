@@ -46,8 +46,6 @@ export interface RecordingsScreenProps {
   setDownloadingRecordingIds: React.Dispatch<React.SetStateAction<Map<number, number>>>;
   activeDownloadInterval: NodeJS.Timeout | null;
   setActiveDownloadInterval: (v: NodeJS.Timeout | null) => void;
-  showDownloadError: boolean;
-  setShowDownloadError: (v: boolean) => void;
 
   // Edit mode
   isEditingRecordings: boolean;
@@ -142,8 +140,6 @@ export function RecordingsScreen({
   setDownloadingRecordingIds,
   activeDownloadInterval,
   setActiveDownloadInterval,
-  showDownloadError,
-  setShowDownloadError,
   isEditingRecordings,
   setIsEditingRecordings,
   selectedRecordingIds,
@@ -206,6 +202,7 @@ export function RecordingsScreen({
 
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [shareProgress, setShareProgress] = useState(0);
+  const [isWaitingForCamera, setIsWaitingForCamera] = useState(false);
   const shareIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startShare = () => {
@@ -255,7 +252,7 @@ export function RecordingsScreen({
                     setSelectedRecordingIndex(null);
                     setIsVideoPlaying(false);
                     setIsDownloadingRecording(false);
-                    setShowDownloadError(false);
+                    setIsWaitingForCamera(false);
                   }}
                   className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors flex items-center gap-2"
                 >
@@ -295,33 +292,42 @@ export function RecordingsScreen({
                     <div
                       className="w-full h-full bg-gray-900 flex flex-col items-center justify-center gap-6 cursor-pointer"
                       onClick={() => {
-                        // Pause download and show error
+                        // Pause download due to simulated connection issue
                         if (activeDownloadInterval) {
                           clearInterval(activeDownloadInterval);
                           setActiveDownloadInterval(null);
                         }
-                        setShowDownloadError(true);
+                        setIsWaitingForCamera(true);
                       }}
                     >
-                      <h2 className="text-3xl text-white font-medium">Downloading...</h2>
+                      {isWaitingForCamera ? (
+                        <>
+                          <h2 className="text-3xl text-white font-medium">Waiting for Camera...</h2>
+                          <h3 className="text-xl text-gray-400">Will retry automatically</h3>
+                        </>
+                      ) : (
+                        <>
+                          <h2 className="text-3xl text-white font-medium">Downloading...</h2>
 
-                      <h3 className="text-xl text-gray-400">Downloading from Camera</h3>
+                          <h3 className="text-xl text-gray-400">Downloading from Camera</h3>
 
-                      <p className="text-lg text-[#BFE3D9]">
-                        {downloadProgress}%
-                      </p>
+                          <p className="text-lg text-[#BFE3D9]">
+                            {downloadProgress}%
+                          </p>
 
-                      {/* Progress Bar */}
-                      <div className="w-full max-w-xs bg-gray-800 rounded-full h-3 overflow-hidden border border-[#FCEAAD]/30">
-                        <div
-                          className="bg-[#FCEAAD] h-full rounded-full transition-all duration-300"
-                          style={{ width: `${downloadProgress}%` }}
-                        />
-                      </div>
+                          {/* Progress Bar */}
+                          <div className="w-full max-w-xs bg-gray-800 rounded-full h-3 overflow-hidden border border-[#FCEAAD]/30">
+                            <div
+                              className="bg-[#FCEAAD] h-full rounded-full transition-all duration-300"
+                              style={{ width: `${downloadProgress}%` }}
+                            />
+                          </div>
 
-                      <p className="text-sm text-gray-400 mt-2">
-                        This may take a moment
-                      </p>
+                          <p className="text-sm text-gray-400 mt-2">
+                            This may take a moment
+                          </p>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <>
@@ -864,43 +870,6 @@ export function RecordingsScreen({
                 </button>
               </div>
 
-              {/* Download Error Popup */}
-              {showDownloadError && (
-                <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-                  <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
-                    {/* Icon and Title */}
-                    <div className="px-8 pt-8 flex flex-col items-center">
-                      <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mb-4 border-2 border-[#FFC7BD]">
-                        <AlertCircle className="w-10 h-10 text-[#FFC7BD]" />
-                      </div>
-                      <h2 className="text-white text-2xl font-semibold text-center">
-                        Download Paused
-                      </h2>
-                    </div>
-
-                    {/* Description */}
-                    <div className="px-8 py-6">
-                      <p className="text-white text-lg leading-relaxed text-center">
-                        Download has been paused due to connection issues
-                      </p>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="border-t border-gray-700 flex flex-col">
-                      <button
-                        onClick={() => {
-                          setShowDownloadError(false);
-                          // Keep the download paused, user can navigate away
-                        }}
-                        className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold"
-                        style={{ color: '#5B8BBF' }}
-                      >
-                        OK
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </>
           );
         })()
