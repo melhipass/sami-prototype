@@ -2096,10 +2096,12 @@ export function SettingsScreen({
               <div>
                 <div className="bg-gray-800 rounded-lg overflow-hidden px-4">
                   {/* Camera Status */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
+                  <div className={`flex items-center justify-between py-4 ${showCameraPasswordRow ? 'border-b border-gray-700' : ''}`}>
                     <span className="text-white text-base">Camera Status</span>
                     <div className="flex items-center gap-4">
-                      <span className="text-[#BFE3D9] text-base font-medium">Online</span>
+                      <button onClick={cycleCameraStatus} className="hover:opacity-70 transition-opacity" title="Tap to cycle status states (demo)">
+                        <span className="text-base font-medium" style={{ color: cameraStatusColor }}>{cameraStatus}</span>
+                      </button>
                       <button
                         onClick={() => setShowRemoveCameraConfirm(true)}
                         className="px-4 py-2 bg-[#B95555] hover:bg-[#B95555]/80 text-white rounded transition-colors text-sm"
@@ -2108,48 +2110,54 @@ export function SettingsScreen({
                   </div>
 
                   {/* Camera Password */}
-                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">Camera Password</span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-gray-300 text-base">{savedCameraPassword || 'Not set'}</span>
-                      <button
-                        onClick={() => {
-                          setEditedPassword(savedCameraPassword || '');
-                          setEditedConfirmPassword('');
-                          setEditedPasswordHint(savedCameraPasswordHint || '');
-                          setEditPasswordError('');
-                          setShowPassword(false);
-                          setShowEditPasswordModal(true);
-                        }}
-                        className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
-                        style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                      >Edit</button>
+                  {showCameraPasswordRow && (
+                    <div className={`flex items-center justify-between py-4 ${showFullCameraSettings ? 'border-b border-gray-700' : ''}`}>
+                      <span className="text-white text-base">Camera Password</span>
+                      <div className="flex items-center gap-4">
+                        <span className="text-gray-300 text-base">{savedCameraPassword || 'Not set'}</span>
+                        <button
+                          onClick={() => {
+                            setEditedPassword(savedCameraPassword || '');
+                            setEditedConfirmPassword('');
+                            setEditedPasswordHint(savedCameraPasswordHint || '');
+                            setEditPasswordError('');
+                            setShowPassword(false);
+                            setShowEditPasswordModal(true);
+                          }}
+                          className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
+                          style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
+                        >Edit</button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Camera Wi-Fi */}
-                  <div className="flex items-center justify-between py-4">
-                    <span className="text-white text-base">Camera Wi-Fi [{cameraWifiNetwork}]</span>
-                    <div className="flex items-center gap-4">
-                      <button onClick={cycleCameraSignal} className="flex items-center gap-2 hover:opacity-70 transition-opacity" title="Tap to cycle signal states (demo)">
-                        {cameraSignal !== 'Wired' && cameraSignal !== 'NONE' && (
-                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            {(cameraSignal === 'Excellent' || cameraSignal === 'Ok') && <path d="M1 11C1 11 5.5 6.5 12 6.5C18.5 6.5 23 11 23 11" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
-                            {cameraSignal === 'Excellent' && <path d="M5 14C5 14 8 11 12 11C16 11 19 14 19 14" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
-                            <path d="M8.5 16.5C8.5 16.5 10 15 12 15C14 15 15.5 16.5 15.5 16.5" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />
-                            <circle cx="12" cy="20" r="1.5" fill={cameraSignalColor} />
-                          </svg>
-                        )}
-                        <span className="text-sm font-medium" style={{ color: cameraSignalColor }}>
-                          {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
-                        </span>
-                      </button>
-                      <button onClick={() => { setCameraWifiPickerStep('select'); setShowCameraWifiPicker(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
+                  {showFullCameraSettings && (
+                    <div className="flex items-center justify-between py-4">
+                      <span className="text-white text-base">Camera Wi-Fi [{cameraWifiNetwork}]</span>
+                      <div className="flex items-center gap-4">
+                        <button onClick={cycleCameraSignal} className="flex items-center gap-2 hover:opacity-70 transition-opacity" title="Tap to cycle signal states (demo)">
+                          {cameraSignal !== 'Wired' && cameraSignal !== 'NONE' && (
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              {(cameraSignal === 'Excellent' || cameraSignal === 'Ok') && <path d="M1 11C1 11 5.5 6.5 12 6.5C18.5 6.5 23 11 23 11" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
+                              {cameraSignal === 'Excellent' && <path d="M5 14C5 14 8 11 12 11C16 11 19 14 19 14" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />}
+                              <path d="M8.5 16.5C8.5 16.5 10 15 12 15C14 15 15.5 16.5 15.5 16.5" stroke={cameraSignalColor} strokeWidth="2" strokeLinecap="round" fill="none" />
+                              <circle cx="12" cy="20" r="1.5" fill={cameraSignalColor} />
+                            </svg>
+                          )}
+                          <span className="text-sm font-medium" style={{ color: cameraSignalColor }}>
+                            {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
+                          </span>
+                        </button>
+                        <button onClick={() => { setCameraWifiPickerStep('select'); setShowCameraWifiPicker(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
+              {showFullCameraSettings && (
+                <>
               {/* ── Image ── */}
               <div>
                 <h3 className="text-white text-xl font-bold mb-3 px-4">Image</h3>
@@ -2319,6 +2327,8 @@ export function SettingsScreen({
                   </div>
                 </div>
               </div>
+                </>
+              )}
 
             </div>
           </div>
