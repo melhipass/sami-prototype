@@ -186,7 +186,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       } else {
         // Labels: Guide, Connect
         if (step === 2 || step === 3) return { labels: ['Guide', 'Connect'], index: 0 };
-        if (step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Guide', 'Connect'], index: 1 };
+        if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Guide', 'Connect'], index: 1 };
       }
       return null;
     }
