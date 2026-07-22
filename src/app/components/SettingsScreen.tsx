@@ -416,6 +416,7 @@ export function SettingsScreen({
   }
 
   const [showRemoveCameraConfirm, setShowRemoveCameraConfirm] = useState(false);
+  const [showBadPasswordPopup, setShowBadPasswordPopup] = useState(false);
 
   // SD Card
   type SDStatus = 'Missing!' | 'Reading...' | 'Blank' | '1 Recording' | '42 recordings';
@@ -489,7 +490,12 @@ export function SettingsScreen({
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>('Online');
   const cycleCameraStatus = () => {
     const idx = CAMERA_STATUS_CYCLE.indexOf(cameraStatus);
-    setCameraStatus(CAMERA_STATUS_CYCLE[(idx + 1) % CAMERA_STATUS_CYCLE.length]);
+    const next = CAMERA_STATUS_CYCLE[(idx + 1) % CAMERA_STATUS_CYCLE.length];
+    setCameraStatus(next);
+    if (next === 'Bad Password') {
+      // Demo only — the real app would never show this on a simple tap, only when a genuine connection failure occurs.
+      setShowBadPasswordPopup(true);
+    }
   };
   const cameraStatusColor = cameraStatus === 'Online' ? '#BFE3D9'
     : cameraStatus === 'Bad Password' || cameraStatus === 'Camera needs power cycling' || cameraStatus === 'Offline' ? '#FFC7BD'
@@ -2789,6 +2795,60 @@ export function SettingsScreen({
                 className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold text-[#B95555]"
               >
                 Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bad Password Popup (demo only — cycling Camera Status to "Bad Password" simulates this; in the real app it would only appear after a genuine connection failure) */}
+      {showBadPasswordPopup && (
+        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
+          <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            {/* Title */}
+            <div className="px-8 pt-6">
+              <h2 className="text-white text-2xl font-semibold text-center">Bad Password</h2>
+            </div>
+
+            {/* Description */}
+            <div className="px-8 py-6">
+              <p className="text-white text-lg leading-relaxed text-center">
+                Your camera password is incorrect. Enter the correct password in Camera Settings. If you don't know the password connect the camera to your router with an Ethernet wire and press the camera's reset button. Then press Try Again.
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className="border-t border-gray-700 flex flex-col">
+              <button
+                onClick={() => {
+                  setShowBadPasswordPopup(false);
+                  setEditedPassword(savedCameraPassword || '');
+                  setEditedConfirmPassword('');
+                  setEditedPasswordHint(savedCameraPasswordHint || '');
+                  setEditPasswordError('');
+                  setShowPassword(false);
+                  setShowEditPasswordModal(true);
+                }}
+                className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full border-b border-gray-700"
+                style={{ color: SETTINGS_ACCENT_COLOR }}
+              >
+                Enter Password
+              </button>
+              <button
+                onClick={() => {
+                  setShowBadPasswordPopup(false);
+                  setCameraStatus('Online');
+                }}
+                className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full border-b border-gray-700"
+                style={{ color: SETTINGS_ACCENT_COLOR }}
+              >
+                Try Again
+              </button>
+              <button
+                onClick={() => setShowBadPasswordPopup(false)}
+                className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full text-gray-400"
+              >
+                Cancel
               </button>
             </div>
           </div>
