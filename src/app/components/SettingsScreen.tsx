@@ -483,6 +483,22 @@ export function SettingsScreen({
     }, 2500);
   };
 
+  // Camera Status (tappable cycle for demo)
+  type CameraStatus = 'Online' | 'Updating...' | 'Connecting' | 'Waiting for camera to start' | 'Bad Password' | 'Camera needs power cycling' | 'Offline';
+  const CAMERA_STATUS_CYCLE: CameraStatus[] = ['Online', 'Updating...', 'Connecting', 'Waiting for camera to start', 'Bad Password', 'Camera needs power cycling', 'Offline'];
+  const [cameraStatus, setCameraStatus] = useState<CameraStatus>('Online');
+  const cycleCameraStatus = () => {
+    const idx = CAMERA_STATUS_CYCLE.indexOf(cameraStatus);
+    setCameraStatus(CAMERA_STATUS_CYCLE[(idx + 1) % CAMERA_STATUS_CYCLE.length]);
+  };
+  const cameraStatusColor = cameraStatus === 'Online' ? '#BFE3D9'
+    : cameraStatus === 'Bad Password' || cameraStatus === 'Camera needs power cycling' || cameraStatus === 'Offline' ? '#FFC7BD'
+    : '#FCEAAD'; // Updating..., Connecting, Waiting for camera to start
+  // Only Camera Status is shown for every state; Camera Password is also shown for Bad Password/Offline;
+  // Camera Wi-Fi and the rest of the settings sections only show when fully Online.
+  const showCameraPasswordRow = cameraStatus === 'Online' || cameraStatus === 'Bad Password' || cameraStatus === 'Offline';
+  const showFullCameraSettings = cameraStatus === 'Online';
+
   // Camera Wi-Fi signal quality (tappable cycle for demo)
   type CameraSignal = 'Excellent' | 'Ok' | 'Bad' | 'Poor' | 'Wired' | 'NONE';
   const CAMERA_SIGNAL_CYCLE: CameraSignal[] = ['Excellent', 'Ok', 'Bad', 'Poor', 'Wired', 'NONE'];
