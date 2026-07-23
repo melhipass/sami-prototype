@@ -297,6 +297,10 @@ function AppContent() {
   // Settings state
   const [selectedDevice, setSelectedDevice] = useState('');
   const [cameraPaired, setCameraPaired] = useState(false);
+  // Demo-only: simulates AC 5 of "Pairing Camera from Settings" (Proactive Sami Network
+  // Detection). Real behavior would trigger on Wi-Fi network change; here it just shows
+  // whenever there's no camera paired and the user is on the Main Live View.
+  const [showSamiNetworkBanner, setShowSamiNetworkBanner] = useState(true);
   const [showPairingPopup, setShowPairingPopup] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [showEraseConfirmDialog, setShowEraseConfirmDialog] = useState(false);
@@ -1806,6 +1810,7 @@ function AppContent() {
     // Reset all settings including device selection
     setSelectedDevice('');
     setCameraPaired(false);
+    setShowSamiNetworkBanner(true);
     setEnableAlarm(false);
     setHasSeenEnableAlarmAlerts(false);
     setMotionThresholdSetting(25);
@@ -2827,6 +2832,41 @@ IP is Dynamic`}
           </div>
         )}
 
+
+        {/* Proactive Sami Network Detection Banner - Main Live View (demo trigger: no camera paired) */}
+        {isMainView && !cameraPaired && showSamiNetworkBanner && (
+          <div className="absolute top-4 left-4 right-4 z-40">
+            <div className="bg-gray-800 border border-[#FFC7BD]/40 rounded-xl p-4 flex items-start gap-3 shadow-lg">
+              <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 border border-[#FFC7BD]/50">
+                <AlertCircle className="w-5 h-5 text-[#FFC7BD]" />
+              </div>
+              <div className="flex-1">
+                <div className="text-white font-semibold text-base">Sami Camera Detected</div>
+                <div className="text-gray-300 text-sm mt-1">You&apos;re connected to a Sami camera&apos;s Wi-Fi network. Would you like to pair it now?</div>
+                <div className="flex gap-3 mt-3">
+                  <button
+                    onClick={() => {
+                      setShowSamiNetworkBanner(false);
+                      setOnboardingInitialStep(selectedOS === 'android' ? 13 : 2);
+                      setOnboardingSkipPermissions(true);
+                      setShowOnboarding(true);
+                    }}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors hover:opacity-90"
+                    style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
+                  >
+                    Pair Now
+                  </button>
+                  <button
+                    onClick={() => setShowSamiNetworkBanner(false)}
+                    className="px-4 py-2 rounded-lg text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    Not Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Pairing Camera Popup - Main Screen */}
         {showPairingPopup && !showSettings && (
