@@ -4,6 +4,9 @@ import { Lock } from 'lucide-react';
 interface PasswordManagementProps {
   passwordHint?: string;
   showErrorOnMount?: boolean;
+  // Pre-fills the input with the password from the failed attempt, so the user
+  // can see and correct it instead of retyping from scratch.
+  initialPassword?: string;
   onSubmit: (password: string) => void;
   onCancel: () => void;
 }
@@ -23,8 +26,8 @@ function getPasswordStrength(password: string): { label: string; color: string }
   return { label: 'Strong', color: 'text-green-500' };
 }
 
-export function PasswordManagement({ passwordHint, showErrorOnMount = false, onSubmit, onCancel }: PasswordManagementProps) {
-  const [password, setPassword] = useState('');
+export function PasswordManagement({ passwordHint, showErrorOnMount = false, initialPassword = '', onSubmit, onCancel }: PasswordManagementProps) {
+  const [password, setPassword] = useState(initialPassword);
   const [showError, setShowError] = useState(showErrorOnMount);
   const [showForgotPasswordDialog, setShowForgotPasswordDialog] = useState(false);
 

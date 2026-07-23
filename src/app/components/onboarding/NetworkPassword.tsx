@@ -5,22 +5,18 @@ interface NetworkPasswordProps {
   ssid: string;
   onSubmit: (password: string) => void;
   onCancel: () => void;
-  firstAttemptFails?: boolean;
   showErrorOnMount?: boolean;
+  // Pre-fills the input with the password from the failed attempt, so the user
+  // can see and correct it instead of retyping from scratch.
+  initialPassword?: string;
 }
 
-export function NetworkPassword({ ssid, onSubmit, onCancel, firstAttemptFails = false, showErrorOnMount = false }: NetworkPasswordProps) {
-  const [password, setPassword] = useState('');
+export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = false, initialPassword = '' }: NetworkPasswordProps) {
+  const [password, setPassword] = useState(initialPassword);
   const [showError, setShowError] = useState(showErrorOnMount);
 
   const handleSubmit = () => {
     if (password.length === 0) return;
-    if (firstAttemptFails) {
-      setShowError(true);
-      setPassword('');
-      onSubmit(password); // notify parent to increment attempt counter
-      return;
-    }
     setShowError(false);
     onSubmit(password);
   };

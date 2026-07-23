@@ -52,6 +52,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   // 2+ = run the real search (which will show "No Cameras Found" once, then succeed).
   const [networkCheckAttempt, setNetworkCheckAttempt] = useState(0);
   const [selectedWifi, setSelectedWifi] = useState('');
+  const [wifiPassword, setWifiPassword] = useState('');
   const [wifiPasswordAttempt, setWifiPasswordAttempt] = useState(0);
   const [wifiShowErrorOnReturn, setWifiShowErrorOnReturn] = useState(false);
   const [cameraPasswordAttempt, setCameraPasswordAttempt] = useState(0);
@@ -332,6 +333,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         <PasswordManagement
           passwordHint={passwordHint}
           showErrorOnMount={cameraShowErrorOnReturn}
+          initialPassword={password}
           onSubmit={handlePasswordSubmit}
           onCancel={() => setStep(8)}
         />
@@ -368,7 +370,9 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         <NetworkPassword
           ssid={selectedWifi}
           showErrorOnMount={wifiShowErrorOnReturn}
-          onSubmit={() => {
+          initialPassword={wifiPassword}
+          onSubmit={(pwd) => {
+            setWifiPassword(pwd);
             setWifiShowErrorOnReturn(false);
             setStep(15);
           }}
