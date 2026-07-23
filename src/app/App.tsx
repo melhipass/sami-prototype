@@ -2833,36 +2833,42 @@ IP is Dynamic`}
         )}
 
 
-        {/* Proactive Sami Network Detection Banner - Main Live View (demo trigger: no camera paired) */}
+        {/* Proactive Sami Network Detection Popup - Main Live View (demo trigger: no camera paired) */}
         {isMainView && !cameraPaired && showSamiNetworkBanner && (
-          <div className="absolute top-4 left-4 right-4 z-40">
-            <div className="bg-gray-800 border border-[#FFC7BD]/40 rounded-xl p-4 flex items-start gap-3 shadow-lg">
-              <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 border border-[#FFC7BD]/50">
-                <AlertCircle className="w-5 h-5 text-[#FFC7BD]" />
+          <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
+            <div className="bg-gray-800 rounded-lg w-[500px] overflow-hidden">
+              {/* Title */}
+              <div className="text-white text-xl font-semibold text-center py-4 border-b border-gray-700">
+                Sami Camera Detected
               </div>
-              <div className="flex-1">
-                <div className="text-white font-semibold text-base">Sami Camera Detected</div>
-                <div className="text-gray-300 text-sm mt-1">You&apos;re connected to a Sami camera&apos;s Wi-Fi network. Would you like to pair it now?</div>
-                <div className="flex gap-3 mt-3">
-                  <button
-                    onClick={() => {
-                      setShowSamiNetworkBanner(false);
-                      setOnboardingInitialStep(selectedOS === 'android' ? 13 : 2);
-                      setOnboardingSkipPermissions(true);
-                      setShowOnboarding(true);
-                    }}
-                    className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-colors hover:opacity-90"
-                    style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                  >
-                    Pair Now
-                  </button>
-                  <button
-                    onClick={() => setShowSamiNetworkBanner(false)}
-                    className="px-4 py-2 rounded-lg text-sm text-gray-400 hover:text-white transition-colors"
-                  >
-                    Not Now
-                  </button>
-                </div>
+
+              {/* Description */}
+              <div className="px-6 py-6">
+                <p className="text-white text-center text-lg">
+                  You&apos;re connected to a Sami camera&apos;s Wi-Fi network. Would you like to pair it now?
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="border-t border-gray-700 flex flex-col">
+                <button
+                  onClick={() => {
+                    setShowSamiNetworkBanner(false);
+                    setOnboardingInitialStep(selectedOS === 'android' ? 13 : 2);
+                    setOnboardingSkipPermissions(true);
+                    setShowOnboarding(true);
+                  }}
+                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700"
+                  style={{ color: SETTINGS_ACCENT_COLOR }}
+                >
+                  Pair Now
+                </button>
+                <button
+                  onClick={() => setShowSamiNetworkBanner(false)}
+                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold text-gray-400"
+                >
+                  Not Now
+                </button>
               </div>
             </div>
           </div>
