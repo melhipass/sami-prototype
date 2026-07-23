@@ -27,12 +27,18 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-[#FCEAAD]">
-          <Camera className="w-10 h-10 text-[#FCEAAD]" />
-          <div className="absolute -top-2 -right-2 bg-[#BFE3D9] rounded-full p-1 border-2 border-black">
-            <CheckCircle className="w-6 h-6 text-[#2C3B4A]" />
+        {cameras.length > 0 ? (
+          <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-[#FCEAAD]">
+            <Camera className="w-10 h-10 text-[#FCEAAD]" />
+            <div className="absolute -top-2 -right-2 bg-[#BFE3D9] rounded-full p-1 border-2 border-black">
+              <CheckCircle className="w-6 h-6 text-[#2C3B4A]" />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FFC7BD]">
+            <AlertCircle className="w-10 h-10 text-[#FFC7BD]" />
+          </div>
+        )}
 
         <h1 className="text-3xl mb-3 text-white">{cameras.length > 0 ? 'Cameras Found' : 'No Cameras Found'}</h1>
         <p className="text-base text-gray-400 mb-6">
