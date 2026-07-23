@@ -1574,6 +1574,15 @@ function AppContent() {
   // Check if we're on the main view (not in any other screen)
   const isMainView = !showHomeScreen && !showSplash && !showClock && !showHelp && !showRecordings && !showSettings && selectedRecordingIndex === null;
 
+  // Re-trigger the "Initial Setup" (Proactive Sami Network Detection) popup every time
+  // the user (re-)enters the Main Live View, for demo purposes — rather than suppressing
+  // it for the rest of the session after the first dismissal.
+  useEffect(() => {
+    if (isMainView && !cameraPaired) {
+      setShowSamiNetworkBanner(true);
+    }
+  }, [isMainView, cameraPaired]);
+
   // Check for volume warning on main view
   useEffect(() => {
     if (isMainView && beepOnCameraFault && alarmVolume === 0 && !ignoreCameraFaultWarning) {
