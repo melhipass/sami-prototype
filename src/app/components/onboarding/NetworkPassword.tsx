@@ -47,7 +47,10 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
             <input
               type="text"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setShowError(false);
+              }}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-900 text-white placeholder-gray-600 ${showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-gray-600 focus:border-[#5B8BBF]'}`}
               placeholder="Enter password"
