@@ -2839,13 +2839,13 @@ IP is Dynamic`}
             <div className="bg-gray-800 rounded-lg w-[500px] overflow-hidden">
               {/* Title */}
               <div className="text-white text-xl font-semibold text-center py-4 border-b border-gray-700">
-                Sami Camera Detected
+                Initial Setup
               </div>
 
               {/* Description */}
               <div className="px-6 py-6">
                 <p className="text-white text-center text-lg">
-                  You&apos;re connected to a Sami camera&apos;s Wi-Fi network. Would you like to pair it now?
+                  Plug in your Sami camera and press continue after the power light is green.
                 </p>
               </div>
 
@@ -2861,13 +2861,13 @@ IP is Dynamic`}
                   className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
-                  Pair Now
+                  Continue
                 </button>
                 <button
                   onClick={() => setShowSamiNetworkBanner(false)}
                   className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold text-gray-400"
                 >
-                  Not Now
+                  Cancel
                 </button>
               </div>
             </div>
