@@ -10,17 +10,26 @@ interface CameraDevice {
 
 interface NetworkCheckProps {
   onComplete: (found: boolean, cameraName: string, cameras: CameraDevice[]) => void;
-  onError: () => void;
+  onGoBack: () => void;
   isFirstAttempt?: boolean;
   selectedWifi?: string;
+  platform?: 'ios' | 'android';
+  // Demo-only: forces one of the connectivity error screens instead of running the search.
+  // Progression through vpn -> no-wifi -> real search is controlled by the parent
+  // (OnboardingFlow), which advances errorType each time onSearchAgain fires.
+  errorType?: 'vpn' | 'no-wifi' | null;
+  // Called when the user taps "Search Again" (or "Go to Settings") on one of the
+  // connectivity error screens. Parent decides what to show next.
+  onSearchAgain?: () => void;
 }
 
-export function NetworkCheck({ onComplete, onError, isFirstAttempt = false, selectedWifi }: NetworkCheckProps) {
-  const [status, setStatus] = useState<'verifying' | 'searching' | 'error' | 'found'>('verifying');
+export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, selectedWifi, platform = 'ios', errorType = null, onSearchAgain }: NetworkCheckProps) {
+  const [status, setStatus] = useState<'verifying' | 'searching' | 'found'>('verifying');
   const [networkName, setNetworkName] = useState(selectedWifi ?? 'Sami-5G');
-  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    if (errorType) return; // Showing a connectivity error screen instead of running the search.
+
     let isMounted = true;
 
     // Simulate network verification
@@ -50,30 +59,86 @@ export function NetworkCheck({ onComplete, onError, isFirstAttempt = false, sele
     return () => {
       isMounted = false;
     };
-  }, [isFirstAttempt]);
+  }, [isFirstAttempt, errorType]);
 
-  if (status === 'error') {
+  if (errorType === 'vpn') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6">
-        <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-700">
-          <div className="flex flex-col items-center text-center">
-            <AlertCircle className="w-16 h-16 text-[#B95555] mb-4" />
-            <h2 className="text-xl mb-3 text-white">Connection Issue</h2>
-            <p className="text-sm text-gray-400 mb-6">{errorMessage}</p>
-            <div className="space-y-3 w-full">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 py-8">
+        <div className="flex flex-col items-center max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FFC7BD]">
+            <AlertCircle className="w-10 h-10 text-[#FFC7BD]" />
+          </div>
+
+          <h1 className="text-3xl mb-3 text-white">VPN Detected</h1>
+          <p className="text-base text-gray-400 mb-6">Your VPN may be blocking the camera search</p>
+
+          <div className="w-full mb-8 bg-gray-800 rounded-xl p-6 border border-[#FFC7BD]/30 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-[#FFC7BD] flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-[#FFC7BD] text-left">
+              It looks like you are using a VPN. This can prevent the Sami app from having the necessary access to your local network. Please disable your VPN, then press Search Again.
+            </p>
+          </div>
+
+          <div className="space-y-3 w-full">
+            <button
+              onClick={onSearchAgain}
+              className="w-full bg-gray-700 text-white py-4 rounded-xl text-lg hover:bg-gray-600 transition-colors"
+            >
+              Search Again
+            </button>
+            <button
+              onClick={onGoBack}
+              className="w-full text-gray-400 py-3 text-base hover:text-white transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorType === 'no-wifi') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 py-8">
+        <div className="flex flex-col items-center max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FFC7BD]">
+            <AlertCircle className="w-10 h-10 text-[#FFC7BD]" />
+          </div>
+
+          <h1 className="text-3xl mb-3 text-white">No Wi-Fi Connection Found</h1>
+          <p className="text-base text-gray-400 mb-6">Your device isn't connected to a Wi-Fi network</p>
+
+          <div className="w-full mb-8 bg-gray-800 rounded-xl p-6 border border-[#FFC7BD]/30 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-[#FFC7BD] flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-[#FFC7BD] text-left">
+              No Wi-Fi connection found. Connect to your Wi-Fi network and try again
+            </p>
+          </div>
+
+          <div className="space-y-3 w-full">
+            {platform === 'ios' && (
               <button
-                onClick={onError}
-                className="w-full bg-[#5B8BBF] text-white py-3 rounded-xl hover:bg-[#5B8BBF]/80 transition-colors"
+                onClick={onSearchAgain}
+                title="Opens the device's Wi-Fi settings (native app only)"
+                className="w-full text-white py-4 rounded-xl text-lg shadow-lg hover:opacity-90 transition-colors"
+                style={{ backgroundColor: '#5B8BBF' }}
               >
                 Go to Settings
               </button>
-              <button
-                onClick={onError}
-                className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
+            )}
+            <button
+              onClick={onSearchAgain}
+              className="w-full bg-gray-700 text-white py-4 rounded-xl text-lg hover:bg-gray-600 transition-colors"
+            >
+              Search Again
+            </button>
+            <button
+              onClick={onGoBack}
+              className="w-full text-gray-400 py-3 text-base hover:text-white transition-colors"
+            >
+              Go Back
+            </button>
           </div>
         </div>
       </div>

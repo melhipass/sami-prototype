@@ -48,6 +48,9 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const [passwordHint, setPasswordHint] = useState(savedPasswordHint);
   const [connectionType, setConnectionType] = useState<'hub' | 'wifi'>('hub');
   const [isFirstNetworkCheck, setIsFirstNetworkCheck] = useState(true);
+  // Demo-only sequence: 0 = show "VPN Detected", 1 = show "No Wi-Fi Connection Found",
+  // 2+ = run the real search (which will show "No Cameras Found" once, then succeed).
+  const [networkCheckAttempt, setNetworkCheckAttempt] = useState(0);
   const [selectedWifi, setSelectedWifi] = useState('');
   const [wifiPasswordAttempt, setWifiPasswordAttempt] = useState(0);
   const [wifiShowErrorOnReturn, setWifiShowErrorOnReturn] = useState(false);
@@ -170,8 +173,10 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     setStep(7); // Go back to Network Check
   };
 
-  const handleCancel = () => {
-    onComplete(); // Exit onboarding
+  // Advances the demo error sequence inside NetworkCheck: VPN Detected -> No Wi-Fi
+  // Connection Found -> real search (No Cameras Found, then success).
+  const handleNetworkCheckSearchAgain = () => {
+    setNetworkCheckAttempt((prev) => prev + 1);
   };
 
   // Labels vary by platform and whether coming from Settings (skipPermissions)
@@ -300,9 +305,12 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 7 && (
         <NetworkCheck
           onComplete={handleNetworkCheckComplete}
-          onError={handleCancel}
+          onGoBack={() => setStep(isAndroid ? 13 : 2)}
           isFirstAttempt={isFirstNetworkCheck}
           selectedWifi={isAndroid && selectedWifi ? selectedWifi : undefined}
+          platform={platform}
+          errorType={networkCheckAttempt === 0 ? 'vpn' : networkCheckAttempt === 1 ? 'no-wifi' : null}
+          onSearchAgain={handleNetworkCheckSearchAgain}
         />
       )}
       {step === 8 && (
@@ -399,7 +407,15 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <div className="space-y-3 w-full">
               <button
                 onClick={() => setStep(5)}
+                title="Opens the device's Settings app (native app only)"
                 className="w-full bg-[#5B8BBF] text-white py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
+              >
+                Go to Settings
+              </button>
+
+              <button
+                onClick={() => setStep(5)}
+                className="w-full bg-gray-700 text-white py-4 rounded-xl text-lg hover:bg-gray-600 transition-colors"
               >
                 Try Again
               </button>
