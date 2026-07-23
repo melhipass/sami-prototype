@@ -1264,6 +1264,11 @@ function AppContent() {
 
   // Handle Off/Pause button click
   const handleCameraButtonClick = () => {
+    // No camera paired: button is fully inactive
+    if (!cameraPaired) {
+      return;
+    }
+
     // If alarm is disabled in settings, show hint instead
     if (!enableAlarm) {
       setShowAlarmDisabledHint(true);
@@ -3743,15 +3748,17 @@ IP is Dynamic`}
             </div>
 
             {/* Mic button at bottom */}
-            <button 
+            <button
               ref={micButtonRef}
               onClick={() => {
+                if (!cameraPaired) return;
+
                 // Clear any auto-off timer when user manually interacts with mic button
                 if (micAutoOffTimer) {
                   clearTimeout(micAutoOffTimer);
                   setMicAutoOffTimer(null);
                 }
-                
+
                 if (!micOn) {
                   // Mic is off, turn it on and show picker
                   setMicOn(true);
@@ -3765,17 +3772,22 @@ IP is Dynamic`}
                   setShowVolumePicker(true);
                 }
               }}
+              disabled={!cameraPaired}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
-                micOn ? 'text-white' : 'bg-[#5B6C7E] text-white'
+                !cameraPaired
+                  ? 'bg-gray-600 cursor-not-allowed opacity-50 text-white'
+                  : micOn ? 'text-white' : 'bg-[#5B6C7E] text-white'
               }`}
-              style={micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
+              style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
             >
-              {micOn ? (
+              {!cameraPaired ? (
+                <MicOff className="w-8 h-8 mb-1" />
+              ) : micOn ? (
                 <Mic className="w-8 h-8 mb-1" style={{ color: micVolume === 0 ? '#FFFFFF' : '#2C3B4A' }} />
               ) : (
                 <MicOff className="w-8 h-8 mb-1" />
               )}
-              <span className="text-base" style={micOn && micVolume !== 0 ? { color: '#2C3B4A' } : {}}>Mic</span>
+              <span className="text-base" style={cameraPaired && micOn && micVolume !== 0 ? { color: '#2C3B4A' } : {}}>Mic</span>
             </button>
 
             {/* Settings button - triggers bottom panel */}
