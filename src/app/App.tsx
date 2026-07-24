@@ -2859,7 +2859,7 @@ IP is Dynamic`}
               {/* Description */}
               <div className="px-6 py-6">
                 <p className="text-white text-center text-lg">
-                  Plug in your Sami camera and press continue after the power light is green.
+                  Confirm your Sami camera is plugged in and press continue after the power light is green.
                 </p>
               </div>
 
