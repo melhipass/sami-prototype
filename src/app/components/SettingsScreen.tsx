@@ -3870,7 +3870,7 @@ export function SettingsScreen({
       {showEditPasswordModal && (() => {
         const validation = validateCameraPassword(editedPassword);
         const passwordsMatch = editedPassword === editedConfirmPassword && editedConfirmPassword.length > 0;
-        const canSave = validation.isValid && passwordsMatch && editedPasswordHint.trim().length > 0;
+        const canSave = validation.isValid && passwordsMatch;
 
         const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const val = e.target.value;
@@ -3909,23 +3909,33 @@ export function SettingsScreen({
               </div>
 
               {/* Fields */}
-              <div className="px-8 py-5 space-y-3">
-                <input
-                  type="text"
-                  value={editedPassword}
-                  onChange={handleNewPasswordChange}
-                  autoFocus
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-900 text-white placeholder-gray-500 ${editPasswordError ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'}`}
-                  placeholder="New password"
-                />
-                <input
-                  type="text"
-                  value={editedConfirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-900 text-white placeholder-gray-500 ${editPasswordError ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'}`}
-                  placeholder="Confirm new password"
-                />
+              <div className="px-8 py-5 space-y-4">
                 <div>
+                  <label className="block text-sm mb-2 text-gray-400 text-left">
+                    Password: <span className="text-xs text-[#FFC7BD]">(required)</span>
+                  </label>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      value={editedPassword}
+                      onChange={handleNewPasswordChange}
+                      autoFocus
+                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-900 text-white placeholder-gray-500 ${editPasswordError ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'}`}
+                      placeholder="New password"
+                    />
+                    <input
+                      type="text"
+                      value={editedConfirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-900 text-white placeholder-gray-500 ${editPasswordError ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'}`}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm mb-2 text-gray-400 text-left">
+                    Password Hint: <span className="text-xs text-gray-500">(optional)</span>
+                  </label>
                   <input
                     type="text"
                     value={editedPasswordHint}
@@ -3934,7 +3944,7 @@ export function SettingsScreen({
                     className="w-full px-4 py-3 border border-[#FCEAAD]/30 rounded-xl focus:outline-none focus:border-[#FCEAAD] bg-gray-900 text-white placeholder-gray-500"
                     placeholder="Password hint (e.g., my first pet's name)"
                   />
-                  <p className="text-xs text-gray-400 mt-1">This will help you remember your password ({editedPasswordHint.length}/30)</p>
+                  <p className="text-xs text-gray-400 mt-1 text-left">This will help you remember your password ({editedPasswordHint.length}/30)</p>
                 </div>
                 {editPasswordError && (
                   <p className="text-sm text-[#FFC7BD]">{editPasswordError}</p>
