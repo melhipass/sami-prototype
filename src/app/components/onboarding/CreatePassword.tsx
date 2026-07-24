@@ -42,11 +42,6 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
       return;
     }
 
-    if (!passwordHint.trim()) {
-      setError('Please provide a password hint');
-      return;
-    }
-
     onSubmit(password, passwordHint);
   };
 
@@ -85,7 +80,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
 
   const validation = validatePassword(password);
   const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
-  const canSubmit = validation.isValid && passwordsMatch && passwordHint.trim().length > 0;
+  const canSubmit = validation.isValid && passwordsMatch;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6">
@@ -101,7 +96,9 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
 
         <div className="mb-6 w-full space-y-4">
           <div>
-            <label className="block text-sm mb-2 text-gray-400 text-left">Password:</label>
+            <label className="block text-sm mb-2 text-gray-400 text-left">
+              Password: <span className="text-xs text-[#FFC7BD]">(required)</span>
+            </label>
             <div className="space-y-3">
               <div className="relative">
                 <input
@@ -130,7 +127,9 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           </div>
 
           <div>
-            <label className="block text-sm mb-2 text-gray-400 text-left">Password Hint:</label>
+            <label className="block text-sm mb-2 text-gray-400 text-left">
+              Password Hint: <span className="text-xs text-gray-500">(optional)</span>
+            </label>
             <input
               type="text"
               value={passwordHint}
