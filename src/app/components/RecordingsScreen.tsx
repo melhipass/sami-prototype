@@ -465,12 +465,7 @@ export function RecordingsScreen({
                           setShowUnarchivedMessage(true);
                           setTimeout(() => setShowUnarchivedMessage(false), 3000);
                         }}
-                        disabled={isDownloadingRecording}
-                        className={`px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 ${
-                          isDownloadingRecording
-                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                            : 'bg-[#BFE3D9] hover:bg-[#BFE3D9]/90 text-[#2C3B4A]'
-                        }`}
+                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#BFE3D9] hover:bg-[#BFE3D9]/90 text-[#2C3B4A]"
                       >
                         <RotateCcw className="w-4 h-4" />
                         <span className="text-sm font-semibold">Restore</span>
@@ -479,12 +474,7 @@ export function RecordingsScreen({
                         onClick={() => {
                           setShowDeleteConfirmation(true);
                         }}
-                        disabled={isDownloadingRecording}
-                        className={`px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 ${
-                          isDownloadingRecording
-                            ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                            : 'bg-[#B85555] hover:bg-[#B85555]/90 text-white'
-                        }`}
+                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B85555] hover:bg-[#B85555]/90 text-white"
                       >
                         <X className="w-4 h-4" />
                         <span className="text-sm font-semibold">Delete</span>
@@ -516,12 +506,7 @@ export function RecordingsScreen({
                           }, 3000);
                         }
                       }}
-                      disabled={isDownloadingRecording}
-                      className={`px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 ${
-                        isDownloadingRecording
-                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                          : 'bg-[#B95555] hover:bg-[#B95555]/90 text-white'
-                      }`}
+                      className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B95555] hover:bg-[#B95555]/90 text-white"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span className="text-sm font-semibold">Trash</span>
@@ -538,11 +523,8 @@ export function RecordingsScreen({
                         r.id === selectedRecording.id ? { ...r, isLocked: !r.isLocked } : r
                       ));
                     }}
-                    disabled={isDownloadingRecording}
                     className={`px-3 py-1.5 rounded-full transition-all backdrop-blur-sm flex items-center gap-1.5 ${
-                      isDownloadingRecording
-                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                        : selectedRecording.isLocked
+                      selectedRecording.isLocked
                         ? 'bg-[#FFC7BD]/90 hover:bg-[#FFC7BD] text-gray-900'
                         : 'bg-white/30 hover:bg-white/40 text-white'
                     }`}
@@ -556,11 +538,8 @@ export function RecordingsScreen({
                         r.id === selectedRecording.id ? { ...r, hasAlarm: !r.hasAlarm } : r
                       ));
                     }}
-                    disabled={isDownloadingRecording}
                     className={`px-3 py-1.5 rounded-full transition-all backdrop-blur-sm flex items-center gap-1.5 ${
-                      isDownloadingRecording
-                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                        : selectedRecording.hasAlarm
+                      selectedRecording.hasAlarm
                         ? 'bg-[#FCEAAD]/90 hover:bg-[#FCEAAD] text-[#2C3B4A]'
                         : 'bg-white/30 hover:bg-white/40 text-white'
                     }`}
