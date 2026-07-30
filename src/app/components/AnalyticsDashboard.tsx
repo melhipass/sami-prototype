@@ -193,15 +193,17 @@ function ChartCard({
   badge,
   children,
   footer,
+  className,
 }: {
   title: string;
   answers: ReactNode;
   badge?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="bg-white border border-[#E5E9F2] rounded-xl shadow-sm p-5">
+    <div className={`bg-white border border-[#E5E9F2] rounded-xl shadow-sm p-5${className ? ` ${className}` : ''}`}>
       <div className="flex items-start justify-between mb-1">
         <h3 className="text-[15px] font-semibold text-[#111827]">{title}</h3>
         {badge}
@@ -361,7 +363,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const retentionSegmentLabel = platformFilter === 'iOS' ? 'iOS' : platformFilter === 'Android' ? 'Android' : 'All Cameras';
   const retentionLineName = platformFilter === 'iOS' ? 'iOS' : platformFilter === 'Android' ? 'Android' : 'All Cameras';
   const retentionLineColor = platformFilter === 'iOS' ? COLORS.purple : platformFilter === 'Android' ? COLORS.teal : COLORS.primary;
-  const day7Retention = retentionTable.find((r) => r.segment === retentionSegmentLabel)?.day7 ?? '39%';
 
   // Device Family / OS Version: filter rows to the selected platform.
   const filteredDeviceFamily = deviceFamily.filter((d) => {
@@ -472,16 +473,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         <div className="flex-1 overflow-y-auto p-6">
           {activeCategory === 'overview' && (
             <div className="space-y-6">
-              <div className="grid grid-cols-4 gap-4">
-                <KpiCard label="Cameras Active Tonight" value={`${scaleCount(742)}`} sub={`of ${scaleCount(982)} paired cameras`} />
-                <KpiCard label="Alarms Triggered (30d)" value={`${(scaleCount(68400) / 1000).toFixed(1)}k`} sub={`avg ${(scaleCount(2300) / 1000).toFixed(1)}k / day`} />
-                <KpiCard label="Recordings Created (30d)" value={`${(scaleCount(104820) / 1000).toFixed(1)}k`} sub="17.6% watched" />
-                <KpiCard label="Day 7 Retention" value={day7Retention} sub={`of newly paired ${platformFilter === 'All Platforms' ? 'cameras' : platformFilter + ' cameras'}`} />
-              </div>
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Nightly Active Cameras"
-                  answers="How many cameras are being used every night? (the big-picture usage question)"
+                  answers="How many cameras are being used every night?"
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={scaledNightly}>
@@ -494,9 +489,24 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </ResponsiveContainer>
                 </ChartCard>
                 <ChartCard
+                  title="Alarms Triggered Over Time"
+                  answers="How many alarms are being triggered?"
+                >
+                  <ResponsiveContainer width="100%" height={220}>
+                    <AreaChart data={scaledAlarmsOverTime}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="alarms" stroke={COLORS.coral} fill={COLORS.coral} fillOpacity={0.15} name="Alarms triggered" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+                <ChartCard
                   title="Recordings: Created vs. Watched vs. Shared"
                   answers="How many recordings are being made, how many were watched, and how many were shared?"
                   badge={<NewEventBadge eventName="recording_created" />}
+                  className="col-span-2"
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={scaledRecordingsFunnel} layout="vertical" margin={{ left: 24 }}>
