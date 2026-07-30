@@ -248,32 +248,6 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
   );
 }
 
-function Segmented({
-  options,
-  value,
-  onChange,
-}: {
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="inline-flex bg-[#F3F5F9] rounded-lg p-1">
-      {options.map((opt) => (
-        <button
-          key={opt}
-          onClick={() => onChange(opt)}
-          className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-            value === opt ? 'bg-white text-[#111827] shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function Dropdown({
   label,
   options,
@@ -320,15 +294,86 @@ type CategoryId = typeof CATEGORIES[number]['id'];
 export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState<CategoryId>('overview');
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
-  const [dateRange, setDateRange] = useState('Last 30 Days');
-  const [retentionViewBy, setRetentionViewBy] = useState('Overall');
 
+  // Platform filter applies globally, but only to metrics that are genuinely
+  // platform-scoped (counts of events/cameras, or device/OS breakdowns).
+  // It intentionally does NOT touch: retention/adoption rates or ratios
+  // (scaling a percentage by a headcount multiplier would corrupt it), the
+  // churn-vs-alarms comparison (a rate, not a count), or camera-level data
+  // like Recordings-by-Camera / Connectivity (a camera's recordings and its
+  // own Wi-Fi connection aren't tied to which platform happens to view it).
   const platformMultiplier = platformFilter === 'iOS' ? 0.61 : platformFilter === 'Android' ? 0.39 : 1;
+  const scaleCount = (n: number) => Math.round(n * platformMultiplier);
 
   const scaledNightly = useMemo(
-    () => nightlyActiveCameras.map((d) => ({ ...d, cameras: Math.round(d.cameras * platformMultiplier) })),
+    () => nightlyActiveCameras.map((d) => ({ ...d, cameras: scaleCount(d.cameras) })),
     [platformMultiplier]
   );
+
+  const scaledAlarmsOverTime = useMemo(
+    () => alarmsOverTime.map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
+    [platformMultiplier]
+  );
+
+  const scaledAlarmsDistribution = useMemo(
+    () => alarmsPerCameraDistribution.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsCreatedOverTime = useMemo(
+    () => recordingsCreatedOverTime.map((d) => ({ ...d, created: scaleCount(d.created) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsFunnel = useMemo(
+    () => recordingsFunnel.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsDuringAlarm = useMemo(
+    () => recordingsDuringAlarm.map((d) => ({ ...d, value: scaleCount(d.value) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsTagged = useMemo(
+    () => recordingsTagged.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledUsageConsistency = useMemo(
+    () => usageConsistency.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledFeatureUsage = useMemo(
+    () => featureUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledScheduleAdoption = useMemo(
+    () => scheduleAdoption.map((d) => ({ ...d, value: scaleCount(d.value) })),
+    [platformMultiplier]
+  );
+
+  // Retention: pick the right line/table row directly from the global
+  // Platform filter instead of a separate local toggle.
+  const retentionKey = platformFilter === 'iOS' ? 'ios' : platformFilter === 'Android' ? 'android' : 'overall';
+  const retentionSegmentLabel = platformFilter === 'iOS' ? 'iOS' : platformFilter === 'Android' ? 'Android' : 'All Cameras';
+  const retentionLineName = platformFilter === 'iOS' ? 'iOS' : platformFilter === 'Android' ? 'Android' : 'All Cameras';
+  const retentionLineColor = platformFilter === 'iOS' ? COLORS.purple : platformFilter === 'Android' ? COLORS.teal : COLORS.primary;
+  const day7Retention = retentionTable.find((r) => r.segment === retentionSegmentLabel)?.day7 ?? '39%';
+
+  // Device Family / OS Version: filter rows to the selected platform.
+  const filteredDeviceFamily = deviceFamily.filter((d) => {
+    if (platformFilter === 'iOS') return d.name === 'iPad' || d.name === 'iPhone';
+    if (platformFilter === 'Android') return d.name === 'Android Tablet' || d.name === 'Android Phone';
+    return true;
+  });
+  const filteredOsVersionTable = osVersionTable.filter((d) => {
+    if (platformFilter === 'iOS') return d.os.startsWith('iOS');
+    if (platformFilter === 'Android') return d.os.startsWith('Android');
+    return true;
+  });
 
   return (
     <div className="w-screen h-screen bg-[#F7F8FB] text-[#111827] flex overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -420,7 +465,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         {/* Filters row */}
         <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
           <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
-          <Dropdown label="Date range" options={['Last 7 Days', 'Last 30 Days', 'Last 90 Days']} value={dateRange} onChange={setDateRange} />
           <span className="text-xs text-gray-400 ml-auto">All figures below are illustrative / dummy data</span>
         </div>
 
@@ -429,10 +473,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'overview' && (
             <div className="space-y-6">
               <div className="grid grid-cols-4 gap-4">
-                <KpiCard label="Cameras Active Tonight" value="742" sub="of 982 paired cameras" />
-                <KpiCard label="Alarms Triggered (30d)" value="68.4k" sub="avg 2.3k / day" />
-                <KpiCard label="Recordings Created (30d)" value="104.8k" sub="17.6% watched" />
-                <KpiCard label="Day 7 Retention" value="39%" sub="of newly paired cameras" />
+                <KpiCard label="Cameras Active Tonight" value={`${scaleCount(742)}`} sub={`of ${scaleCount(982)} paired cameras`} />
+                <KpiCard label="Alarms Triggered (30d)" value={`${(scaleCount(68400) / 1000).toFixed(1)}k`} sub={`avg ${(scaleCount(2300) / 1000).toFixed(1)}k / day`} />
+                <KpiCard label="Recordings Created (30d)" value={`${(scaleCount(104820) / 1000).toFixed(1)}k`} sub="17.6% watched" />
+                <KpiCard label="Day 7 Retention" value={day7Retention} sub={`of newly paired ${platformFilter === 'All Platforms' ? 'cameras' : platformFilter + ' cameras'}`} />
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
@@ -455,7 +499,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   badge={<NewEventBadge eventName="recording_created" />}
                 >
                   <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={recordingsFunnel} layout="vertical" margin={{ left: 24 }}>
+                    <BarChart data={scaledRecordingsFunnel} layout="vertical" margin={{ left: 24 }}>
                       <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
@@ -474,19 +518,15 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Overall Retention"
                 answers="What does usage look like over time? Are cameras still being used weeks after setup?"
                 footer={
-                  <>
-                    <div className="mb-3">
-                      <Segmented options={['Overall', 'iOS', 'Android']} value={retentionViewBy} onChange={setRetentionViewBy} />
-                    </div>
-                    <SimpleTable
-                      columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
-                      rows={retentionTable
-                        .filter((r) => retentionViewBy === 'Overall' || r.segment === retentionViewBy)
-                        .map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
-                    />
-                  </>
+                  <SimpleTable
+                    columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
+                    rows={retentionTable
+                      .filter((r) => r.segment === retentionSegmentLabel)
+                      .map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
+                  />
                 }
               >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">Controlled by the Platform filter above.</p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
@@ -494,9 +534,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} unit="%" />
                     <Tooltip />
                     <Legend />
-                    {retentionViewBy === 'Overall' && <Line type="monotone" dataKey="overall" name="All Cameras" stroke={COLORS.primary} strokeWidth={2} dot={false} />}
-                    {retentionViewBy === 'iOS' && <Line type="monotone" dataKey="ios" name="iOS" stroke={COLORS.purple} strokeWidth={2} dot={false} />}
-                    {retentionViewBy === 'Android' && <Line type="monotone" dataKey="android" name="Android" stroke={COLORS.teal} strokeWidth={2} dot={false} />}
+                    <Line type="monotone" dataKey={retentionKey} name={retentionLineName} stroke={retentionLineColor} strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -507,7 +545,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   answers="Consistent vs. sporadic usage — how many cameras are used nightly vs. only occasionally?"
                 >
                   <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={usageConsistency}>
+                    <BarChart data={scaledUsageConsistency}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
                       <XAxis dataKey="segment" tick={{ fontSize: 10, fill: COLORS.axis }} interval={0} angle={-15} textAnchor="end" height={60} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -549,7 +587,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="How many alarms are being triggered?"
               >
                 <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={alarmsOverTime}>
+                  <LineChart data={scaledAlarmsOverTime}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
                     <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -564,7 +602,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="How many alarms are being triggered — broken down by how concentrated they are on individual cameras (relevant to the drop-off correlation above)."
               >
                 <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={alarmsPerCameraDistribution}>
+                  <BarChart data={scaledAlarmsDistribution}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
                     <XAxis dataKey="bin" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -585,7 +623,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   badge={<NewEventBadge eventName="recording_created" />}
                 >
                   <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={recordingsCreatedOverTime}>
+                    <AreaChart data={scaledRecordingsCreatedOverTime}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
                       <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -602,8 +640,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
-                      <Pie data={recordingsDuringAlarm} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
-                        {recordingsDuringAlarm.map((_, i) => (
+                      <Pie data={scaledRecordingsDuringAlarm} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
+                        {scaledRecordingsDuringAlarm.map((_, i) => (
                           <Cell key={i} fill={i === 0 ? COLORS.coral : COLORS.primaryLight} />
                         ))}
                       </Pie>
@@ -619,7 +657,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="How many recordings does each user have tagged as alarmed or locked manually? How many were shared?"
               >
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={recordingsTagged} layout="vertical" margin={{ left: 24 }}>
+                  <BarChart data={scaledRecordingsTagged} layout="vertical" margin={{ left: 24 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis type="category" dataKey="tag" tick={{ fontSize: 12, fill: '#111827' }} width={110} />
@@ -641,6 +679,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   columns={['Camera (MAC)', 'Created', 'Watched', 'Locked', 'Alarmed', 'Shared']}
                   rows={recordingsByCameraTable.map((r) => [r.camera, r.created, r.watched, r.locked, r.alarmed, r.shared])}
                 />
+                <p className="text-xs text-gray-500 mt-3">
+                  Not affected by the Platform filter — a camera&apos;s recordings belong to the camera itself, not to whichever device happens to view them.
+                </p>
               </ChartCard>
             </div>
           )}
@@ -652,7 +693,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="What features are being used? How many times do people utilize a given feature?"
               >
                 <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={featureUsage} layout="vertical" margin={{ left: 8 }}>
+                  <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis type="category" dataKey="feature" tick={{ fontSize: 11, fill: '#111827' }} width={220} />
@@ -671,8 +712,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               >
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
-                    <Pie data={scheduleAdoption} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
-                      {scheduleAdoption.map((_, i) => (
+                    <Pie data={scaledScheduleAdoption} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
+                      {scaledScheduleAdoption.map((_, i) => (
                         <Cell key={i} fill={i === 0 ? COLORS.teal : COLORS.grid} />
                       ))}
                     </Pie>
@@ -699,7 +740,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
                   />
                   <p className="text-xs text-gray-500 mt-3">
-                    From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
+                    From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Not affected by the Platform filter — this is the camera&apos;s own connection, not the viewing device&apos;s. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
                   </p>
                 </ChartCard>
 
@@ -709,8 +750,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
-                      <Pie data={deviceFamily} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85} paddingAngle={2}>
-                        {deviceFamily.map((_, i) => (
+                      <Pie data={filteredDeviceFamily} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85} paddingAngle={2}>
+                        {filteredDeviceFamily.map((_, i) => (
                           <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                         ))}
                       </Pie>
@@ -728,7 +769,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               >
                 <SimpleTable
                   columns={['OS Version', 'Devices', '% of platform']}
-                  rows={osVersionTable.map((r) => [r.os, r.devices, r.pct])}
+                  rows={filteredOsVersionTable.map((r) => [r.os, r.devices, r.pct])}
                 />
                 <p className="text-xs text-gray-500 mt-3">From Amplitude&apos;s auto-captured <code className="font-mono">os_name</code> / <code className="font-mono">os_version</code>.</p>
               </ChartCard>
