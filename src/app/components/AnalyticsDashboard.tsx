@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Search, Share2, SlidersHorizontal, Home, Activity, Bell, Video,
+  ArrowLeft, Share2, SlidersHorizontal, Home, Activity, Bell, Video,
   Settings as SettingsIcon, Smartphone, ChevronDown, HelpCircle,
 } from 'lucide-react';
 import {
@@ -465,21 +465,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-        </div>
-
-        <div className="px-4 py-3 border-b border-[#E5E9F2]">
-          <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#F7F8FB] cursor-pointer">
-            <div className="w-6 h-6 rounded bg-[#7C5CFC] text-white text-xs font-bold flex items-center justify-center">D</div>
-            <span className="text-sm font-medium truncate">[Dev] Sami Analytics</span>
-            <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-auto" />
-          </div>
-        </div>
-
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-2 bg-[#F3F5F9] rounded-lg px-3 py-2">
-            <Search className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-400">Search</span>
-          </div>
         </div>
 
         <div className="px-3 py-2 flex-1 overflow-y-auto">

@@ -30,9 +30,14 @@ const SETTINGS_ACCENT_COLOR = '#5A8BBF';
 const SETTINGS_BG_COLOR = '#000000';
 const SETTINGS_SECTION_BG = '#1F2937'; // gray-800
 
-function AppContent() {
+function AppContent({
+  showAnalyticsDashboard,
+  setShowAnalyticsDashboard,
+}: {
+  showAnalyticsDashboard: boolean;
+  setShowAnalyticsDashboard: (v: boolean) => void;
+}) {
   const [selectedOS, setSelectedOS] = useState<'ios' | 'android' | null>(null);
-  const [showAnalyticsDashboard, setShowAnalyticsDashboard] = useState(false);
   const [showHomeScreen, setShowHomeScreen] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -3972,10 +3977,14 @@ function PrototypeLogoutButton() {
 }
 
 export default function App() {
+  const [showAnalyticsDashboard, setShowAnalyticsDashboard] = useState(false);
   return (
     <>
-      <PrototypeLogoutButton />
-      <AppContent />
+      {!showAnalyticsDashboard && <PrototypeLogoutButton />}
+      <AppContent
+        showAnalyticsDashboard={showAnalyticsDashboard}
+        setShowAnalyticsDashboard={setShowAnalyticsDashboard}
+      />
     </>
   );
 }
