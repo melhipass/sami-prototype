@@ -58,7 +58,7 @@ const usageConsistency = [
   { segment: 'Daily (6–7 days/wk)', count: 412 },
   { segment: 'Frequent (3–5 days/wk)', count: 268 },
   { segment: 'Occasional (1–2 days/wk)', count: 137 },
-  { segment: 'Inactive (0 in last 7 days)', count: 165 },
+  { segment: 'No cloud connection (7d)', count: 165 },
 ];
 
 const churnVsAlarms = [
@@ -525,8 +525,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'usage' && (
             <div className="space-y-6">
               <ChartCard
-                title="Overall Retention"
-                answers="What does usage look like over time? Are cameras still being used weeks after setup?"
+                title="Cloud Connection Retention"
+                answers="Are cameras still connecting to the cloud weeks after setup? (Not the same as still being used — see note below.)"
                 footer={
                   <SimpleTable
                     columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
@@ -536,7 +536,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   />
                 }
               >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">% of newly paired cameras still active, day by day since setup.</p>
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  % of newly paired cameras still checking in with the cloud, day by day since setup. Sami cameras can run fully offline over local Wi-Fi (live view, alarms, recording all work without internet) — a camera in active daily use but never reconnecting to the internet after setup will show up here as churned. This measures cloud connectivity, not real-world usage.
+                </p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
@@ -551,10 +553,12 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
-                  title="Usage Consistency"
-                  answers="Consistent vs. sporadic usage — how many cameras are used daily vs. only occasionally?"
+                  title="Connection Consistency"
+                  answers="Consistent vs. sporadic cloud check-ins — how many cameras connect daily vs. only occasionally?"
                 >
-                  <p className="text-xs text-gray-500 -mt-1 mb-3">Cameras active right now, grouped by how many days a week they're used.</p>
+                  <p className="text-xs text-gray-500 -mt-1 mb-3">
+                    Cameras grouped by how many days a week they check in with the cloud. Since cameras can run fully offline over local Wi-Fi, a camera shown as &quot;No cloud connection&quot; could still be in daily active use — this chart can&apos;t see local-only usage.
+                  </p>
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={scaledUsageConsistency}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
@@ -568,7 +572,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
                 <ChartCard
                   title="Drop-off vs. Nightly Alarm Volume"
-                  answers="Can we correlate drop-off with anything? e.g. do cameras that get abandoned tend to have had many more alarms per night beforehand?"
+                  answers="Can we correlate cloud drop-off with anything? e.g. do cameras that stop connecting tend to have had many more alarms per night beforehand?"
                 >
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={churnVsAlarms}>
@@ -584,7 +588,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     </BarChart>
                   </ResponsiveContainer>
                   <p className="text-xs text-gray-500 mt-2">
-                    Illustrative only — computed by joining last-activity date per camera against average nightly <code className="font-mono">alarm_triggered</code> count in the prior week. Not a built-in event; requires a cross-event query in Snowflake.
+                    Illustrative only — computed by joining last cloud-connection date per camera against average nightly <code className="font-mono">alarm_triggered</code> count in the prior week. &quot;Drop-off&quot; means the camera stopped connecting to the cloud, not necessarily that it stopped being used (it may still be working fully offline). Not a built-in event; requires a cross-event query in Snowflake.
                   </p>
                 </ChartCard>
               </div>
