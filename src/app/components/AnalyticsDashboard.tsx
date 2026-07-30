@@ -331,7 +331,7 @@ const CATEGORIES = [
   { id: 'alarms', label: 'Alarms', icon: Bell },
   { id: 'recordings', label: 'Recordings', icon: Video },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
-  { id: 'devices', label: 'Devices & Connectivity', icon: Smartphone },
+  { id: 'devices', label: 'Devices', icon: Smartphone },
 ] as const;
 
 type CategoryId = typeof CATEGORIES[number]['id'];
@@ -645,6 +645,19 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </p>
                 </ChartCard>
               </div>
+
+              <ChartCard
+                title="Camera Connectivity"
+                answers="Connectivity: how many cameras connect wirelessly vs. wired?"
+              >
+                <SimpleTable
+                  columns={['Connection type', 'Cameras', '% of fleet']}
+                  rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">
+                  From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Not affected by the Platform filter — this is the camera&apos;s own connection, not the viewing device&apos;s. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
+                </p>
+              </ChartCard>
             </div>
           )}
 
@@ -798,20 +811,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
           {activeCategory === 'devices' && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <ChartCard
-                  title="Camera Connectivity"
-                  answers="Connectivity: how many cameras connect wirelessly vs. wired?"
-                >
-                  <SimpleTable
-                    columns={['Connection type', 'Cameras', '% of fleet']}
-                    rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
-                  />
-                  <p className="text-xs text-gray-500 mt-3">
-                    From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Not affected by the Platform filter — this is the camera&apos;s own connection, not the viewing device&apos;s. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
-                  </p>
-                </ChartCard>
-
+              <div className="grid grid-cols-1 max-w-md">
                 <ChartCard
                   title="Device Family"
                   answers="Apple device: what device type is being used to monitor?"
