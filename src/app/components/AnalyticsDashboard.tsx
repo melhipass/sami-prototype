@@ -55,9 +55,9 @@ const nightlyActiveCameras = Array.from({ length: 30 }, (_, i) => {
 });
 
 const usageConsistency = [
-  { segment: 'Nightly (6–7 nights/wk)', count: 412 },
-  { segment: 'Frequent (3–5 nights/wk)', count: 268 },
-  { segment: 'Occasional (1–2 nights/wk)', count: 137 },
+  { segment: 'Daily (6–7 days/wk)', count: 412 },
+  { segment: 'Frequent (3–5 days/wk)', count: 268 },
+  { segment: 'Occasional (1–2 days/wk)', count: 137 },
   { segment: 'Inactive (0 in last 7 days)', count: 165 },
 ];
 
@@ -552,8 +552,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Usage Consistency"
-                  answers="Consistent vs. sporadic usage — how many cameras are used nightly vs. only occasionally?"
+                  answers="Consistent vs. sporadic usage — how many cameras are used daily vs. only occasionally?"
                 >
+                  <p className="text-xs text-gray-500 -mt-1 mb-3">Cameras active right now, grouped by how many days a week they're used.</p>
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={scaledUsageConsistency}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
