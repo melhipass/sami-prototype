@@ -543,6 +543,14 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         {/* Filters row */}
         <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
           <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
+          {activeCategory === 'overview' && (
+            <Dropdown
+              label="Time range"
+              options={OVERVIEW_RANGES.map((r) => r.label)}
+              value={overviewRange}
+              onChange={setOverviewRange}
+            />
+          )}
           <span className="text-xs text-gray-400 ml-auto">All figures below are illustrative / dummy data</span>
         </div>
 
@@ -550,15 +558,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         <div className="flex-1 overflow-y-auto p-6">
           {activeCategory === 'overview' && (
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <Dropdown
-                  label="Time range"
-                  options={OVERVIEW_RANGES.map((r) => r.label)}
-                  value={overviewRange}
-                  onChange={setOverviewRange}
-                />
-                <span className="text-xs text-gray-400">Applies to the 3 charts below only.</span>
-              </div>
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Active Cameras"
