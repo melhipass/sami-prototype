@@ -23,6 +23,7 @@ import { Toaster } from '@/app/components/ui/sonner';
 import { OnboardingFlow } from '@/app/components/onboarding/OnboardingFlow';
 import { RecordingsScreen } from '@/app/components/RecordingsScreen';
 import { SettingsScreen } from '@/app/components/SettingsScreen';
+import { AnalyticsDashboard } from '@/app/components/AnalyticsDashboard';
 
 // Settings screen accent color
 const SETTINGS_ACCENT_COLOR = '#5A8BBF';
@@ -31,6 +32,7 @@ const SETTINGS_SECTION_BG = '#1F2937'; // gray-800
 
 function AppContent() {
   const [selectedOS, setSelectedOS] = useState<'ios' | 'android' | null>(null);
+  const [showAnalyticsDashboard, setShowAnalyticsDashboard] = useState(false);
   const [showHomeScreen, setShowHomeScreen] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -1953,6 +1955,10 @@ function AppContent() {
   }, [isLocked]);
 
   // Home Screen
+  if (showAnalyticsDashboard) {
+    return <AnalyticsDashboard onBack={() => setShowAnalyticsDashboard(false)} />;
+  }
+
   if (selectedOS === null) {
     return (
       <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
@@ -1996,6 +2002,15 @@ function AppContent() {
               <span className="text-white text-xl font-semibold group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Android</span>
             </button>
           </div>
+
+          {/* Analytics Dashboard CTA */}
+          <button
+            onClick={() => setShowAnalyticsDashboard(true)}
+            className="mt-12 flex items-center gap-2 text-gray-400 hover:text-[#22C7E8] transition-colors text-sm underline underline-offset-4"
+            style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}
+          >
+            View Analytics Dashboard →
+          </button>
         </div>
       </div>
     );
