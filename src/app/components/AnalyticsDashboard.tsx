@@ -34,6 +34,23 @@ function dayLabels(n: number) {
   return Array.from({ length: n }, (_, i) => `Day ${i}`);
 }
 
+// Long daily history (used by the Overview time-range picker) so ranges up to
+// "1 Year" / "Ever" have real day-by-day dummy data to slice, instead of
+// faking a longer range out of a 30-day array.
+const LONG_RANGE_DAYS = 400;
+function pastDates(n: number, endDate: string = '2026-07-30') {
+  const end = new Date(`${endDate}T00:00:00`);
+  return Array.from({ length: n }, (_, i) => {
+    const d = new Date(end);
+    d.setDate(d.getDate() - (n - 1 - i));
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+}
+function lastNDays<T>(arr: T[], n: number): T[] {
+  return arr.slice(-Math.min(n, arr.length));
+}
+const longDates = pastDates(LONG_RANGE_DAYS);
+
 // --- Usage & Retention -------------------------------------------------
 
 const retentionData = dayLabels(31).map((day, i) => {
@@ -48,17 +65,23 @@ const retentionData = dayLabels(31).map((day, i) => {
   };
 });
 
-const nightlyActiveCameras = Array.from({ length: 30 }, (_, i) => {
-  const base = 640 + Math.round(Math.sin(i / 4) * 40);
-  const weekend = i % 7 === 5 || i % 7 === 6 ? 35 : 0;
-  return { date: `Jul ${i + 1}`, cameras: base + weekend + Math.round(Math.random() * 20 - 10) };
+// 400 days of history, ending "today" — supports the Overview time-range
+// picker (7d/30d/60d/90d/1y/ever). Includes a slow growth trend so longer
+// ranges look like plausible history rather than a flat repeat.
+const nightlyActiveCameras = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 300 + progress * 380;
+  const weekly = Math.sin(i / 3.5) * 30;
+  const weekend = i % 7 === 5 || i % 7 === 6 ? 25 : 0;
+  const noise = Math.round(Math.random() * 20 - 10);
+  return { date, cameras: Math.max(50, Math.round(trend + weekly + weekend + noise)) };
 });
 
 const usageConsistency = [
   { segment: 'Daily (6–7 days/wk)', count: 412 },
   { segment: 'Frequent (3–5 days/wk)', count: 268 },
   { segment: 'Occasional (1–2 days/wk)', count: 137 },
-  { segment: 'No cloud connection (7d)', count: 165 },
+  { segment: 'No internet connection (7d)', count: 165 },
 ];
 
 const reconnectionGaps = [
@@ -66,7 +89,9 @@ const reconnectionGaps = [
   { bucket: '2–3 days', count: 214 },
   { bucket: '4–7 days', count: 97 },
   { bucket: '8–30 days', count: 41 },
-  { bucket: '30+ days / never', count: 63 },
+  { bucket: '31–60 days', count: 22 },
+  { bucket: '61–90 days', count: 14 },
+  { bucket: '90+ days / never', count: 27 },
 ];
 
 const retentionTable = [
@@ -77,10 +102,17 @@ const retentionTable = [
 
 // --- Alarms --------------------------------------------------------------
 
-const alarmsOverTime = Array.from({ length: 30 }, (_, i) => ({
-  date: `Jul ${i + 1}`,
-  alarms: 2100 + Math.round(Math.sin(i / 3) * 300 + Math.random() * 150),
-}));
+// Long version powers the Overview chart (range-picker aware). The Alarms
+// category page keeps its own fixed last-30-days view, unaffected by the
+// Overview picker — see `alarmsOverTime` below.
+const alarmsOverTimeLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 1200 + progress * 1300;
+  const weekly = Math.sin(i / 3) * 250;
+  const noise = Math.round(Math.random() * 150 - 75);
+  return { date, alarms: Math.max(200, Math.round(trend + weekly + noise)) };
+});
+const alarmsOverTime = lastNDays(alarmsOverTimeLong, 30);
 
 const alarmsPerCameraDistribution = [
   { bin: '0', count: 165 },
@@ -97,11 +129,19 @@ const recordingsCreatedOverTime = Array.from({ length: 30 }, (_, i) => ({
   created: 3400 + Math.round(Math.sin(i / 4) * 500 + Math.random() * 300),
 }));
 
-const recordingsFunnel = [
-  { stage: 'Created', count: 104820 },
-  { stage: 'Watched', count: 18420 },
-  { stage: 'Shared', count: 2210 },
-];
+// Long daily "created" history so the Overview funnel can be totaled over
+// whatever range the time-range picker selects. Watched/Shared are derived
+// from Created using fixed conversion rates (matching the original 30d
+// baseline: 18,420 watched / 2,210 shared out of 104,820 created).
+const recordingsCreatedLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 1800 + progress * 2000;
+  const weekly = Math.sin(i / 4) * 400;
+  const noise = Math.round(Math.random() * 250 - 125);
+  return { date, created: Math.max(200, Math.round(trend + weekly + noise)) };
+});
+const RECORDINGS_WATCHED_RATE = 18420 / 104820;
+const RECORDINGS_SHARED_RATE = 2210 / 104820;
 
 const recordingsDuringAlarm = [
   { name: 'During an active alarm', value: 21730 },
@@ -296,9 +336,27 @@ const CATEGORIES = [
 
 type CategoryId = typeof CATEGORIES[number]['id'];
 
+// Local to the Overview section only — its 2 time-series charts (Active
+// Cameras, Alarms Triggered) share the same daily axis, so a range picker
+// is meaningful there. It doesn't extend to other categories' charts
+// (cohort retention, snapshot tables, cumulative totals), same reasoning
+// as why the Platform filter isn't wired to everything either.
+const OVERVIEW_RANGES = [
+  { label: '7 Days', days: 7 },
+  { label: '30 Days', days: 30 },
+  { label: '60 Days', days: 60 },
+  { label: '90 Days', days: 90 },
+  { label: '1 Year', days: 365 },
+  { label: 'Ever', days: LONG_RANGE_DAYS },
+] as const;
+
 export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState<CategoryId>('overview');
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
+  const [overviewRange, setOverviewRange] = useState('30 Days');
+  const overviewRangeDays = OVERVIEW_RANGES.find((r) => r.label === overviewRange)?.days ?? 30;
+  // Keep roughly ~8 x-axis labels visible regardless of how many days are shown.
+  const overviewTickInterval = Math.max(0, Math.ceil(overviewRangeDays / 8) - 1);
 
   // Platform filter applies globally, but only to metrics that are genuinely
   // platform-scoped (counts of events/cameras, or device/OS breakdowns).
@@ -310,11 +368,32 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const platformMultiplier = platformFilter === 'iOS' ? 0.61 : platformFilter === 'Android' ? 0.39 : 1;
   const scaleCount = (n: number) => Math.round(n * platformMultiplier);
 
+  // Overview-only, range-picker-aware versions (sliced from the long 400-day
+  // datasets according to the selected range, then platform-scaled).
   const scaledNightly = useMemo(
-    () => nightlyActiveCameras.map((d) => ({ ...d, cameras: scaleCount(d.cameras) })),
-    [platformMultiplier]
+    () => lastNDays(nightlyActiveCameras, overviewRangeDays).map((d) => ({ ...d, cameras: scaleCount(d.cameras) })),
+    [platformMultiplier, overviewRangeDays]
   );
 
+  const scaledOverviewAlarms = useMemo(
+    () => lastNDays(alarmsOverTimeLong, overviewRangeDays).map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
+    [platformMultiplier, overviewRangeDays]
+  );
+
+  const overviewRecordingsTotals = useMemo(() => {
+    const createdTotal = lastNDays(recordingsCreatedLong, overviewRangeDays).reduce((sum, d) => sum + d.created, 0);
+    const created = scaleCount(createdTotal);
+    const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
+    const shared = Math.round(created * RECORDINGS_SHARED_RATE);
+    return [
+      { stage: 'Created', count: created },
+      { stage: 'Watched', count: watched },
+      { stage: 'Shared', count: shared },
+    ];
+  }, [platformMultiplier, overviewRangeDays]);
+
+  // Fixed last-30-days versions, used by the Alarms and Recordings category
+  // pages — unaffected by the Overview time-range picker.
   const scaledAlarmsOverTime = useMemo(
     () => alarmsOverTime.map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
     [platformMultiplier]
@@ -327,11 +406,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
   const scaledRecordingsCreatedOverTime = useMemo(
     () => recordingsCreatedOverTime.map((d) => ({ ...d, created: scaleCount(d.created) })),
-    [platformMultiplier]
-  );
-
-  const scaledRecordingsFunnel = useMemo(
-    () => recordingsFunnel.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -476,6 +550,15 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         <div className="flex-1 overflow-y-auto p-6">
           {activeCategory === 'overview' && (
             <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <Dropdown
+                  label="Time range"
+                  options={OVERVIEW_RANGES.map((r) => r.label)}
+                  value={overviewRange}
+                  onChange={setOverviewRange}
+                />
+                <span className="text-xs text-gray-400">Applies to the 3 charts below only.</span>
+              </div>
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Active Cameras"
@@ -484,7 +567,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={scaledNightly}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={overviewTickInterval} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <Tooltip />
                       <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Active cameras" />
@@ -496,9 +579,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   answers="How many alarms are being triggered?"
                 >
                   <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={scaledAlarmsOverTime}>
+                    <AreaChart data={scaledOverviewAlarms}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={overviewTickInterval} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <Tooltip />
                       <Area type="monotone" dataKey="alarms" stroke={COLORS.coral} fill={COLORS.coral} fillOpacity={0.15} name="Alarms triggered" />
@@ -512,7 +595,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   className="col-span-2"
                 >
                   <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={scaledRecordingsFunnel} layout="vertical" margin={{ left: 24 }}>
+                    <BarChart data={overviewRecordingsTotals} layout="vertical" margin={{ left: 24 }}>
                       <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
@@ -540,7 +623,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 }
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  % of newly paired cameras still online, day by day since setup. Sami cameras can run fully offline over local network. This measures cloud connectivity, not real-world usage.
+                  % of newly paired cameras still online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage.
                 </p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
@@ -557,7 +640,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Connection Consistency"
-                  answers="Consistent vs. sporadic cloud check-ins — how many cameras connect daily vs. only occasionally?"
+                  answers="Consistent vs. sporadic internet check-ins — how many cameras connect daily vs. only occasionally?"
                 >
                   <p className="text-xs text-gray-500 -mt-1 mb-3">
                     Cameras grouped by how many days a week they are online.
@@ -587,7 +670,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     </BarChart>
                   </ResponsiveContainer>
                   <p className="text-xs text-gray-500 mt-2">
-                    Illustrative only. Computed by comparing consecutive connection timestamps per camera (e.g. <code className="font-mono">app_heartbeat</code>) and measuring the gap whenever one exceeds a day. &quot;30+ days / never&quot; includes cameras that may simply be in ongoing offline-only use. Not a built-in event; requires a window-function query (LAG/LEAD) in Snowflake.
+                    Comparing consecutive connection timestamps per camera and measuring the gap whenever one exceeds a day. &quot;90+ days / never&quot; includes cameras that may simply be in ongoing offline-only use.
                   </p>
                 </ChartCard>
               </div>
