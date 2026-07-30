@@ -284,7 +284,7 @@ function Dropdown({
 
 const CATEGORIES = [
   { id: 'overview', label: 'Overview', icon: Home },
-  { id: 'usage', label: 'Usage & Retention', icon: Activity },
+  { id: 'usage', label: 'Usage & Connectivity', icon: Activity },
   { id: 'alarms', label: 'Alarms', icon: Bell },
   { id: 'recordings', label: 'Recordings', icon: Video },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
@@ -525,8 +525,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'usage' && (
             <div className="space-y-6">
               <ChartCard
-                title="Cloud Connection Retention"
-                answers="Are cameras still connecting to the cloud weeks after setup? (Not the same as still being used — see note below.)"
+                title="Internet Connection Retention"
+                answers="Are cameras still connecting to the internet weeks after setup?"
                 footer={
                   <SimpleTable
                     columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
@@ -537,7 +537,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 }
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  % of newly paired cameras still checking in with the cloud, day by day since setup. Sami cameras can run fully offline over local Wi-Fi (live view, alarms, recording all work without internet) — a camera in active daily use but never reconnecting to the internet after setup will show up here as churned. This measures cloud connectivity, not real-world usage.
+                  % of newly paired cameras still online, day by day since setup. Sami cameras can run fully offline over local network. This measures cloud connectivity, not real-world usage.
                 </p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
@@ -557,7 +557,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   answers="Consistent vs. sporadic cloud check-ins — how many cameras connect daily vs. only occasionally?"
                 >
                   <p className="text-xs text-gray-500 -mt-1 mb-3">
-                    Cameras grouped by how many days a week they check in with the cloud. Since cameras can run fully offline over local Wi-Fi, a camera shown as &quot;No cloud connection&quot; could still be in daily active use — this chart can&apos;t see local-only usage.
+                    Cameras grouped by how many days a week they are online.
                   </p>
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={scaledUsageConsistency}>
