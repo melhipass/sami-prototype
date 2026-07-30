@@ -61,9 +61,9 @@ const usageConsistency = [
   { segment: 'No cloud connection (7d)', count: 165 },
 ];
 
-const churnVsAlarms = [
-  { group: 'Retained\n(active 30d+)', avgAlarmsPerNight: 1.8 },
-  { group: 'Churned\n(inactive after setup)', avgAlarmsPerNight: 6.4 },
+const alarmsBeforeDisconnect = [
+  { group: 'Still connecting\n(30d+)', avgAlarmsPerNight: 1.8 },
+  { group: 'Stopped connecting\n(last connected week)', avgAlarmsPerNight: 6.4 },
 ];
 
 const retentionTable = [
@@ -571,24 +571,24 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 </ChartCard>
 
                 <ChartCard
-                  title="Drop-off vs. Nightly Alarm Volume"
-                  answers="Can we correlate cloud drop-off with anything? e.g. do cameras that stop connecting tend to have had many more alarms per night beforehand?"
+                  title="Alarm Volume Before Cameras Stop Connecting"
+                  answers="Do cameras that stop connecting to the internet tend to have had more alarms per night in their last connected week?"
                 >
                   <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={churnVsAlarms}>
+                    <BarChart data={alarmsBeforeDisconnect}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
                       <XAxis dataKey="group" tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <Tooltip />
                       <Bar dataKey="avgAlarmsPerNight" name="Avg alarms / night" radius={[6, 6, 0, 0]}>
-                        {churnVsAlarms.map((_, i) => (
+                        {alarmsBeforeDisconnect.map((_, i) => (
                           <Cell key={i} fill={i === 1 ? COLORS.coral : COLORS.teal} />
                         ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                   <p className="text-xs text-gray-500 mt-2">
-                    Illustrative only — computed by joining last cloud-connection date per camera against average nightly <code className="font-mono">alarm_triggered</code> count in the prior week. &quot;Drop-off&quot; means the camera stopped connecting to the cloud, not necessarily that it stopped being used (it may still be working fully offline). Not a built-in event; requires a cross-event query in Snowflake.
+                    Illustrative only. Alarms can only be counted while a camera is connected, so this only uses each camera&apos;s <code className="font-mono">alarm_triggered</code> count from its last connected week — never data from after it stopped connecting, which is unknowable. &quot;Stopped connecting&quot; just means no further connection was seen; we can&apos;t tell from this alone whether the camera is still in offline-only use, was turned off, or was abandoned. Not a built-in event; requires a cross-event query in Snowflake.
                   </p>
                 </ChartCard>
               </div>
