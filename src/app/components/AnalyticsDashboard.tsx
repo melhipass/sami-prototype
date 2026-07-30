@@ -475,7 +475,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
-                  title="Daily Active Cameras"
+                  title="Active Cameras"
                   answers="How many cameras are being used every day?"
                 >
                   <ResponsiveContainer width="100%" height={220}>
@@ -489,7 +489,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </ResponsiveContainer>
                 </ChartCard>
                 <ChartCard
-                  title="Alarms Triggered Over Time"
+                  title="Alarms Triggered"
                   answers="How many alarms are being triggered?"
                 >
                   <ResponsiveContainer width="100%" height={220}>
@@ -536,7 +536,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   />
                 }
               >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">Controlled by the Platform filter above.</p>
+                <p className="text-xs text-gray-500 -mt-1 mb-3">% of newly paired cameras still active, day by day since setup.</p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
@@ -593,7 +593,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
               <ChartCard
-                title="Alarms Triggered Over Time"
+                title="Alarms Triggered"
                 answers="How many alarms are being triggered?"
               >
                 <ResponsiveContainer width="100%" height={260}>
