@@ -2,8 +2,8 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Share2, SlidersHorizontal, Home, Activity, Bell, Video,
-  Settings as SettingsIcon, Smartphone, ChevronDown, HelpCircle,
+  ArrowLeft, Home, Activity, Bell, Video,
+  Settings as SettingsIcon, Smartphone, ChevronDown,
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -510,19 +510,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           <div className="text-lg font-semibold">
             {CATEGORIES.find((c) => c.id === activeCategory)?.label}
           </div>
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg border border-[#E5E9F2]">
-              <HelpCircle className="w-4 h-4" />
-            </button>
-            <button className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg border border-[#E5E9F2]">
-              <Share2 className="w-4 h-4" />
-              Share
-            </button>
-            <button className="flex items-center gap-1.5 text-sm text-white bg-[#2F6FEB] hover:bg-[#2F6FEB]/90 px-3 py-1.5 rounded-lg font-medium">
-              <SlidersHorizontal className="w-4 h-4" />
-              Customize
-            </button>
-          </div>
         </div>
 
         {/* Filters row */}
@@ -679,8 +666,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Alarms per Camera per Night"
-                answers="How many alarms are being triggered — broken down by how concentrated they are on individual cameras (relevant to the drop-off correlation above)."
+                title="Alarms per Camera per Day"
+                answers="How many alarms are triggered per camera per day — are they concentrated on a few cameras, or spread evenly across all of them?"
               >
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={scaledAlarmsDistribution}>
