@@ -475,8 +475,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
-                  title="Nightly Active Cameras"
-                  answers="How many cameras are being used every night?"
+                  title="Daily Active Cameras"
+                  answers="How many cameras are being used every day?"
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={scaledNightly}>
