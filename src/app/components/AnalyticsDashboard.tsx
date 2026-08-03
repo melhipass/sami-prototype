@@ -127,10 +127,11 @@ const recordingsCreatedOverTime = Array.from({ length: 30 }, (_, i) => ({
   created: 3400 + Math.round(Math.sin(i / 4) * 500 + Math.random() * 300),
 }));
 
-// Long daily "created" history so the Overview funnel can be totaled over
-// whatever range the time-range picker selects. Watched/Shared are derived
-// from Created using fixed conversion rates (matching the original 30d
-// baseline: 18,420 watched / 2,210 shared out of 104,820 created).
+// Long daily "created" history so the combined Recordings chart can be
+// totaled over whatever range the time-range picker selects. Watched/
+// Shared/Locked/Alarmed are all derived from Created using fixed conversion
+// rates (matching the original 30d baseline: 18,420 watched / 2,210 shared /
+// 8,340 locked / 12,680 alarmed out of 104,820 created).
 const recordingsCreatedLong = longDates.map((date, i) => {
   const progress = i / (LONG_RANGE_DAYS - 1);
   const trend = 1800 + progress * 2000;
@@ -140,42 +141,12 @@ const recordingsCreatedLong = longDates.map((date, i) => {
 });
 const RECORDINGS_WATCHED_RATE = 18420 / 104820;
 const RECORDINGS_SHARED_RATE = 2210 / 104820;
+const RECORDINGS_LOCKED_RATE = 8340 / 104820;
+const RECORDINGS_ALARMED_RATE = 12680 / 104820;
 
 const recordingsDuringAlarm = [
   { name: 'During an active alarm', value: 21730 },
   { name: 'Routine (motion / continuous)', value: 83090 },
-];
-
-const recordingsTagged = [
-  { tag: 'Locked', count: 8340 },
-  { tag: 'Marked Alarmed', count: 12680 },
-];
-
-const recordingsByCameraTable = [
-  { camera: 'B8:27:EB:1A:2B:3C', created: 412, watched: 61, locked: 14, alarmed: 22, shared: 3 },
-  { camera: 'B8:27:EB:4F:9C:11', created: 388, watched: 40, locked: 6, alarmed: 15, shared: 1 },
-  { camera: 'B8:27:EB:7A:2D:88', created: 205, watched: 22, locked: 2, alarmed: 8, shared: 0 },
-  { camera: 'B8:27:EB:C3:0E:56', created: 601, watched: 95, locked: 31, alarmed: 47, shared: 9 },
-  { camera: 'B8:27:EB:9B:44:2A', created: 97, watched: 12, locked: 1, alarmed: 3, shared: 0 },
-];
-
-const recordingsTotals = recordingsByCameraTable.reduce(
-  (acc, r) => ({
-    created: acc.created + r.created,
-    watched: acc.watched + r.watched,
-    locked: acc.locked + r.locked,
-    alarmed: acc.alarmed + r.alarmed,
-    shared: acc.shared + r.shared,
-  }),
-  { created: 0, watched: 0, locked: 0, alarmed: 0, shared: 0 }
-);
-
-const recordingsTotalsChartData = [
-  { stage: 'Created', count: recordingsTotals.created },
-  { stage: 'Watched', count: recordingsTotals.watched },
-  { stage: 'Locked', count: recordingsTotals.locked },
-  { stage: 'Alarmed', count: recordingsTotals.alarmed },
-  { stage: 'Shared', count: recordingsTotals.shared },
 ];
 
 // --- Feature Adoption --------------------------------------------------
@@ -395,14 +366,21 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
-  const recordingsFunnelTotals = useMemo(() => {
+  // Single source of truth for Created/Watched/Shared/Locked/Alarmed —
+  // summed over the selected time range, then scaled by the Platform filter
+  // (all 5 are counts of things that happen via the app, same as each other).
+  const recordingsStageTotals = useMemo(() => {
     const createdTotal = lastNDays(recordingsCreatedLong, timeRangeDays).reduce((sum, d) => sum + d.created, 0);
     const created = scaleCount(createdTotal);
     const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
     const shared = Math.round(created * RECORDINGS_SHARED_RATE);
+    const locked = Math.round(created * RECORDINGS_LOCKED_RATE);
+    const alarmed = Math.round(created * RECORDINGS_ALARMED_RATE);
     return [
       { stage: 'Created', count: created },
       { stage: 'Watched', count: watched },
+      { stage: 'Locked', count: locked },
+      { stage: 'Alarmed', count: alarmed },
       { stage: 'Shared', count: shared },
     ];
   }, [platformMultiplier, timeRangeDays]);
@@ -422,11 +400,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
   const scaledRecordingsDuringAlarm = useMemo(
     () => recordingsDuringAlarm.map((d) => ({ ...d, value: scaleCount(d.value) })),
-    [platformMultiplier]
-  );
-
-  const scaledRecordingsTagged = useMemo(
-    () => recordingsTagged.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -666,12 +639,12 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Recordings: Created vs. Watched vs. Shared"
-                answers="How many recordings are being made, how many were watched, and how many were shared?"
+                title="Recordings: Created, Watched, Locked, Alarmed, Shared"
+                answers="How many recordings are being made, watched, locked, marked alarmed, and shared?"
                 badge={<NewEventBadge eventName="recording_created" />}
               >
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={recordingsFunnelTotals} layout="vertical" margin={{ left: 24 }}>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={recordingsStageTotals} layout="vertical" margin={{ left: 24 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
@@ -679,6 +652,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+                <p className="text-xs text-gray-500 mt-3">
+                  Locked and Alarmed count <code className="font-mono">recording_action</code> events taken (lock / mark_alarmed) — not a live snapshot, so a recording locked then unlocked still counts here. All 5 values scale with the Platform filter.
+                </p>
               </ChartCard>
 
               <div className="grid grid-cols-2 gap-6">
@@ -717,42 +693,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 </ChartCard>
               </div>
 
-              <ChartCard
-                title="Recordings Tagged by Caregivers"
-                answers="How many recordings does each user have tagged as alarmed or locked manually?"
-              >
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={scaledRecordingsTagged} layout="vertical" margin={{ left: 24 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="tag" tick={{ fontSize: 12, fill: '#111827' }} width={110} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.purple} radius={[0, 6, 6, 0]} name="recording_action events" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <p className="text-xs text-gray-500 mt-2">
-                  From <code className="font-mono">recording_action</code> events where <code className="font-mono">action</code> is <code className="font-mono">lock</code> or <code className="font-mono">mark_alarmed</code>. This counts actions taken, not a live snapshot — a recording locked then unlocked won&apos;t show as currently locked; see the totals below for a point-in-time view.
-                </p>
-              </ChartCard>
-
-              <ChartCard
-                title="Recordings Totals"
-                answers="Across all cameras — how many recordings total have been created, watched, locked, alarmed, and shared?"
-                badge={<NewEventBadge eventName="recording_created" />}
-              >
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={recordingsTotalsChartData} layout="vertical" margin={{ left: 24 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-                <p className="text-xs text-gray-500 mt-3">
-                  Not affected by the Platform filter — a camera&apos;s recordings belong to the camera itself, not to whichever device happens to view them.
-                </p>
-              </ChartCard>
             </div>
           )}
 
