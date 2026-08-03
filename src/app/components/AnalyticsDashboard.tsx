@@ -615,23 +615,38 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
-              <ChartCard
-                title="Recordings & Alarms Over Time"
-                answers="How many recordings are being made, and how many alarms are being triggered?"
-                badge={<NewEventBadge eventName="recording_created" />}
-              >
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={scaledRecordingsAndAlarms}>
-                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
-                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="created" stroke={COLORS.primary} strokeWidth={2} dot={false} name="Recordings created" />
-                    <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarms triggered" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartCard>
+              <div className="grid grid-cols-2 gap-6">
+                <ChartCard
+                  title="Recordings Created Over Time"
+                  answers="How many recordings are being made?"
+                  badge={<NewEventBadge eventName="recording_created" />}
+                >
+                  <ResponsiveContainer width="100%" height={220}>
+                    <AreaChart data={scaledRecordingsAndAlarms}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="created" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Recordings created" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard
+                  title="Alarms Triggered Over Time"
+                  answers="How many alarms are being triggered?"
+                >
+                  <ResponsiveContainer width="100%" height={220}>
+                    <LineChart data={scaledRecordingsAndAlarms}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarms triggered" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+              </div>
 
               <ChartCard
                 title="Alarms per Camera per Day"
