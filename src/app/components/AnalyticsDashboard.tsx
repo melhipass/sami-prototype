@@ -532,6 +532,75 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
+          {activeCategory === 'retention' && (
+            <div className="space-y-6">
+              <ChartCard
+                title="Internet Connection Retention"
+                answers="Are cameras still connecting to the internet weeks after setup?"
+                footer={
+                  <SimpleTable
+                    columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
+                    rows={retentionTable
+                      .filter((r) => r.segment === retentionSegmentLabel)
+                      .map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
+                  />
+                }
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  % of newly paired cameras still online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage.
+                </p>
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={retentionData}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: COLORS.axis }} interval={2} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} unit="%" />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey={retentionKey} name={retentionLineName} stroke={retentionLineColor} strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <div className="grid grid-cols-2 gap-6">
+                <ChartCard
+                  title="Connection Consistency"
+                  answers="Consistent vs. sporadic internet check-ins — how many cameras connect daily vs. only occasionally?"
+                >
+                  <p className="text-xs text-gray-500 -mt-1 mb-3">
+                    Cameras grouped by how many days a week they are online.
+                  </p>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={scaledUsageConsistency}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="segment" tick={{ fontSize: 10, fill: COLORS.axis }} interval={0} angle={-15} textAnchor="end" height={60} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.primary} radius={[6, 6, 0, 0]} name="Cameras" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard
+                  title="Days Until Reconnection"
+                  answers="When a camera goes quiet, how long does it typically take to reconnect?"
+                >
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={reconnectionGaps}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Bar dataKey="count" name="Cameras" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Comparing consecutive connection timestamps per camera and measuring the gap whenever one exceeds a day. &quot;90+ days / never&quot; includes cameras that may simply be in ongoing offline-only use.
+                  </p>
+                </ChartCard>
+              </div>
+            </div>
+          )}
+
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
