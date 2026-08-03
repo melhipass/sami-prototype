@@ -520,8 +520,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'usage' && (
             <div className="space-y-6">
               <ChartCard
-                title="Active Cameras Over Time"
-                answers="How many cameras are being used every day?"
+                title="Online Cameras Over Time"
+                answers="How many cameras are online each day?"
               >
                 <ResponsiveContainer width="100%" height={220}>
                   <AreaChart data={scaledNightly}>
@@ -529,7 +529,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <Tooltip />
-                    <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Active cameras" />
+                    <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Online cameras" />
                   </AreaChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -614,7 +614,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
               <ChartCard
-                title="Recordings Created & Alarms Triggered Over Time"
+                title="Recordings & Alarms Over Time"
                 answers="How many recordings are being made, and how many alarms are being triggered?"
                 badge={<NewEventBadge eventName="recording_created" />}
               >
