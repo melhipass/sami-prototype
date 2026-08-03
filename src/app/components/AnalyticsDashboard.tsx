@@ -102,9 +102,8 @@ const retentionTable = [
 
 // --- Alarms --------------------------------------------------------------
 
-// Long version powers the Overview chart (range-picker aware). The Alarms
-// category page keeps its own fixed last-30-days view, unaffected by the
-// Overview picker — see `alarmsOverTime` below.
+// Long daily history — powers "Alarms Triggered" in both Overview and the
+// Alarms category page, both driven by the shared time-range picker.
 const alarmsOverTimeLong = longDates.map((date, i) => {
   const progress = i / (LONG_RANGE_DAYS - 1);
   const trend = 1200 + progress * 1300;
@@ -112,7 +111,6 @@ const alarmsOverTimeLong = longDates.map((date, i) => {
   const noise = Math.round(Math.random() * 150 - 75);
   return { date, alarms: Math.max(200, Math.round(trend + weekly + noise)) };
 });
-const alarmsOverTime = lastNDays(alarmsOverTimeLong, 30);
 
 const alarmsPerCameraDistribution = [
   { bin: '0', count: 165 },
@@ -336,12 +334,12 @@ const CATEGORIES = [
 
 type CategoryId = typeof CATEGORIES[number]['id'];
 
-// Local to the Overview section only — its 2 time-series charts (Active
+// Shown for Overview and Alarms only — their time-series charts (Active
 // Cameras, Alarms Triggered) share the same daily axis, so a range picker
 // is meaningful there. It doesn't extend to other categories' charts
-// (cohort retention, snapshot tables, cumulative totals), same reasoning
-// as why the Platform filter isn't wired to everything either.
-const OVERVIEW_RANGES = [
+// (cohort retention, snapshot tables, cumulative totals, distributions),
+// same reasoning as why the Platform filter isn't wired to everything either.
+const TIME_RANGES = [
   { label: '7 Days', days: 7 },
   { label: '30 Days', days: 30 },
   { label: '60 Days', days: 60 },
@@ -353,10 +351,10 @@ const OVERVIEW_RANGES = [
 export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState<CategoryId>('overview');
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
-  const [overviewRange, setOverviewRange] = useState('30 Days');
-  const overviewRangeDays = OVERVIEW_RANGES.find((r) => r.label === overviewRange)?.days ?? 30;
+  const [timeRange, setTimeRange] = useState('30 Days');
+  const timeRangeDays = TIME_RANGES.find((r) => r.label === timeRange)?.days ?? 30;
   // Keep roughly ~8 x-axis labels visible regardless of how many days are shown.
-  const overviewTickInterval = Math.max(0, Math.ceil(overviewRangeDays / 8) - 1);
+  const timeTickInterval = Math.max(0, Math.ceil(timeRangeDays / 8) - 1);
 
   // Platform filter applies globally, but only to metrics that are genuinely
   // platform-scoped (counts of events/cameras, or device/OS breakdowns).
@@ -371,17 +369,17 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   // Overview-only, range-picker-aware versions (sliced from the long 400-day
   // datasets according to the selected range, then platform-scaled).
   const scaledNightly = useMemo(
-    () => lastNDays(nightlyActiveCameras, overviewRangeDays).map((d) => ({ ...d, cameras: scaleCount(d.cameras) })),
-    [platformMultiplier, overviewRangeDays]
+    () => lastNDays(nightlyActiveCameras, timeRangeDays).map((d) => ({ ...d, cameras: scaleCount(d.cameras) })),
+    [platformMultiplier, timeRangeDays]
   );
 
-  const scaledOverviewAlarms = useMemo(
-    () => lastNDays(alarmsOverTimeLong, overviewRangeDays).map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
-    [platformMultiplier, overviewRangeDays]
+  const scaledRangedAlarms = useMemo(
+    () => lastNDays(alarmsOverTimeLong, timeRangeDays).map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
+    [platformMultiplier, timeRangeDays]
   );
 
   const overviewRecordingsTotals = useMemo(() => {
-    const createdTotal = lastNDays(recordingsCreatedLong, overviewRangeDays).reduce((sum, d) => sum + d.created, 0);
+    const createdTotal = lastNDays(recordingsCreatedLong, timeRangeDays).reduce((sum, d) => sum + d.created, 0);
     const created = scaleCount(createdTotal);
     const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
     const shared = Math.round(created * RECORDINGS_SHARED_RATE);
@@ -390,15 +388,11 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
       { stage: 'Watched', count: watched },
       { stage: 'Shared', count: shared },
     ];
-  }, [platformMultiplier, overviewRangeDays]);
+  }, [platformMultiplier, timeRangeDays]);
 
-  // Fixed last-30-days versions, used by the Alarms and Recordings category
-  // pages — unaffected by the Overview time-range picker.
-  const scaledAlarmsOverTime = useMemo(
-    () => alarmsOverTime.map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
-    [platformMultiplier]
-  );
-
+  // A per-day distribution snapshot, not a real time series — unaffected by
+  // the time-range picker (same reasoning as camera-level/rate metrics
+  // elsewhere not being scaled by filters that don't conceptually apply).
   const scaledAlarmsDistribution = useMemo(
     () => alarmsPerCameraDistribution.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
@@ -515,12 +509,12 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         {/* Filters row */}
         <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
           <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
-          {activeCategory === 'overview' && (
+          {(activeCategory === 'overview' || activeCategory === 'alarms') && (
             <Dropdown
               label="Time range"
-              options={OVERVIEW_RANGES.map((r) => r.label)}
-              value={overviewRange}
-              onChange={setOverviewRange}
+              options={TIME_RANGES.map((r) => r.label)}
+              value={timeRange}
+              onChange={setTimeRange}
             />
           )}
           <span className="text-xs text-gray-400 ml-auto">All figures below are illustrative / dummy data</span>
@@ -538,7 +532,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={scaledNightly}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={overviewTickInterval} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <Tooltip />
                       <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Active cameras" />
@@ -550,9 +544,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   answers="How many alarms are being triggered?"
                 >
                   <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={scaledOverviewAlarms}>
+                    <AreaChart data={scaledRangedAlarms}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={overviewTickInterval} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                       <Tooltip />
                       <Area type="monotone" dataKey="alarms" stroke={COLORS.coral} fill={COLORS.coral} fillOpacity={0.15} name="Alarms triggered" />
@@ -668,9 +662,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="How many alarms are being triggered?"
               >
                 <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={scaledAlarmsOverTime}>
+                  <LineChart data={scaledRangedAlarms}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <Tooltip />
                     <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="alarm_triggered events" />
