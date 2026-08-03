@@ -160,6 +160,17 @@ const recordingsByCameraTable = [
   { camera: 'B8:27:EB:9B:44:2A', created: 97, watched: 12, locked: 1, alarmed: 3, shared: 0 },
 ];
 
+const recordingsTotals = recordingsByCameraTable.reduce(
+  (acc, r) => ({
+    created: acc.created + r.created,
+    watched: acc.watched + r.watched,
+    locked: acc.locked + r.locked,
+    alarmed: acc.alarmed + r.alarmed,
+    shared: acc.shared + r.shared,
+  }),
+  { created: 0, watched: 0, locked: 0, alarmed: 0, shared: 0 }
+);
+
 // --- Feature Adoption --------------------------------------------------
 
 const featureUsage = [
@@ -611,9 +622,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   columns={['Connection type', 'Cameras', '% of fleet']}
                   rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
                 />
-                <p className="text-xs text-gray-500 mt-3">
-                  From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Not affected by the Platform filter — this is the camera&apos;s own connection, not the viewing device&apos;s. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
-                </p>
               </ChartCard>
             </div>
           )}
@@ -716,18 +724,18 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </BarChart>
                 </ResponsiveContainer>
                 <p className="text-xs text-gray-500 mt-2">
-                  From <code className="font-mono">recording_action</code> events where <code className="font-mono">action</code> is <code className="font-mono">lock</code>, <code className="font-mono">mark_alarmed</code>, or <code className="font-mono">share</code>. This counts actions taken, not a live snapshot — a recording locked then unlocked won&apos;t show as currently locked; see the per-camera breakdown below for a point-in-time view.
+                  From <code className="font-mono">recording_action</code> events where <code className="font-mono">action</code> is <code className="font-mono">lock</code>, <code className="font-mono">mark_alarmed</code>, or <code className="font-mono">share</code>. This counts actions taken, not a live snapshot — a recording locked then unlocked won&apos;t show as currently locked; see the totals below for a point-in-time view.
                 </p>
               </ChartCard>
 
               <ChartCard
-                title="Recordings by Camera"
-                answers="How many recordings does each of our cameras have — created, watched, locked, alarmed, and shared?"
+                title="Recordings Totals"
+                answers="Across all cameras — how many recordings total have been created, watched, locked, alarmed, and shared?"
                 badge={<NewEventBadge eventName="recording_created" />}
               >
                 <SimpleTable
-                  columns={['Camera (MAC)', 'Created', 'Watched', 'Locked', 'Alarmed', 'Shared']}
-                  rows={recordingsByCameraTable.map((r) => [r.camera, r.created, r.watched, r.locked, r.alarmed, r.shared])}
+                  columns={['Created', 'Watched', 'Locked', 'Alarmed', 'Shared']}
+                  rows={[[recordingsTotals.created, recordingsTotals.watched, recordingsTotals.locked, recordingsTotals.alarmed, recordingsTotals.shared]]}
                 />
                 <p className="text-xs text-gray-500 mt-3">
                   Not affected by the Platform filter — a camera&apos;s recordings belong to the camera itself, not to whichever device happens to view them.
