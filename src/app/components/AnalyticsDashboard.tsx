@@ -614,6 +614,24 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
               <ChartCard
+                title="Recordings Created & Alarms Triggered Over Time"
+                answers="How many recordings are being made, and how many alarms are being triggered?"
+                badge={<NewEventBadge eventName="recording_created" />}
+              >
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={scaledRecordingsAndAlarms}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="created" stroke={COLORS.primary} strokeWidth={2} dot={false} name="Recordings created" />
+                    <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarms triggered" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard
                 title="Alarms per Camera per Day"
                 answers="How many alarms are triggered per camera per day — are they concentrated on a few cameras, or spread evenly across all of them?"
               >
@@ -645,24 +663,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 <p className="text-xs text-gray-500 mt-3">
                   This is not a live snapshot, so a recording locked then unlocked still counts here.
                 </p>
-              </ChartCard>
-
-              <ChartCard
-                title="Recordings Created & Alarms Triggered Over Time"
-                answers="How many recordings are being made, and how many alarms are being triggered?"
-                badge={<NewEventBadge eventName="recording_created" />}
-              >
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={scaledRecordingsAndAlarms}>
-                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
-                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="created" stroke={COLORS.primary} strokeWidth={2} dot={false} name="Recordings created" />
-                    <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarms triggered" />
-                  </LineChart>
-                </ResponsiveContainer>
               </ChartCard>
 
               <ChartCard
