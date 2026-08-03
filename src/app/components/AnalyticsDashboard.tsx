@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Home, Activity, Bell, Video,
+  ArrowLeft, Activity, Bell, Video,
   Settings as SettingsIcon, Smartphone, ChevronDown,
 } from 'lucide-react';
 import {
@@ -324,7 +324,6 @@ function Dropdown({
 // ---------------------------------------------------------------------------
 
 const CATEGORIES = [
-  { id: 'overview', label: 'Overview', icon: Home },
   { id: 'usage', label: 'Usage & Connectivity', icon: Activity },
   { id: 'alarms', label: 'Alarms', icon: Bell },
   { id: 'recordings', label: 'Recordings', icon: Video },
@@ -334,11 +333,12 @@ const CATEGORIES = [
 
 type CategoryId = typeof CATEGORIES[number]['id'];
 
-// Shown for Overview and Alarms only — their time-series charts (Active
-// Cameras, Alarms Triggered) share the same daily axis, so a range picker
-// is meaningful there. It doesn't extend to other categories' charts
-// (cohort retention, snapshot tables, cumulative totals, distributions),
-// same reasoning as why the Platform filter isn't wired to everything either.
+// Shown for Usage & Connectivity, Alarms, and Recordings only — their
+// time-series/summable charts (Active Cameras, Alarms Triggered, the
+// Recordings funnel) share the same daily axis, so a range picker is
+// meaningful there. It doesn't extend to other charts (cohort retention,
+// snapshot tables, distributions), same reasoning as why the Platform
+// filter isn't wired to everything either.
 const TIME_RANGES = [
   { label: '7 Days', days: 7 },
   { label: '30 Days', days: 30 },
@@ -349,7 +349,7 @@ const TIME_RANGES = [
 ] as const;
 
 export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('overview');
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('usage');
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
   const [timeRange, setTimeRange] = useState('30 Days');
   const timeRangeDays = TIME_RANGES.find((r) => r.label === timeRange)?.days ?? 30;
@@ -378,7 +378,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
-  const overviewRecordingsTotals = useMemo(() => {
+  const recordingsFunnelTotals = useMemo(() => {
     const createdTotal = lastNDays(recordingsCreatedLong, timeRangeDays).reduce((sum, d) => sum + d.created, 0);
     const created = scaleCount(createdTotal);
     const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
@@ -509,7 +509,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         {/* Filters row */}
         <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
           <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
-          {(activeCategory === 'overview' || activeCategory === 'alarms') && (
+          {(activeCategory === 'usage' || activeCategory === 'alarms' || activeCategory === 'recordings') && (
             <Dropdown
               label="Time range"
               options={TIME_RANGES.map((r) => r.label)}
@@ -522,72 +522,23 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {activeCategory === 'overview' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <ChartCard
-                  title="Active Cameras"
-                  answers="How many cameras are being used every day?"
-                >
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={scaledNightly}>
-                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
-                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Active cameras" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-                <ChartCard
-                  title="Alarms Triggered"
-                  answers="How many alarms are being triggered?"
-                >
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={scaledRangedAlarms}>
-                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
-                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="alarms" stroke={COLORS.coral} fill={COLORS.coral} fillOpacity={0.15} name="Alarms triggered" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-                <ChartCard
-                  title="Recordings: Created vs. Watched vs. Shared"
-                  answers="How many recordings are being made, how many were watched, and how many were shared?"
-                  badge={<NewEventBadge eventName="recording_created" />}
-                  className="col-span-2"
-                >
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={overviewRecordingsTotals} layout="vertical" margin={{ left: 24 }}>
-                      <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
-                      <Tooltip />
-                      <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-                <ChartCard
-                  title="Camera Connectivity"
-                  answers="Connectivity: how many cameras connect wirelessly vs. wired?"
-                  className="col-span-2"
-                >
-                  <SimpleTable
-                    columns={['Connection type', 'Cameras', '% of fleet']}
-                    rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
-                  />
-                  <p className="text-xs text-gray-500 mt-3">
-                    From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Not affected by the Platform filter — this is the camera&apos;s own connection, not the viewing device&apos;s. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
-                  </p>
-                </ChartCard>
-              </div>
-            </div>
-          )}
-
           {activeCategory === 'usage' && (
             <div className="space-y-6">
+              <ChartCard
+                title="Active Cameras"
+                answers="How many cameras are being used every day?"
+              >
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={scaledNightly}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Active cameras" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
               <ChartCard
                 title="Internet Connection Retention"
                 answers="Are cameras still connecting to the internet weeks after setup?"
@@ -652,6 +603,19 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </p>
                 </ChartCard>
               </div>
+
+              <ChartCard
+                title="Camera Connectivity"
+                answers="Connectivity: how many cameras connect wirelessly vs. wired?"
+              >
+                <SimpleTable
+                  columns={['Connection type', 'Cameras', '% of fleet']}
+                  rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">
+                  From <code className="font-mono">camera_setting_changed</code> (<code className="font-mono">setting: camera_wifi</code>), taking the most recent value per camera. Not affected by the Platform filter — this is the camera&apos;s own connection, not the viewing device&apos;s. Network name (SSID) is intentionally not tracked — dropped for privacy, per team decision.
+                </p>
+              </ChartCard>
             </div>
           )}
 
@@ -691,6 +655,22 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
           {activeCategory === 'recordings' && (
             <div className="space-y-6">
+              <ChartCard
+                title="Recordings: Created vs. Watched vs. Shared"
+                answers="How many recordings are being made, how many were watched, and how many were shared?"
+                badge={<NewEventBadge eventName="recording_created" />}
+              >
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={recordingsFunnelTotals} layout="vertical" margin={{ left: 24 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Recordings Created Over Time"
