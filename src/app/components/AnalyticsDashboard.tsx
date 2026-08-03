@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Activity, Bell, Video,
+  ArrowLeft, Activity, Bell,
   Settings as SettingsIcon, Smartphone, ChevronDown,
 } from 'lucide-react';
 import {
@@ -325,8 +325,7 @@ function Dropdown({
 
 const CATEGORIES = [
   { id: 'usage', label: 'Usage & Connectivity', icon: Activity },
-  { id: 'alarms', label: 'Alarms', icon: Bell },
-  { id: 'recordings', label: 'Recordings', icon: Video },
+  { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
   { id: 'devices', label: 'Devices', icon: Smartphone },
 ] as const;
@@ -509,7 +508,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         {/* Filters row */}
         <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
           <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
-          {(activeCategory === 'usage' || activeCategory === 'alarms' || activeCategory === 'recordings') && (
+          {(activeCategory === 'usage' || activeCategory === 'alarms') && (
             <Dropdown
               label="Time range"
               options={TIME_RANGES.map((r) => r.label)}
@@ -650,11 +649,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
-            </div>
-          )}
 
-          {activeCategory === 'recordings' && (
-            <div className="space-y-6">
               <ChartCard
                 title="Recordings: Created vs. Watched vs. Shared"
                 answers="How many recordings are being made, how many were watched, and how many were shared?"
