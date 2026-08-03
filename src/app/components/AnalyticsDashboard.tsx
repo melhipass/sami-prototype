@@ -151,6 +151,18 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   alarms: alarmsOverTimeLong[i].alarms,
 }));
 
+// Per-camera breakdown of manual tags — answers "how many recordings does
+// each of our users have tagged as alarmed or locked". A snapshot, not
+// wired to the time-range picker (same reasoning as other camera-level
+// tables: not affected by the Platform filter either).
+const recordingsTaggedByCamera = [
+  { camera: 'B8:27:EB:1A:2B:3C', locked: 21, alarmed: 19 },
+  { camera: 'B8:27:EB:4F:9C:11', locked: 14, alarmed: 12 },
+  { camera: 'B8:27:EB:7A:2D:88', locked: 6, alarmed: 5 },
+  { camera: 'B8:27:EB:C3:0E:56', locked: 34, alarmed: 31 },
+  { camera: 'B8:27:EB:9B:44:2A', locked: 3, alarmed: 2 },
+];
+
 // --- Feature Adoption --------------------------------------------------
 
 const featureUsage = [
@@ -662,6 +674,19 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 </ResponsiveContainer>
                 <p className="text-xs text-gray-500 mt-3">
                   This is not a live snapshot, so a recording locked then unlocked still counts here.
+                </p>
+              </ChartCard>
+
+              <ChartCard
+                title="Recordings Tagged by Camera"
+                answers="How many recordings does each of our users have that are tagged as alarmed or locked manually?"
+              >
+                <SimpleTable
+                  columns={['Camera (MAC)', 'Locked', 'Alarmed']}
+                  rows={recordingsTaggedByCamera.map((r) => [r.camera, r.locked, r.alarmed])}
+                />
+                <p className="text-xs text-gray-500 mt-3">
+                  A snapshot, not a live count — same caveat as above. Not affected by the Platform filter, since a camera&apos;s recordings belong to the camera, not to whichever device views them.
                 </p>
               </ChartCard>
             </div>
