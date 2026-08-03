@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Activity, Bell,
+  ArrowLeft, Activity, Bell, RefreshCw,
   Settings as SettingsIcon, Smartphone, ChevronDown,
 } from 'lucide-react';
 import {
@@ -150,18 +150,6 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   created: recordingsCreatedLong[i].created,
   alarms: alarmsOverTimeLong[i].alarms,
 }));
-
-// Per-camera breakdown of manual tags — answers "how many recordings does
-// each of our users have tagged as alarmed or locked". A snapshot, not
-// wired to the time-range picker (same reasoning as other camera-level
-// tables: not affected by the Platform filter either).
-const recordingsTaggedByCamera = [
-  { camera: 'B8:27:EB:1A:2B:3C', locked: 21, alarmed: 19 },
-  { camera: 'B8:27:EB:4F:9C:11', locked: 14, alarmed: 12 },
-  { camera: 'B8:27:EB:7A:2D:88', locked: 6, alarmed: 5 },
-  { camera: 'B8:27:EB:C3:0E:56', locked: 34, alarmed: 31 },
-  { camera: 'B8:27:EB:9B:44:2A', locked: 3, alarmed: 2 },
-];
 
 // --- Feature Adoption --------------------------------------------------
 
@@ -328,6 +316,7 @@ function Dropdown({
 
 const CATEGORIES = [
   { id: 'usage', label: 'Usage & Connectivity', icon: Activity },
+  { id: 'retention', label: 'Retention', icon: RefreshCw },
   { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
   { id: 'devices', label: 'Devices', icon: Smartphone },
@@ -532,71 +521,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Internet Connection Retention"
-                answers="Are cameras still connecting to the internet weeks after setup?"
-                footer={
-                  <SimpleTable
-                    columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
-                    rows={retentionTable
-                      .filter((r) => r.segment === retentionSegmentLabel)
-                      .map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
-                  />
-                }
-              >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  % of newly paired cameras still online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage.
-                </p>
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={retentionData}>
-                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: COLORS.axis }} interval={2} />
-                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} unit="%" />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey={retentionKey} name={retentionLineName} stroke={retentionLineColor} strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <div className="grid grid-cols-2 gap-6">
-                <ChartCard
-                  title="Connection Consistency"
-                  answers="Consistent vs. sporadic internet check-ins — how many cameras connect daily vs. only occasionally?"
-                >
-                  <p className="text-xs text-gray-500 -mt-1 mb-3">
-                    Cameras grouped by how many days a week they are online.
-                  </p>
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={scaledUsageConsistency}>
-                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="segment" tick={{ fontSize: 10, fill: COLORS.axis }} interval={0} angle={-15} textAnchor="end" height={60} />
-                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <Tooltip />
-                      <Bar dataKey="count" fill={COLORS.primary} radius={[6, 6, 0, 0]} name="Cameras" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-
-                <ChartCard
-                  title="Days Until Reconnection"
-                  answers="When a camera goes quiet, how long does it typically take to reconnect?"
-                >
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={reconnectionGaps}>
-                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <Tooltip />
-                      <Bar dataKey="count" name="Cameras" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Comparing consecutive connection timestamps per camera and measuring the gap whenever one exceeds a day. &quot;90+ days / never&quot; includes cameras that may simply be in ongoing offline-only use.
-                  </p>
-                </ChartCard>
-              </div>
-
-              <ChartCard
                 title="Camera Connectivity"
                 answers="Connectivity: how many cameras connect wirelessly vs. wired?"
               >
@@ -678,16 +602,18 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Recordings Tagged by Camera"
-                answers="How many recordings does each of our users have that are tagged as alarmed or locked manually?"
+                title="Recordings Tagged Manually"
+                answers="In total, how many recordings were tagged as locked or alarmed manually?"
               >
-                <SimpleTable
-                  columns={['Camera (MAC)', 'Locked', 'Alarmed']}
-                  rows={recordingsTaggedByCamera.map((r) => [r.camera, r.locked, r.alarmed])}
-                />
-                <p className="text-xs text-gray-500 mt-3">
-                  A snapshot, not a live count — same caveat as above. Not affected by the Platform filter, since a camera&apos;s recordings belong to the camera, not to whichever device views them.
-                </p>
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={recordingsStageTotals.filter((d) => d.stage === 'Locked' || d.stage === 'Alarmed')} layout="vertical" margin={{ left: 24 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.purple} radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </ChartCard>
             </div>
           )}
