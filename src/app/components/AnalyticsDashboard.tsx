@@ -151,11 +151,6 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   alarms: alarmsOverTimeLong[i].alarms,
 }));
 
-const recordingsDuringAlarm = [
-  { name: 'During an active alarm', value: 21730 },
-  { name: 'Routine (motion / continuous)', value: 83090 },
-];
-
 // --- Feature Adoption --------------------------------------------------
 
 const featureUsage = [
@@ -405,11 +400,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
-  const scaledRecordingsDuringAlarm = useMemo(
-    () => recordingsDuringAlarm.map((d) => ({ ...d, value: scaleCount(d.value) })),
-    [platformMultiplier]
-  );
-
   const scaledUsageConsistency = useMemo(
     () => usageConsistency.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
@@ -481,13 +471,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         </div>
 
         <div className="p-4 border-t border-[#E5E9F2]">
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
-            <span>Cameras Tracked</span>
-            <span className="font-medium text-gray-700">982 / 1,500</span>
-          </div>
-          <div className="w-full h-1.5 bg-[#F3F5F9] rounded-full overflow-hidden mb-3">
-            <div className="h-full bg-[#F5A623] rounded-full" style={{ width: '65%' }} />
-          </div>
           <button className="w-full text-sm text-center text-gray-500 border border-[#E5E9F2] rounded-lg py-1.5 hover:bg-[#F7F8FB]">
             Export Data
           </button>
@@ -681,24 +664,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   This is not a live snapshot, so a recording locked then unlocked still counts here.
                 </p>
               </ChartCard>
-
-              <ChartCard
-                title="Recordings Made During an Active Alarm"
-                answers="How many recordings were made during an alarm, vs. routine motion/continuous recording?"
-                badge={<NewEventBadge eventName="recording_created.was_during_alarm" />}
-              >
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie data={scaledRecordingsDuringAlarm} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
-                      {scaledRecordingsDuringAlarm.map((_, i) => (
-                        <Cell key={i} fill={i === 0 ? COLORS.coral : COLORS.primaryLight} />
-                      ))}
-                    </Pie>
-                    <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: 12 }} />
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartCard>
             </div>
           )}
 
@@ -717,9 +682,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Events (30d)" />
                   </BarChart>
                 </ResponsiveContainer>
-                <p className="text-xs text-gray-500 mt-2">
-                  From <code className="font-mono">setting_changed</code> / <code className="font-mono">camera_setting_changed</code> (grouped by <code className="font-mono">setting</code>) plus the Live Monitoring toggle events. Dropbox / Google Drive backup are intentionally omitted — not being built right now.
-                </p>
               </ChartCard>
 
               <ChartCard
@@ -737,9 +699,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-                <p className="text-xs text-gray-500 mt-2">
-                  From <code className="font-mono">camera_setting_changed</code> where <code className="font-mono">setting = record_schedule</code>.
-                </p>
               </ChartCard>
             </div>
           )}
