@@ -171,6 +171,14 @@ const recordingsTotals = recordingsByCameraTable.reduce(
   { created: 0, watched: 0, locked: 0, alarmed: 0, shared: 0 }
 );
 
+const recordingsTotalsChartData = [
+  { stage: 'Created', count: recordingsTotals.created },
+  { stage: 'Watched', count: recordingsTotals.watched },
+  { stage: 'Locked', count: recordingsTotals.locked },
+  { stage: 'Alarmed', count: recordingsTotals.alarmed },
+  { stage: 'Shared', count: recordingsTotals.shared },
+];
+
 // --- Feature Adoption --------------------------------------------------
 
 const featureUsage = [
@@ -733,10 +741,15 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="Across all cameras — how many recordings total have been created, watched, locked, alarmed, and shared?"
                 badge={<NewEventBadge eventName="recording_created" />}
               >
-                <SimpleTable
-                  columns={['Created', 'Watched', 'Locked', 'Alarmed', 'Shared']}
-                  rows={[[recordingsTotals.created, recordingsTotals.watched, recordingsTotals.locked, recordingsTotals.alarmed, recordingsTotals.shared]]}
-                />
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={recordingsTotalsChartData} layout="vertical" margin={{ left: 24 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
                 <p className="text-xs text-gray-500 mt-3">
                   Not affected by the Platform filter — a camera&apos;s recordings belong to the camera itself, not to whichever device happens to view them.
                 </p>
