@@ -149,7 +149,6 @@ const recordingsDuringAlarm = [
 const recordingsTagged = [
   { tag: 'Locked', count: 8340 },
   { tag: 'Marked Alarmed', count: 12680 },
-  { tag: 'Shared', count: 2210 },
 ];
 
 const recordingsByCameraTable = [
@@ -543,7 +542,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'usage' && (
             <div className="space-y-6">
               <ChartCard
-                title="Active Cameras"
+                title="Active Cameras Over Time"
                 answers="How many cameras are being used every day?"
               >
                 <ResponsiveContainer width="100%" height={220}>
@@ -637,7 +636,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
               <ChartCard
-                title="Alarms Triggered"
+                title="Alarms Triggered Over Time"
                 answers="How many alarms are being triggered?"
               >
                 <ResponsiveContainer width="100%" height={260}>
@@ -720,7 +719,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
               <ChartCard
                 title="Recordings Tagged by Caregivers"
-                answers="How many recordings does each user have tagged as alarmed or locked manually? How many were shared?"
+                answers="How many recordings does each user have tagged as alarmed or locked manually?"
               >
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={scaledRecordingsTagged} layout="vertical" margin={{ left: 24 }}>
@@ -732,7 +731,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </BarChart>
                 </ResponsiveContainer>
                 <p className="text-xs text-gray-500 mt-2">
-                  From <code className="font-mono">recording_action</code> events where <code className="font-mono">action</code> is <code className="font-mono">lock</code>, <code className="font-mono">mark_alarmed</code>, or <code className="font-mono">share</code>. This counts actions taken, not a live snapshot — a recording locked then unlocked won&apos;t show as currently locked; see the totals below for a point-in-time view.
+                  From <code className="font-mono">recording_action</code> events where <code className="font-mono">action</code> is <code className="font-mono">lock</code> or <code className="font-mono">mark_alarmed</code>. This counts actions taken, not a live snapshot — a recording locked then unlocked won&apos;t show as currently locked; see the totals below for a point-in-time view.
                 </p>
               </ChartCard>
 
