@@ -103,13 +103,15 @@ const retentionTable = [
 // --- Alarms --------------------------------------------------------------
 
 // Long daily history — combined with Recordings Created into a single
-// 2-line trend chart, driven by the shared time-range picker.
+// 2-line trend chart, driven by the shared time-range picker. Scaled to
+// roughly 1 alarm per ~20 recordings, so the gap between the two lines is
+// visible rather than the two trends looking similar in size.
 const alarmsOverTimeLong = longDates.map((date, i) => {
   const progress = i / (LONG_RANGE_DAYS - 1);
-  const trend = 1200 + progress * 1300;
-  const weekly = Math.sin(i / 3) * 250;
-  const noise = Math.round(Math.random() * 150 - 75);
-  return { date, alarms: Math.max(200, Math.round(trend + weekly + noise)) };
+  const trend = 90 + progress * 100;
+  const weekly = Math.sin(i / 3) * 15;
+  const noise = Math.round(Math.random() * 10 - 5);
+  return { date, alarms: Math.max(20, Math.round(trend + weekly + noise)) };
 });
 
 const alarmsPerCameraDistribution = [
