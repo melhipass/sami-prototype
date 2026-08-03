@@ -102,8 +102,8 @@ const retentionTable = [
 
 // --- Alarms --------------------------------------------------------------
 
-// Long daily history — powers "Alarms Triggered" in both Overview and the
-// Alarms category page, both driven by the shared time-range picker.
+// Long daily history — combined with Recordings Created into a single
+// 2-line trend chart, driven by the shared time-range picker.
 const alarmsOverTimeLong = longDates.map((date, i) => {
   const progress = i / (LONG_RANGE_DAYS - 1);
   const trend = 1200 + progress * 1300;
@@ -121,11 +121,6 @@ const alarmsPerCameraDistribution = [
 ];
 
 // --- Recordings ------------------------------------------------------------
-
-const recordingsCreatedOverTime = Array.from({ length: 30 }, (_, i) => ({
-  date: `Jul ${i + 1}`,
-  created: 3400 + Math.round(Math.sin(i / 4) * 500 + Math.random() * 300),
-}));
 
 // Long daily "created" history so the combined Recordings chart can be
 // totaled over whatever range the time-range picker selects. Watched/
@@ -145,6 +140,14 @@ const RECORDINGS_WATCHED_RATE = 18420 / 104820;
 const RECORDINGS_SHARED_RATE = 2210 / 104820;
 const RECORDINGS_LOCKED_RATE = 10900 / 104820;
 const RECORDINGS_ALARMED_RATE = 9800 / 104820;
+
+// Recordings created + Alarms triggered, on the same daily axis, so both can
+// share a single trend chart (2 lines) instead of 2 near-identical charts.
+const recordingsAndAlarmsLong = longDates.map((date, i) => ({
+  date,
+  created: recordingsCreatedLong[i].created,
+  alarms: alarmsOverTimeLong[i].alarms,
+}));
 
 const recordingsDuringAlarm = [
   { name: 'During an active alarm', value: 21730 },
@@ -363,11 +366,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
-  const scaledRangedAlarms = useMemo(
-    () => lastNDays(alarmsOverTimeLong, timeRangeDays).map((d) => ({ ...d, alarms: scaleCount(d.alarms) })),
-    [platformMultiplier, timeRangeDays]
-  );
-
   // Single source of truth for Created/Watched/Shared/Locked/Alarmed —
   // summed over the selected time range, then scaled by the Platform filter
   // (all 5 are counts of things that happen via the app, same as each other).
@@ -395,9 +393,14 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier]
   );
 
-  const scaledRecordingsCreatedOverTime = useMemo(
-    () => recordingsCreatedOverTime.map((d) => ({ ...d, created: scaleCount(d.created) })),
-    [platformMultiplier]
+  const scaledRecordingsAndAlarms = useMemo(
+    () =>
+      lastNDays(recordingsAndAlarmsLong, timeRangeDays).map((d) => ({
+        date: d.date,
+        created: scaleCount(d.created),
+        alarms: scaleCount(d.alarms),
+      })),
+    [platformMultiplier, timeRangeDays]
   );
 
   const scaledRecordingsDuringAlarm = useMemo(
@@ -611,21 +614,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
           {activeCategory === 'alarms' && (
             <div className="space-y-6">
               <ChartCard
-                title="Alarms Triggered Over Time"
-                answers="How many alarms are being triggered?"
-              >
-                <ResponsiveContainer width="100%" height={260}>
-                  <LineChart data={scaledRangedAlarms}>
-                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
-                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="alarm_triggered events" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard
                 title="Alarms per Camera per Day"
                 answers="How many alarms are triggered per camera per day — are they concentrated on a few cameras, or spread evenly across all of them?"
               >
@@ -655,46 +643,45 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </BarChart>
                 </ResponsiveContainer>
                 <p className="text-xs text-gray-500 mt-3">
-                  Locked and Alarmed count <code className="font-mono">recording_action</code> events taken (lock / mark_alarmed) — not a live snapshot, so a recording locked then unlocked still counts here. All 5 values scale with the Platform filter.
+                  This is not a live snapshot, so a recording locked then unlocked still counts here.
                 </p>
               </ChartCard>
 
-              <div className="grid grid-cols-2 gap-6">
-                <ChartCard
-                  title="Recordings Created Over Time"
-                  answers="How many recordings are being made? (Matt: 'we make a ton and most are probably not actual events')"
-                  badge={<NewEventBadge eventName="recording_created" />}
-                >
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={scaledRecordingsCreatedOverTime}>
-                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={4} />
-                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="created" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Recordings created" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </ChartCard>
+              <ChartCard
+                title="Recordings Created & Alarms Triggered Over Time"
+                answers="How many recordings are being made, and how many alarms are being triggered?"
+                badge={<NewEventBadge eventName="recording_created" />}
+              >
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={scaledRecordingsAndAlarms}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="created" stroke={COLORS.primary} strokeWidth={2} dot={false} name="Recordings created" />
+                    <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarms triggered" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartCard>
 
-                <ChartCard
-                  title="Recordings Made During an Active Alarm"
-                  answers="How many recordings were made during an alarm, vs. routine motion/continuous recording?"
-                  badge={<NewEventBadge eventName="recording_created.was_during_alarm" />}
-                >
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie data={scaledRecordingsDuringAlarm} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
-                        {scaledRecordingsDuringAlarm.map((_, i) => (
-                          <Cell key={i} fill={i === 0 ? COLORS.coral : COLORS.primaryLight} />
-                        ))}
-                      </Pie>
-                      <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: 12 }} />
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </div>
-
+              <ChartCard
+                title="Recordings Made During an Active Alarm"
+                answers="How many recordings were made during an alarm, vs. routine motion/continuous recording?"
+                badge={<NewEventBadge eventName="recording_created.was_during_alarm" />}
+              >
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={scaledRecordingsDuringAlarm} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
+                      {scaledRecordingsDuringAlarm.map((_, i) => (
+                        <Cell key={i} fill={i === 0 ? COLORS.coral : COLORS.primaryLight} />
+                      ))}
+                    </Pie>
+                    <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: 12 }} />
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartCard>
             </div>
           )}
 
