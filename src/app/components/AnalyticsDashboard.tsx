@@ -131,7 +131,9 @@ const recordingsCreatedOverTime = Array.from({ length: 30 }, (_, i) => ({
 // totaled over whatever range the time-range picker selects. Watched/
 // Shared/Locked/Alarmed are all derived from Created using fixed conversion
 // rates (matching the original 30d baseline: 18,420 watched / 2,210 shared /
-// 8,340 locked / 12,680 alarmed out of 104,820 created).
+// 10,900 locked / 9,800 alarmed out of 104,820 created — Locked is a bit
+// higher than Alarmed since an alarmed recording auto-locks, plus some
+// recordings get locked manually even without an alarm).
 const recordingsCreatedLong = longDates.map((date, i) => {
   const progress = i / (LONG_RANGE_DAYS - 1);
   const trend = 1800 + progress * 2000;
@@ -141,8 +143,8 @@ const recordingsCreatedLong = longDates.map((date, i) => {
 });
 const RECORDINGS_WATCHED_RATE = 18420 / 104820;
 const RECORDINGS_SHARED_RATE = 2210 / 104820;
-const RECORDINGS_LOCKED_RATE = 8340 / 104820;
-const RECORDINGS_ALARMED_RATE = 12680 / 104820;
+const RECORDINGS_LOCKED_RATE = 10900 / 104820;
+const RECORDINGS_ALARMED_RATE = 9800 / 104820;
 
 const recordingsDuringAlarm = [
   { name: 'During an active alarm', value: 21730 },
