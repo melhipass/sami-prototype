@@ -521,9 +521,12 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Camera Connectivity"
+                title="Camera Connectivity (Right Now)"
                 answers="Connectivity: how many cameras connect wirelessly vs. wired?"
               >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  A current snapshot, not a trend over time — each camera&apos;s most recently known connection type.
+                </p>
                 <SimpleTable
                   columns={['Connection type', 'Cameras', '% of fleet']}
                   rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
