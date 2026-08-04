@@ -489,6 +489,7 @@ const EVENT_CATALOG: CatalogSection[] = [
         when: 'A setting is changed (on commit — see slider rule)',
         data: 'setting (enum — see reference), new_value (string), previous_value (string), section (enum: devices, alarms, schedule, audio, display, recordings, mobile_data)',
         reference:
+          'The possible values of "setting", grouped by settings section:\n\n' +
           'Devices: selected_device\n' +
           'Alarms: alarm_enabled, motion_threshold, alarm_threshold, sensitivity_boost, max_pause_time, border_size (not wired), smart_edge, beep_camera_fault, beep_app_not_active\n' +
           'Schedule: schedule_enabled, alarm_enable_time, alarm_disable_time\n' +
@@ -512,6 +513,7 @@ const EVENT_CATALOG: CatalogSection[] = [
         when: 'A camera setting’s REST update completes (on commit)',
         data: 'setting (enum — see reference), new_value (string), previous_value (string), success (bool), error_reason (enum, when success=false — full list TBD)',
         reference:
+          'The possible values of "setting", with what each value means:\n\n' +
           'camera_password: Edited — password value never sent\n' +
           'camera_wifi: Network changed (e.g. wired / Wi-Fi SSID)\n' +
           'night_vision_mode: off / on / auto / auto_plus\n' +
