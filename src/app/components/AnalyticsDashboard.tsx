@@ -153,6 +153,7 @@ const recordingsCreatedLong = longDates.map((date, i) => {
   return { date, created: Math.max(200, Math.round(trend + weekly + noise)) };
 });
 const RECORDINGS_WATCHED_RATE = 18420 / 104820;
+const RECORDINGS_DOWNLOADED_RATE = 8500 / 104820;
 const RECORDINGS_SHARED_RATE = 2210 / 104820;
 const RECORDINGS_LOCKED_RATE = 10900 / 104820;
 const RECORDINGS_ALARMED_RATE = 9800 / 104820;
@@ -167,31 +168,42 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
 
 // Raw event-name frequency within the Recordings section of the catalog —
 // how often each actual analytics event fires, not a feature/UI label.
-// recordings_auto_deleted is 0 since the garbage collector isn't built yet
-// (see Open Items); recording_created is the proposed CLAUDE event.
+// recording_action is broken out by its `action` enum value (trash, restore,
+// delete_forever, lock, unlock, mark_alarmed, unmark_alarmed, share) instead
+// of one combined row, since that's the actual signal analysts would filter
+// on. recordings_auto_deleted is 0 since the garbage collector isn't built
+// yet (see Open Items); recording_created is the proposed CLAUDE event.
 const recordingsEventFrequency = [
   { event: 'Recording Created', count: 8400 },
   { event: 'Recordings Viewed', count: 5200 },
   { event: 'Recording Played', count: 3100 },
-  { event: 'Recording Action', count: 2600 },
+  { event: 'Recording Trashed', count: 980 },
   { event: 'Recording Download Requested', count: 1450 },
   { event: 'Recordings Filter Changed', count: 980 },
+  { event: 'Recording Locked', count: 640 },
   { event: 'Trash Viewed', count: 640 },
   { event: 'Recording Player Navigated', count: 520 },
+  { event: 'Recording Unlocked', count: 310 },
   { event: 'Recordings Edit Mode Toggled', count: 310 },
+  { event: 'Recording Marked Alarmed', count: 280 },
+  { event: 'Recording Unmarked Alarmed', count: 150 },
+  { event: 'Recording Shared', count: 140 },
   { event: 'Recordings Storage Full Shown', count: 90 },
+  { event: 'Recording Restored', count: 70 },
+  { event: 'Recording Deleted Forever', count: 30 },
   { event: 'Recordings Auto Deleted', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
 // --- Feature Adoption --------------------------------------------------
 
-// Excludes anything already covered by Most-Used App Settings / Most-Used
+// Excludes anything already covered by Most-Changed App Settings / Most-Changed
 // Camera Settings (alarm threshold, record schedule, night vision mode, IR
 // illuminator mode) so the same setting change isn't counted on 2 charts.
 const featureUsage = [
   { feature: 'Alarm button (arm/disarm)', count: 3380 },
   { feature: 'Mic toggled (manual)', count: 2150 },
-  { feature: 'Border / detection zone adjusted', count: 1980 },
+  { feature: 'View Border', count: 1240 },
+  { feature: 'Border Zone Adjusted', count: 740 },
   { feature: 'Motion overlay toggled', count: 1710 },
   { feature: 'Clock mode used', count: 1490 },
   { feature: 'Screen locked (manual)', count: 1120 },
@@ -220,7 +232,6 @@ const appSettingsUsage = [
   { setting: 'Vibrate on alarm', count: 740 },
   { setting: 'Sensitivity boost', count: 610 },
   { setting: 'Selected device', count: 420 },
-  { setting: 'Border size', count: 0 },
   { setting: 'Recording transfers enabled', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
@@ -800,13 +811,13 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-01', title: 'Recordings Created Over Time', events: ['recording_created'] },
   { id: 'ALM-02', title: 'Alarms Triggered Over Time', events: ['alarm_triggered'] },
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
-  { id: 'ALM-04', title: 'Recordings: Created, Watched, Locked, Alarmed, Shared', events: ['recording_created', 'recording_played', 'recording_action'] },
+  { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
   { id: 'ALM-05', title: 'Recordings Tagged Manually', events: ['recording_action', 'recording_created'] },
   { id: 'ALM-06', title: 'Recordings — Most Frequent Events', events: ['recording_created', 'recordings_viewed', 'recording_played', 'recording_action', 'recording_download_requested', 'recordings_filter_changed', 'trash_viewed', 'recording_player_navigated', 'recordings_edit_mode_toggled', 'recordings_storage_full_shown', 'recordings_auto_deleted'] },
   { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'alarm_smart_edge_suppressed', 'help_viewed'] },
   { id: 'FEA-02', title: 'Recording Schedule Adoption', events: ['camera_setting_changed'] },
-  { id: 'FEA-03', title: 'Most-Used App Settings', events: ['setting_changed'] },
-  { id: 'FEA-04', title: 'Most-Used Camera Settings', events: ['camera_setting_changed'] },
+  { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed'] },
+  { id: 'FEA-04', title: 'Most-Changed Camera Settings', events: ['camera_setting_changed'] },
   { id: 'DEV-01', title: 'Device Family', events: [] },
   { id: 'DEV-02', title: 'OS Version Breakdown', events: [] },
 ];
@@ -901,12 +912,14 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     const createdTotal = lastNDays(recordingsCreatedLong, timeRangeDays).reduce((sum, d) => sum + d.created, 0);
     const created = scaleCount(createdTotal);
     const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
+    const downloaded = Math.round(created * RECORDINGS_DOWNLOADED_RATE);
     const shared = Math.round(created * RECORDINGS_SHARED_RATE);
     const locked = Math.round(created * RECORDINGS_LOCKED_RATE);
     const alarmed = Math.round(created * RECORDINGS_ALARMED_RATE);
     return [
       { stage: 'Created', count: created },
       { stage: 'Watched', count: watched },
+      { stage: 'Downloaded', count: downloaded },
       { stage: 'Locked', count: locked },
       { stage: 'Alarmed', count: alarmed },
       { stage: 'Shared', count: shared },
@@ -1305,17 +1318,17 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Recordings: Created, Watched, Locked, Alarmed, Shared"
-                answers="How many recordings are being made, watched, locked, alarmed, and shared?"
+                title="Recordings Distribution"
+                answers="How many recordings are being made, watched, downloaded, locked, alarmed, and shared?"
                 badge={<NewEventBadge eventName="recording_created" />}
                 chartId="ALM-04"
                 onViewEvents={() => goToChartEvents('ALM-04')}
               >
-                <ResponsiveContainer width="100%" height={260}>
+                <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={recordingsStageTotals} layout="vertical" margin={{ left: 24 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
+                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={80} />
                     <Tooltip />
                     <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
                   </BarChart>
@@ -1349,9 +1362,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 onViewEvents={() => goToChartEvents('ALM-06')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  Raw event names, not features — recordings_auto_deleted is 0 since the garbage collector isn&apos;t built yet.
+                  Raw event names, not features — recording_action is split out by its action value (trash, restore, delete forever, lock, unlock, mark/unmark alarmed, share); recordings_auto_deleted is 0 since the garbage collector isn&apos;t built yet.
                 </p>
-                <ResponsiveContainer width="100%" height={340}>
+                <ResponsiveContainer width="100%" height={520}>
                   <BarChart data={scaledRecordingsEventFrequency} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1372,7 +1385,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="FEA-01"
                 onViewEvents={() => goToChartEvents('FEA-01')}
               >
-                <ResponsiveContainer width="100%" height={320}>
+                <ResponsiveContainer width="100%" height={360}>
                   <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1404,7 +1417,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
-                  title="Most-Used App Settings"
+                  title="Most-Changed App Settings"
                   answers="Which App Settings do people change the most?"
                   chartId="FEA-03"
                   onViewEvents={() => goToChartEvents('FEA-03')}
@@ -1421,7 +1434,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 </ChartCard>
 
                 <ChartCard
-                  title="Most-Used Camera Settings"
+                  title="Most-Changed Camera Settings"
                   answers="Which Camera Settings do people change the most?"
                   chartId="FEA-04"
                   onViewEvents={() => goToChartEvents('FEA-04')}
