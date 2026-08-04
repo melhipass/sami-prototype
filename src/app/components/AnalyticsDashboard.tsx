@@ -258,9 +258,17 @@ const cameraSettingsUsage = [
 
 // --- Devices & Connectivity ---------------------------------------------
 
+// Inferred from wifi_quality — a shared property attached to every event
+// (not a dedicated event of its own), reporting the camera's Wi-Fi SNR
+// bucket. UNKNOWN is read as "no Wi-Fi signal to measure" i.e. likely wired
+// (Ethernet); POOR/OK/EXCELLENT as connected over Wi-Fi. This is an
+// inference, not a labeled wired-vs-wireless field — nobody has confirmed
+// UNKNOWN specifically means "on Ethernet" rather than "not measured yet".
 const connectivityTable = [
-  { type: 'Wireless (Wi‑Fi)', cameras: 812, pct: '82.7%' },
-  { type: 'Wired (Ethernet)', cameras: 170, pct: '17.3%' },
+  { type: 'UNKNOWN — inferred Wired (Ethernet)', cameras: 170, pct: '17.3%' },
+  { type: 'POOR (Wi‑Fi)', cameras: 96, pct: '9.8%' },
+  { type: 'OK (Wi‑Fi)', cameras: 412, pct: '42.0%' },
+  { type: 'EXCELLENT (Wi‑Fi)', cameras: 304, pct: '31.0%' },
 ];
 
 const deviceFamily = [
@@ -285,11 +293,11 @@ const osVersionTable = [
 
 function Answers({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-3">
-      <span className="inline-block text-[11px] font-semibold tracking-wide text-[#2F6FEB] bg-[#EAF1FE] rounded px-2 py-1 uppercase">
-        Answers
+    <div className="mb-3 flex items-start gap-2">
+      <span className="shrink-0 inline-block text-[11px] font-semibold tracking-wide text-[#2F6FEB] bg-[#EAF1FE] rounded px-2 py-1 uppercase">
+        Answers:
       </span>
-      <p className="text-sm text-gray-600 mt-1.5 leading-snug">{children}</p>
+      <p className="text-sm text-gray-600 leading-snug">{children}</p>
     </div>
   );
 }
@@ -811,7 +819,7 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 // Amplitude's auto-captured properties on every event, not one specific event.
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
-  { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: ['camera_setting_changed'] },
+  { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: [] },
   { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
   { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
@@ -821,7 +829,6 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-02', title: 'Alarms Triggered Over Time', events: ['alarm_triggered'] },
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
   { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
-  { id: 'ALM-05', title: 'Recordings Tagged Manually', events: ['recording_action', 'recording_created'] },
   { id: 'ALM-07', title: 'Recordings — Actions', events: ['recording_played', 'recording_download_requested', 'recording_action', 'recordings_filter_changed', 'recordings_edit_mode_toggled'] },
   { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'help_viewed'] },
   { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed'] },
@@ -1164,10 +1171,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 onViewEvents={() => goToChartEvents('USG-02')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  A current snapshot, not a trend over time — each camera&apos;s most recently known connection type.
+                  A current snapshot, not a trend over time — each camera&apos;s most recently reported wifi_quality. Wired vs. wireless is inferred, not a labeled field: UNKNOWN means no Wi‑Fi signal was measured (read here as likely Ethernet), while POOR/OK/EXCELLENT are Wi‑Fi signal-strength buckets. Nobody has confirmed UNKNOWN specifically means &quot;on Ethernet&quot; rather than &quot;not measured yet&quot;.
                 </p>
                 <SimpleTable
-                  columns={['Connection type', 'Cameras', '% of fleet']}
+                  columns={['wifi_quality', 'Cameras', '% of fleet']}
                   rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
                 />
               </ChartCard>
@@ -1364,23 +1371,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Recordings Tagged Manually"
-                answers="In total, how many recordings were tagged as locked or alarmed manually?"
-                chartId="ALM-05"
-                onViewEvents={() => goToChartEvents('ALM-05')}
-              >
-                <ResponsiveContainer width="100%" height={180}>
-                  <BarChart data={recordingsStageTotals.filter((d) => d.stage === 'Locked' || d.stage === 'Alarmed')} layout="vertical" margin={{ left: 24 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={70} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.purple} radius={[0, 6, 6, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard
                 title="Recordings — Actions"
                 answers="Within Recordings, which events are a deliberate user action on a recording?"
                 chartId="ALM-07"
@@ -1530,7 +1520,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 </div>
                 {selectedChart && selectedChart.events.length === 0 ? (
                   <p className="text-sm text-gray-500 py-6 text-center">
-                    &quot;{selectedChart.title}&quot; ({selectedChart.id}) isn&apos;t built from a specific catalog event — it comes from properties Amplitude auto-captures on every event, not a dedicated one.
+                    &quot;{selectedChart.title}&quot; ({selectedChart.id}) isn&apos;t built from a specific catalog event — it&apos;s derived from a property attached to every event (auto-captured by Amplitude, or one we send ourselves), not a dedicated event.
                   </p>
                 ) : (
                   <CatalogTable rows={filteredCatalogRows} />
