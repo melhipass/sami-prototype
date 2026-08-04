@@ -616,7 +616,7 @@ const EVENT_CATALOG: CatalogSection[] = [
       { event: 'onboarding_camera_password_viewed', when: 'Password configuration screen shown after a camera is selected', data: 'mode (enum: new_camera, existing), camera_mac_address (string)' },
       { event: 'onboarding_camera_password_submitted', when: 'User submits the password form', data: 'mode (enum, same), camera_mac_address (string), hint_provided (bool — new_camera only)' },
       { event: 'onboarding_camera_add_requested', when: 'Add Selected Camera tapped', data: 'camera_mac_address (string)' },
-      { event: 'onboarding_camera_added', when: 'Camera successfully added / connected — onboarding complete', data: 'camera_mac_address (string)' },
+      { event: 'onboarding_camera_added', when: 'Camera successfully added / connected — onboarding complete', data: 'camera_mac_address (string), connection_type (enum: wired, wireless — confirmed with Julio 7/30 to close the gap where a camera that never changes networks after setup would otherwise have no camera_wifi data at all; pending Confluence update)' },
       { event: 'onboarding_camera_add_failed', when: 'Add / connect attempt fails', data: 'camera_mac_address (string), error_reason (enum: e.g. bad_password, connection_failed — full list TBD)' },
       { event: 'onboarding_connect_back', when: 'Go Back tapped', data: '—' },
     ],
@@ -714,7 +714,7 @@ const EVENT_CATALOG: CatalogSection[] = [
   },
   {
     title: 'Recordings — Creation',
-    description: 'Proposed — not yet in the live Confluence catalog, and this is a new build (not a port of the legacy app), so nothing here is guaranteed to exist unless it’s specified. Every existing Recordings event only fires when a user interacts with a recording that already exists (plays, downloads, tags it); nothing fires when a recording is first created, so there is no way to count total recording volume or know whether a recording coincided with an active alarm. Legacy SAMi3 had an equivalent step for reference: the camera reports a manifest of available recordings (filenames only) before any video is transferred, and the app lists the recording from that manifest — the video download happens separately, either automatically in the background or on-demand when played. Camera identity (camera_mac_address, camera_model) is already attached to every event via Identify, so it isn’t repeated here.',
+    description: 'Confirmed with Julio (eng) 7/30 — agreed this was missing and he\'ll add it to the live Confluence catalog; shown here in the meantime. Every existing Recordings event only fires when a user interacts with a recording that already exists (plays, downloads, tags it); nothing fires when a recording is first created, so there is no way to count total recording volume or know whether a recording coincided with an active alarm. Legacy SAMi3 had an equivalent step for reference: the camera reports a manifest of available recordings (filenames only) before any video is transferred, and the app lists the recording from that manifest — the video download happens separately, either automatically in the background or on-demand when played. Camera identity (camera_mac_address, camera_model) is already attached to every event via Identify, so it isn’t repeated here.',
     events: [
       {
         event: 'recording_created',
@@ -817,7 +817,7 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 // Amplitude's auto-captured properties on every event, not one specific event.
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
-  { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: ['camera_setting_changed'] },
+  { id: 'USG-02', title: 'Camera Connectivity', events: ['camera_setting_changed'] },
   { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
   { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
@@ -1163,13 +1163,13 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Camera Connectivity (Right Now)"
+                title="Camera Connectivity"
                 answers="Connectivity: how many cameras connect wirelessly vs. wired?"
                 chartId="USG-02"
                 onViewEvents={() => goToChartEvents('USG-02')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  A current snapshot, not a trend over time — each camera&apos;s last known value of camera_wifi (fires on camera_setting_changed whenever the network changes, e.g. to a Wi‑Fi SSID or &quot;wired&quot;). This is an explicit field, not an inference — but since it only updates on change, this is the last reported value per camera, not a real-time read.
+                  Each camera&apos;s last known value of Camera Wifi Value . This is the last reported value per camera, not a real-time read. Julio (eng) has agreed to also capture this at setup on onboarding_camera_added, so every camera will have a baseline value even if it never changes networks afterward — pending Confluence update.
                 </p>
                 <SimpleTable
                   columns={['Connection type', 'Cameras', '% of fleet']}
