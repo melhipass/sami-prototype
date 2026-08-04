@@ -282,26 +282,31 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
   );
 }
 
-// Same idea as SimpleTable, but columns wrap (event descriptions run long)
-// and the event-name column is monospaced, styled after Amplitude's own
-// event catalog / taxonomy views.
-function CatalogTable({ rows }: { rows: { event: string; when: string; data: string }[] }) {
+// Same idea as SimpleTable, but columns wrap (event descriptions run long),
+// the event-name column is monospaced, and there's a Reference column for
+// the handful of events (setting_changed, camera_setting_changed) whose
+// `setting` enum is documented separately — blank for every other row.
+function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string }[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b border-[#E5E9F2]">
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[220px]">Event</th>
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[240px]">When it fires</th>
-            <th className="text-left font-medium text-gray-500 py-2 align-top">Event-specific data</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[160px]">Category</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[200px]">Event</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[220px]">When it fires</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top">Event-specific data</th>
+            <th className="text-left font-medium text-gray-500 py-2 align-top w-[260px]">Setting Values Reference</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={i} className="border-b border-[#F3F5F9] last:border-0 align-top">
+              <td className="py-2.5 pr-4 text-gray-500 whitespace-nowrap">{r.category}</td>
               <td className="py-2.5 pr-4 font-mono text-xs text-[#2F6FEB]">{r.event}</td>
               <td className="py-2.5 pr-4 text-[#1F2937]">{r.when}</td>
-              <td className="py-2.5 text-gray-600">{r.data}</td>
+              <td className="py-2.5 pr-4 text-gray-600">{r.data}</td>
+              <td className="py-2.5 text-gray-500 text-xs whitespace-pre-line">{r.reference ?? ''}</td>
             </tr>
           ))}
         </tbody>
@@ -387,8 +392,8 @@ const CATALOG_AUTO_CAPTURED = {
   ],
 };
 
-type CatalogEvent = { event: string; when: string; data: string };
-type CatalogSection = { title: string; description?: string; events: CatalogEvent[]; noteTable?: { title: string; columns: string[]; rows: string[][] } };
+type CatalogEvent = { event: string; when: string; data: string; reference?: string };
+type CatalogSection = { title: string; description?: string; events: CatalogEvent[] };
 
 const EVENT_CATALOG: CatalogSection[] = [
   {
@@ -468,50 +473,48 @@ const EVENT_CATALOG: CatalogSection[] = [
     description: 'The Settings screen. All control changes are captured with one consolidated setting_changed event rather than one event per control. Sliders/steppers fire once on commit, not per drag.',
     events: [
       { event: 'settings_viewed', when: 'Settings screen is shown', data: '—' },
-      { event: 'setting_changed', when: 'A setting is changed (on commit — see slider rule)', data: 'setting (enum — see setting values below), new_value (string), previous_value (string), section (enum: devices, alarms, schedule, audio, display, recordings, mobile_data)' },
+      {
+        event: 'setting_changed',
+        when: 'A setting is changed (on commit — see slider rule)',
+        data: 'setting (enum — see reference), new_value (string), previous_value (string), section (enum: devices, alarms, schedule, audio, display, recordings, mobile_data)',
+        reference:
+          'Devices: selected_device\n' +
+          'Alarms: alarm_enabled, motion_threshold, alarm_threshold, sensitivity_boost, max_pause_time, border_size (not wired), smart_edge, beep_camera_fault, beep_app_not_active\n' +
+          'Schedule: schedule_enabled, alarm_enable_time, alarm_disable_time\n' +
+          'Audio: alarm_volume, alarm_sound (values A–F), alarm_duration, vibrate_on_alarm, microphone_boost, noise_reduction\n' +
+          'Display: screen_timeout_to_clock, screen_timeout_delay\n' +
+          'Recordings: recording_transfers_enabled (not wired), storage_limit_gb, hide_shorter_than (not wired), google_drive_backup (not wired)\n' +
+          'Mobile Data: disable_telemetry (not wired), always_allow_mobile_data (not wired)',
+      },
       { event: 'settings_reset_viewed', when: 'Reset dialog is shown (Reset tapped)', data: '—' },
       { event: 'settings_reset', when: 'A reset option is confirmed', data: 'reset_type (enum: user_settings, app_settings, erase_all_content)' },
       { event: 'settings_reset_cancelled', when: 'Cancel tapped in the Reset dialog', data: '—' },
     ],
-    noteTable: {
-      title: 'setting values, grouped by section (some not yet wired: border_size, recording_transfers_enabled, hide_shorter_than, google_drive_backup, disable_telemetry, always_allow_mobile_data)',
-      columns: ['Section', 'setting values'],
-      rows: [
-        ['Devices', 'selected_device'],
-        ['Alarms', 'alarm_enabled, motion_threshold, alarm_threshold, sensitivity_boost, max_pause_time, border_size (not wired), smart_edge, beep_camera_fault, beep_app_not_active'],
-        ['Schedule', 'schedule_enabled, alarm_enable_time, alarm_disable_time'],
-        ['Audio', 'alarm_volume, alarm_sound (values A–F), alarm_duration, vibrate_on_alarm, microphone_boost, noise_reduction'],
-        ['Display', 'screen_timeout_to_clock, screen_timeout_delay'],
-        ['Recordings', 'recording_transfers_enabled (not wired), storage_limit_gb, hide_shorter_than (not wired), google_drive_backup (not wired)'],
-        ['Mobile Data', 'disable_telemetry (not wired), always_allow_mobile_data (not wired)'],
-      ],
-    },
   },
   {
     title: 'Camera Settings',
     description: 'Reached via Camera Settings on the Settings screen. Every change is pushed to the camera over an HTTP REST call that can fail, so each event carries the call outcome.',
     events: [
       { event: 'camera_settings_viewed', when: 'Camera Settings screen is shown', data: '—' },
-      { event: 'camera_setting_changed', when: 'A camera setting’s REST update completes (on commit)', data: 'setting (enum — see setting values below), new_value (string), previous_value (string), success (bool), error_reason (enum, when success=false — full list TBD)' },
+      {
+        event: 'camera_setting_changed',
+        when: 'A camera setting’s REST update completes (on commit)',
+        data: 'setting (enum — see reference), new_value (string), previous_value (string), success (bool), error_reason (enum, when success=false — full list TBD)',
+        reference:
+          'camera_password: Edited — password value never sent\n' +
+          'camera_wifi: Network changed (e.g. wired / Wi-Fi SSID)\n' +
+          'night_vision_mode: off / on / auto / auto_plus\n' +
+          'ir_illuminator_mode: off / on / auto\n' +
+          'record_mode: never / motion_only / everything\n' +
+          'record_threshold: Percentage (slider — commit only)\n' +
+          'record_schedule: Edited schedule\n' +
+          'internet_viewing: enabled / disabled\n' +
+          'power_light_flash_on_internet_viewer: Toggle (bool)\n' +
+          'ip_address: automatic / manual',
+      },
       { event: 'camera_action_requested', when: 'An operation button is tapped (after any confirmation dialog)', data: 'action (enum: remove_camera, format_sd_card, firmware_update, reboot, factory_reset)' },
       { event: 'camera_action_result', when: 'The operation’s REST call completes', data: 'action (enum, same), success (bool), error_reason (enum, when success=false — full list TBD)' },
     ],
-    noteTable: {
-      title: 'setting values for camera settings',
-      columns: ['setting', 'Values / notes'],
-      rows: [
-        ['camera_password', 'Edited — password value never sent'],
-        ['camera_wifi', 'Network changed (e.g. wired / Wi-Fi SSID)'],
-        ['night_vision_mode', 'off / on / auto / auto_plus'],
-        ['ir_illuminator_mode', 'off / on / auto'],
-        ['record_mode', 'never / motion_only / everything'],
-        ['record_threshold', 'Percentage (slider — commit only)'],
-        ['record_schedule', 'Edited schedule'],
-        ['internet_viewing', 'enabled / disabled'],
-        ['power_light_flash_on_internet_viewer', 'Toggle (bool)'],
-        ['ip_address', 'automatic / manual'],
-      ],
-    },
   },
   {
     title: 'Clock Mode',
@@ -631,6 +634,13 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
 ];
+
+// Flattened for the single unified table (Category / Event / When / Data /
+// Reference) — the section-level title + description above still comes from
+// EVENT_CATALOG directly.
+const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
+  section.events.map((e) => ({ category: section.title, ...e }))
+);
 
 const CATALOG_OPEN_ITEMS = [
   'Not-yet-wired settings — border_size, recording_transfers_enabled, hide_shorter_than, google_drive_backup, disable_telemetry, always_allow_mobile_data are present in the UI but no-op/local-only; their setting_changed events apply only once wired.',
@@ -1145,17 +1155,20 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 <SimpleTable columns={CATALOG_AUTO_CAPTURED.columns} rows={CATALOG_AUTO_CAPTURED.rows} />
               </ChartCard>
 
-              {EVENT_CATALOG.map((section) => (
-                <ChartCard key={section.title} title={section.title} answers={section.description ?? `Events in the ${section.title} section.`}>
-                  <CatalogTable rows={section.events} />
-                  {section.noteTable && (
-                    <div className="mt-4 pt-4 border-t border-[#EEF1F6]">
-                      <p className="text-xs text-gray-500 mb-2">{section.noteTable.title}</p>
-                      <SimpleTable columns={section.noteTable.columns} rows={section.noteTable.rows} />
-                    </div>
-                  )}
-                </ChartCard>
-              ))}
+              <ChartCard title="All Events" answers="Every event in the catalog, in one table — grouped by category.">
+                <CatalogTable rows={EVENT_CATALOG_ROWS} />
+              </ChartCard>
+
+              <ChartCard title="Category Descriptions" answers="What each category above covers, for context.">
+                <div className="space-y-3 text-sm">
+                  {EVENT_CATALOG.filter((section) => section.description).map((section) => (
+                    <p key={section.title}>
+                      <span className="font-medium text-[#111827]">{section.title}</span>
+                      <span className="text-gray-600"> — {section.description}</span>
+                    </p>
+                  ))}
+                </div>
+              </ChartCard>
 
               <ChartCard title="Open Items" answers="What's still being finalized before sign-off?">
                 <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
