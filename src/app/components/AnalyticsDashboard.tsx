@@ -200,6 +200,14 @@ const appSettingsUsage = [
   { setting: 'Vibrate on alarm', count: 740 },
   { setting: 'Sensitivity boost', count: 610 },
   { setting: 'Selected device', count: 420 },
+  // Not-yet-wired settings — present in the UI but no-op/local-only today, so
+  // 0 real usage until they're implemented (see Open Items in the catalog).
+  { setting: 'Border size (not wired)', count: 0 },
+  { setting: 'Recording transfers enabled (not wired)', count: 0 },
+  { setting: 'Hide shorter than (not wired)', count: 0 },
+  { setting: 'Google Drive backup (not wired)', count: 0 },
+  { setting: 'Disable telemetry (not wired)', count: 0 },
+  { setting: 'Always allow mobile data (not wired)', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
 const cameraSettingsUsage = [
@@ -1361,17 +1369,17 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   chartId="FEA-03"
                   onViewEvents={() => goToChartEvents('FEA-03')}
                 >
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={460}>
                     <BarChart data={scaledAppSettingsUsage} layout="vertical" margin={{ left: 8 }}>
                       <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                      <YAxis type="category" dataKey="setting" tick={{ fontSize: 11, fill: '#111827' }} width={150} />
+                      <YAxis type="category" dataKey="setting" tick={{ fontSize: 11, fill: '#111827' }} width={190} />
                       <Tooltip />
                       <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Changes (30d)" />
                     </BarChart>
                   </ResponsiveContainer>
                   <p className="text-xs text-gray-500 mt-3">
-                    Excludes not-yet-wired settings (border size, recording transfers, hide-shorter-than, Google Drive backup, telemetry, mobile data override) — see Open Items in the Event Catalog.
+                    The 6 settings marked "(not wired)" show 0 — they&apos;re present in the UI but no-op/local-only today, so no real change events fire for them yet. See Open Items in the Event Catalog.
                   </p>
                 </ChartCard>
 
