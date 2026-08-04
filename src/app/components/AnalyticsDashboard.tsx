@@ -241,6 +241,7 @@ const appSettingsUsage = [
   { setting: 'Sensitivity boost', count: 610 },
   { setting: 'Selected device', count: 420 },
   { setting: 'Recording transfers enabled', count: 0 },
+  { setting: 'Auto-delete older videos', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
 const cameraSettingsUsage = [
@@ -631,7 +632,7 @@ const EVENT_CATALOG: CatalogSection[] = [
           'Schedule: schedule_enabled, alarm_enable_time, alarm_disable_time\n' +
           'Audio: alarm_volume, alarm_sound (values A–F), alarm_duration, vibrate_on_alarm, microphone_boost, noise_reduction\n' +
           'Display: screen_timeout_to_clock, screen_timeout_delay\n' +
-          'Recordings: recording_transfers_enabled (not wired), storage_limit_gb, hide_shorter_than (not wired), google_drive_backup (not wired)\n' +
+          'Recordings: recording_transfers_enabled (not wired), storage_limit_gb, auto_delete_older_videos (not wired — GC not built yet), hide_shorter_than (not wired), google_drive_backup (not wired)\n' +
           'Mobile Data: disable_telemetry (not wired), always_allow_mobile_data (not wired)',
       },
       { event: 'settings_reset_viewed', when: 'Reset dialog is shown (Reset tapped)', data: '—' },
@@ -838,7 +839,7 @@ const CATALOG_OPEN_ITEMS = [
   'Full disclaimer list — complete the accepted_disclaimers enum from the Disclaimers screen.',
   'Device identifier — Amplitude auto device_id vs. a custom persisted app-install UUID.',
   'camera_firmware_version — confirm parsing it from the camera system-info raw fields.',
-  'Garbage collector — recordings_auto_deleted is defined ahead of implementation (GC not built yet).',
+  'Garbage collector — recordings_auto_deleted and the auto_delete_older_videos setting are both defined ahead of implementation (GC not built yet); toggling the setting today has no real effect.',
   'Live sensitivity tuning — to be removed from the code, so not tracked.',
 ];
 
