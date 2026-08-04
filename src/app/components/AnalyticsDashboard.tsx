@@ -3,7 +3,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import {
   ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
-  Settings as SettingsIcon, Smartphone, ChevronDown,
+  Settings as SettingsIcon, Smartphone, ChevronDown, Search,
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -407,7 +407,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Welcome Screen',
+    title: 'Onboarding — Welcome',
     description: 'Entry screen introducing the app, with Configure My Sami Camera and Learn More About Sami actions.',
     events: [
       { event: 'onboarding_welcome_viewed', when: 'Welcome screen is shown', data: '—' },
@@ -415,7 +415,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Disclaimers Screen (step 1 of 4)',
+    title: 'Onboarding — Disclaimers',
     description: 'Lists safety/legal disclaimers as toggles, a Terms & Conditions / Privacy Policy checkbox, and Accept All / Cancel.',
     events: [
       { event: 'onboarding_disclaimers_viewed', when: 'Disclaimers step is shown', data: '—' },
@@ -424,7 +424,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Setup Guide Screen (step 2 of 4)',
+    title: 'Onboarding — Setup Guide',
     description: 'Recommends a setup guide based on connection method; an early signal of hardware configuration.',
     events: [
       { event: 'onboarding_guide_viewed', when: 'Setup Guide step is shown', data: '—' },
@@ -434,7 +434,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Verify Camera is Ready Screen',
+    title: 'Onboarding — Verify Camera is Ready',
     description: 'Confirms the camera power light is green and the device is on the same Wi-Fi network.',
     events: [
       { event: 'onboarding_camera_ready_viewed', when: 'Verify Camera is Ready screen is shown', data: '—' },
@@ -442,7 +442,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Permissions Screen (step 3 of 4)',
+    title: 'Onboarding — Permissions',
     description: 'Requests Location, Local Network, and Notifications permissions, one event per permission.',
     events: [
       { event: 'onboarding_permissions_viewed', when: 'Permissions step is shown', data: '—' },
@@ -452,7 +452,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Connect Screen (step 4 of 4)',
+    title: 'Onboarding — Connect',
     description: 'Camera discovery, selection, password configuration, and the onboarding-completion event. Password/hint text is never sent, only whether a hint was provided.',
     events: [
       { event: 'onboarding_connect_viewed', when: 'Connect step is shown (search starts automatically)', data: '—' },
@@ -694,6 +694,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState<CategoryId>('usage');
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
   const [timeRange, setTimeRange] = useState('30 Days');
+  const [catalogCategoryFilter, setCatalogCategoryFilter] = useState('All Categories');
+  const [catalogSearch, setCatalogSearch] = useState('');
   const timeRangeDays = TIME_RANGES.find((r) => r.label === timeRange)?.days ?? 30;
   // Keep roughly ~8 x-axis labels visible regardless of how many days are shown.
   const timeTickInterval = Math.max(0, Math.ceil(timeRangeDays / 8) - 1);
@@ -785,6 +787,26 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     if (platformFilter === 'Android') return d.os.startsWith('Android');
     return true;
   });
+
+  // Event Catalog: Category dropdown + free-text search across event name,
+  // when-it-fires, and event-specific data.
+  const catalogCategoryOptions = useMemo(
+    () => ['All Categories', ...Array.from(new Set(EVENT_CATALOG_ROWS.map((r) => r.category)))],
+    []
+  );
+  const filteredCatalogRows = useMemo(() => {
+    const q = catalogSearch.trim().toLowerCase();
+    return EVENT_CATALOG_ROWS.filter((r) => {
+      if (catalogCategoryFilter !== 'All Categories' && r.category !== catalogCategoryFilter) return false;
+      if (!q) return true;
+      return (
+        r.event.toLowerCase().includes(q) ||
+        r.when.toLowerCase().includes(q) ||
+        r.data.toLowerCase().includes(q) ||
+        r.category.toLowerCase().includes(q)
+      );
+    });
+  }, [catalogCategoryFilter, catalogSearch]);
 
   return (
     <div className="w-screen h-screen bg-[#F7F8FB] text-[#111827] flex overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -1137,7 +1159,28 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </div>
 
               <ChartCard title="All Events" answers="Every event in the catalog, in one table — grouped by category.">
-                <CatalogTable rows={EVENT_CATALOG_ROWS} />
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <Dropdown
+                    label="Category"
+                    options={catalogCategoryOptions}
+                    value={catalogCategoryFilter}
+                    onChange={setCatalogCategoryFilter}
+                  />
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={catalogSearch}
+                      onChange={(e) => setCatalogSearch(e.target.value)}
+                      placeholder="Search events..."
+                      className="bg-white border border-[#E5E9F2] rounded-lg pl-8 pr-3 py-1.5 text-sm text-[#111827] placeholder:text-gray-400 focus:outline-none focus:border-[#2F6FEB] w-56"
+                    />
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {filteredCatalogRows.length} of {EVENT_CATALOG_ROWS.length} events
+                  </span>
+                </div>
+                <CatalogTable rows={filteredCatalogRows} />
               </ChartCard>
 
               <ChartCard title="Category Descriptions" answers="What each category above covers, for context.">
