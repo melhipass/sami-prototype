@@ -153,7 +153,7 @@ const recordingsCreatedLong = longDates.map((date, i) => {
   return { date, created: Math.max(200, Math.round(trend + weekly + noise)) };
 });
 const RECORDINGS_WATCHED_RATE = 18420 / 104820;
-const RECORDINGS_DOWNLOADED_RATE = 19500 / 104820;
+const RECORDINGS_DOWNLOADED_RATE = RECORDINGS_WATCHED_RATE * 2;
 const RECORDINGS_SHARED_RATE = 2210 / 104820;
 const RECORDINGS_LOCKED_RATE = 10900 / 104820;
 const RECORDINGS_ALARMED_RATE = 9800 / 104820;
@@ -166,26 +166,26 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   alarms: alarmsOverTimeLong[i].alarms,
 }));
 
-// App-wide navigation — every real screen-shown event in the catalog (all 7
-// onboarding screens, Settings, Camera Settings, Recordings, Trash, Live
-// View, Help), plus Recording Player Navigated (prev/next within the
-// player). Excludes app-lifecycle events (app_opened, app_foregrounded) and
-// confirmation dialogs (settings_reset_viewed) — those aren't screens.
+// App-wide navigation — every real screen-shown event in the catalog
+// (Settings, Camera Settings, Recordings, Trash, Live View, Help), plus
+// Recording Player Navigated (prev/next within the player), Clock Mode
+// Entered, Lock Mode Entered, and View Border. The last 3 are also on
+// Feature Usage — kept in both on purpose, since they're both a feature
+// toggle AND a navigation-like "entered this mode" moment. Excludes
+// app-lifecycle events (app_opened, app_foregrounded) and confirmation
+// dialogs (settings_reset_viewed) — those aren't screens. Onboarding screens
+// are excluded too — that's covered by the Onboarding Funnel chart.
 const navigationEvents = [
   { event: 'Live View Opened', count: 9200 },
   { event: 'Recordings Viewed', count: 5200 },
   { event: 'Settings Viewed', count: 2100 },
   { event: 'Camera Settings Viewed', count: 980 },
+  { event: 'Clock Mode Entered', count: 1490 },
+  { event: 'View Border', count: 1240 },
+  { event: 'Lock Mode Entered', count: 1120 },
   { event: 'Trash Viewed', count: 640 },
   { event: 'Recording Player Navigated', count: 520 },
   { event: 'Help Viewed', count: 310 },
-  { event: 'Onboarding Welcome Viewed', count: 260 },
-  { event: 'Onboarding Disclaimers Viewed', count: 240 },
-  { event: 'Onboarding Guide Viewed', count: 220 },
-  { event: 'Onboarding Camera Ready Viewed', count: 205 },
-  { event: 'Onboarding Permissions Viewed', count: 195 },
-  { event: 'Onboarding Connect Viewed', count: 180 },
-  { event: 'Onboarding Camera Password Viewed', count: 165 },
 ].sort((a, b) => b.count - a.count);
 
 // Raw event-name frequency within the Recordings section of the catalog —
@@ -225,10 +225,9 @@ const featureUsage = [
 ].sort((a, b) => b.count - a.count);
 
 // Which "setting" values on setting_changed / camera_setting_changed get
-// changed most. Excludes not-yet-wired settings (border_size,
-// recording_transfers_enabled, hide_shorter_than, google_drive_backup,
-// disable_telemetry, always_allow_mobile_data) since they're no-op today —
-// see Open Items in the Event Catalog.
+// changed most. Recording transfers enabled and Auto-delete older videos are
+// "not wired" (no backend effect yet — see Open Items) but the toggle itself
+// still fires setting_changed when tapped, so they're non-zero here.
 const appSettingsUsage = [
   { setting: 'Alarm threshold', count: 3120 },
   { setting: 'Motion threshold', count: 2840 },
@@ -240,8 +239,8 @@ const appSettingsUsage = [
   { setting: 'Vibrate on alarm', count: 740 },
   { setting: 'Sensitivity boost', count: 610 },
   { setting: 'Selected device', count: 420 },
-  { setting: 'Recording transfers enabled', count: 0 },
-  { setting: 'Auto-delete older videos', count: 0 },
+  { setting: 'Recording transfers enabled', count: 260 },
+  { setting: 'Auto-delete older videos', count: 190 },
 ].sort((a, b) => b.count - a.count);
 
 const cameraSettingsUsage = [
@@ -813,7 +812,7 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
   { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: ['camera_setting_changed'] },
-  { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'trash_viewed', 'recording_player_navigated', 'help_viewed', 'onboarding_welcome_viewed', 'onboarding_disclaimers_viewed', 'onboarding_guide_viewed', 'onboarding_camera_ready_viewed', 'onboarding_permissions_viewed', 'onboarding_connect_viewed', 'onboarding_camera_password_viewed'] },
+  { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
   { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
   { id: 'RET-03', title: 'Days Until Reconnection', events: ['stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
@@ -1179,7 +1178,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="USG-03"
                 onViewEvents={() => goToChartEvents('USG-03')}
               >
-                <ResponsiveContainer width="100%" height={420}>
+                <ResponsiveContainer width="100%" height={360}>
                   <BarChart data={scaledNavigationEvents} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
