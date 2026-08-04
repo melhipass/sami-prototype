@@ -591,12 +591,12 @@ const EVENT_CATALOG: CatalogSection[] = [
   },
   {
     title: 'Recordings — Creation',
-    description: 'Proposed — not yet in the live Confluence catalog. Every existing Recordings event only fires when a user interacts with a recording that already exists (plays, downloads, tags it); nothing fires when a recording is first created, so there is no way to count total recording volume or know whether a recording coincided with an active alarm.',
+    description: 'Proposed — not yet in the live Confluence catalog, and this is a new build (not a port of the legacy app), so nothing here is guaranteed to exist unless it’s specified. Every existing Recordings event only fires when a user interacts with a recording that already exists (plays, downloads, tags it); nothing fires when a recording is first created, so there is no way to count total recording volume or know whether a recording coincided with an active alarm. Legacy SAMi3 had an equivalent step for reference: the camera reports a manifest of available recordings (filenames only) before any video is transferred, and the app lists the recording from that manifest — the video download happens separately, either automatically in the background or on-demand when played. Camera identity (camera_mac_address, camera_model) is already attached to every event via Identify, so it isn’t repeated here.',
     events: [
       {
         event: 'recording_created',
-        when: 'A new recording becomes available to the app — synced from the camera’s SD card into the local Recordings list. Fires once per recording, the first time the app registers it.',
-        data: 'recording_id (string), duration_seconds (int), record_mode_at_creation (enum: motion_only, everything — mirrors the camera’s record_mode setting at capture time), was_during_alarm (bool — true if the alarm was in the active state, per alarm_state_changed, at the moment this recording started capturing)',
+        when: 'A new recording is discovered from the camera’s storage manifest and added to the Recordings list — the video file itself may not be downloaded to the device yet (that can happen later, automatically or on-demand). Fires once per recording, the first time the app becomes aware of it.',
+        data: 'recording_id (string), recorded_at (timestamp — when the recording actually started on the camera; can lag behind this event’s own fired-at time if the camera was offline), duration_seconds (int), record_mode_at_creation (enum: motion_only, everything — mirrors the camera’s record_mode setting at capture time), was_during_alarm (bool — true if the alarm was in the active state, per alarm_state_changed, at the moment this recording started capturing)',
         isProposed: true,
       },
     ],
