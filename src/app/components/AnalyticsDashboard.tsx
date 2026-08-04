@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
   Settings as SettingsIcon, Smartphone, ChevronDown, Search, Info,
@@ -340,6 +341,44 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
   );
 }
 
+// Hover tooltip rendered via a portal to document.body, positioned from the
+// icon's own bounding rect. Needed because the catalog table sits inside an
+// `overflow-x-auto` wrapper — per the CSS spec, once one axis is non-visible
+// the other is forced to `auto` too, so a plain absolutely-positioned
+// tooltip gets clipped (worst when there are few rows, like a 1-row
+// "View events used" filter result). Rendering to document.body sidesteps
+// that clipping entirely.
+function InfoTooltip({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const iconRef = useRef<HTMLSpanElement>(null);
+
+  const show = () => {
+    const rect = iconRef.current?.getBoundingClientRect();
+    if (rect) {
+      setCoords({ top: rect.bottom + 6, left: Math.max(8, Math.min(rect.left, window.innerWidth - 300)) });
+    }
+    setOpen(true);
+  };
+
+  return (
+    <span ref={iconRef} className="relative inline-flex" onMouseEnter={show} onMouseLeave={() => setOpen(false)}>
+      <Info className="w-3.5 h-3.5 text-gray-400 cursor-help shrink-0" />
+      {open &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed z-50 w-72 bg-[#111827] text-gray-100 text-xs font-sans normal-case whitespace-pre-line rounded-lg shadow-lg p-3 leading-snug pointer-events-none"
+            style={{ top: coords.top, left: coords.left }}
+          >
+            {text}
+          </div>,
+          document.body
+        )}
+    </span>
+  );
+}
+
 // Same idea as SimpleTable, but columns wrap (event descriptions run long)
 // and the event-name column is monospaced. A handful of events
 // (setting_changed, camera_setting_changed) have a documented `setting`
@@ -369,14 +408,7 @@ function CatalogTable({ rows }: { rows: { category: string; event: string; when:
                     </span>
                   )}
                   {r.event}
-                  {r.reference && (
-                    <span className="group relative inline-flex">
-                      <Info className="w-3.5 h-3.5 text-gray-400 cursor-help shrink-0" />
-                      <span className="hidden group-hover:block absolute left-0 top-5 z-10 w-72 bg-[#111827] text-gray-100 text-xs font-sans normal-case whitespace-pre-line rounded-lg shadow-lg p-3 leading-snug">
-                        {r.reference}
-                      </span>
-                    </span>
-                  )}
+                  {r.reference && <InfoTooltip text={r.reference} />}
                 </span>
               </td>
               <td className="py-2.5 pr-4 text-[#1F2937]">{r.when}</td>
