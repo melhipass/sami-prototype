@@ -100,6 +100,19 @@ const retentionTable = [
   { segment: 'Android', cameras: 381, day0: '100%', day1: '48%', day7: '32%', day30: '21%' },
 ];
 
+// Onboarding funnel — each step corresponds to a real screen-viewed event
+// from the Event Catalog (Welcome → Disclaimers → Setup Guide → Verify
+// Camera → Permissions → Connect), ending in onboarding_camera_added.
+const onboardingFunnel = [
+  { step: 'Welcome', count: 1000 },
+  { step: 'Disclaimers', count: 927 },
+  { step: 'Setup Guide', count: 861 },
+  { step: 'Verify Camera', count: 803 },
+  { step: 'Permissions', count: 758 },
+  { step: 'Connect', count: 706 },
+  { step: 'Completed', count: 642 },
+];
+
 // --- Alarms --------------------------------------------------------------
 
 // Long daily history — combined with Recordings Created into a single
@@ -307,10 +320,10 @@ function CatalogTable({ rows }: { rows: { category: string; event: string; when:
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b border-[#E5E9F2]">
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[160px]">Category</th>
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[220px]">Event</th>
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[240px]">When it fires</th>
-            <th className="text-left font-medium text-gray-500 py-2 align-top">Event-specific data</th>
+            <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[160px]">Category</th>
+            <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[220px]">Event</th>
+            <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[240px]">When it fires</th>
+            <th className="text-left font-semibold text-[#111827] py-2 align-top">Event-specific data</th>
           </tr>
         </thead>
         <tbody>
@@ -698,6 +711,7 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
   { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
   { id: 'RET-03', title: 'Days Until Reconnection', events: ['stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
+  { id: 'RET-04', title: 'Onboarding Funnel', events: ['onboarding_welcome_viewed', 'onboarding_disclaimers_viewed', 'onboarding_guide_viewed', 'onboarding_camera_ready_viewed', 'onboarding_permissions_viewed', 'onboarding_connect_viewed', 'onboarding_camera_added'] },
   { id: 'ALM-01', title: 'Recordings Created Over Time', events: ['recording_created'] },
   { id: 'ALM-02', title: 'Alarms Triggered Over Time', events: ['alarm_triggered'] },
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
@@ -824,6 +838,11 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
   const scaledUsageConsistency = useMemo(
     () => usageConsistency.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledOnboardingFunnel = useMemo(
+    () => onboardingFunnel.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -1096,6 +1115,26 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </p>
                 </ChartCard>
               </div>
+
+              <ChartCard
+                title="Onboarding Funnel"
+                answers="How far do new users get through onboarding — where do they finish, and where do they drop off?"
+                chartId="RET-04"
+                onViewEvents={() => goToChartEvents('RET-04')}
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  Each step is the screen-viewed event for that part of onboarding; the last bar is cameras successfully added (onboarding complete).
+                </p>
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={scaledOnboardingFunnel} layout="vertical" margin={{ left: 16 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="step" tick={{ fontSize: 12, fill: '#111827' }} width={90} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Users" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
             </div>
           )}
 
