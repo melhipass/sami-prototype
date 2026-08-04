@@ -1165,10 +1165,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
           {activeCategory === 'catalog' && (
             <div className="space-y-6">
-              <div className="text-xs text-gray-400 -mt-1">
-                From the &quot;Analytics — Event Catalog &amp; Metadata&quot; Confluence doc (Engineering space). This is real, documented content — not dummy data — kept here for quick reference alongside the dashboard.
-              </div>
-
               <ChartCard title="All Events">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
                   <Dropdown
