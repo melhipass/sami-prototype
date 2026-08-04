@@ -170,17 +170,17 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
 // recordings_auto_deleted is 0 since the garbage collector isn't built yet
 // (see Open Items); recording_created is the proposed CLAUDE event.
 const recordingsEventFrequency = [
-  { event: 'recording_created', count: 8400 },
-  { event: 'recordings_viewed', count: 5200 },
-  { event: 'recording_played', count: 3100 },
-  { event: 'recording_action', count: 2600 },
-  { event: 'recording_download_requested', count: 1450 },
-  { event: 'recordings_filter_changed', count: 980 },
-  { event: 'trash_viewed', count: 640 },
-  { event: 'recording_player_navigated', count: 520 },
-  { event: 'recordings_edit_mode_toggled', count: 310 },
-  { event: 'recordings_storage_full_shown', count: 90 },
-  { event: 'recordings_auto_deleted', count: 0 },
+  { event: 'Recording Created', count: 8400 },
+  { event: 'Recordings Viewed', count: 5200 },
+  { event: 'Recording Played', count: 3100 },
+  { event: 'Recording Action', count: 2600 },
+  { event: 'Recording Download Requested', count: 1450 },
+  { event: 'Recordings Filter Changed', count: 980 },
+  { event: 'Trash Viewed', count: 640 },
+  { event: 'Recording Player Navigated', count: 520 },
+  { event: 'Recordings Edit Mode Toggled', count: 310 },
+  { event: 'Recordings Storage Full Shown', count: 90 },
+  { event: 'Recordings Auto Deleted', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
 // --- Feature Adoption --------------------------------------------------
@@ -1289,7 +1289,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
               <ChartCard
                 title="Alarms per Camera per Day"
-                answers="How many alarms are triggered per camera per day — are they concentrated on a few cameras, or spread evenly across all of them?"
+                answers="How many alarms are triggered per camera per day"
                 chartId="ALM-03"
                 onViewEvents={() => goToChartEvents('ALM-03')}
               >
@@ -1306,7 +1306,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
               <ChartCard
                 title="Recordings: Created, Watched, Locked, Alarmed, Shared"
-                answers="How many recordings are being made, watched, locked, marked alarmed, and shared?"
+                answers="How many recordings are being made, watched, locked, alarmed, and shared?"
                 badge={<NewEventBadge eventName="recording_created" />}
                 chartId="ALM-04"
                 onViewEvents={() => goToChartEvents('ALM-04')}
@@ -1355,7 +1355,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   <BarChart data={scaledRecordingsEventFrequency} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827', fontFamily: 'monospace' }} width={200} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
                     <Tooltip />
                     <Bar dataKey="count" fill={COLORS.teal} radius={[0, 6, 6, 0]} name="Events (30d)" />
                   </BarChart>
