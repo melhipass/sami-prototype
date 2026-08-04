@@ -668,7 +668,7 @@ const CATEGORIES = [
 // not dummy data), not a data view, so it doesn't get Platform/Time filters.
 const DOCS_CATEGORIES = [
   { id: 'catalog', label: 'Event Catalog', icon: BookOpen },
-  { id: 'conventions', label: 'Conventions and Regular Data', icon: FileText },
+  { id: 'conventions', label: 'Conventions & Metadata', icon: FileText },
 ] as const;
 
 const ALL_CATEGORIES = [...CATEGORIES, ...DOCS_CATEGORIES];
