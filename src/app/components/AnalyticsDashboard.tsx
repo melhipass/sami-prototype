@@ -183,6 +183,37 @@ const scheduleAdoption = [
   { name: 'No schedule set', value: 626 },
 ];
 
+// Which "setting" values on setting_changed / camera_setting_changed get
+// changed most. Excludes not-yet-wired settings (border_size,
+// recording_transfers_enabled, hide_shorter_than, google_drive_backup,
+// disable_telemetry, always_allow_mobile_data) since they're no-op today —
+// see Open Items in the Event Catalog.
+const appSettingsUsage = [
+  { setting: 'Alarm threshold', count: 3120 },
+  { setting: 'Motion threshold', count: 2840 },
+  { setting: 'Alarm volume', count: 2210 },
+  { setting: 'Alarm disable time', count: 1860 },
+  { setting: 'Screen timeout to clock', count: 1540 },
+  { setting: 'Storage limit (GB)', count: 1290 },
+  { setting: 'Alarm sound', count: 980 },
+  { setting: 'Vibrate on alarm', count: 740 },
+  { setting: 'Sensitivity boost', count: 610 },
+  { setting: 'Selected device', count: 420 },
+].sort((a, b) => b.count - a.count);
+
+const cameraSettingsUsage = [
+  { setting: 'Night vision mode', count: 2680 },
+  { setting: 'Record mode', count: 2340 },
+  { setting: 'Record threshold', count: 1920 },
+  { setting: 'Camera Wi‑Fi', count: 1450 },
+  { setting: 'Record schedule', count: 1180 },
+  { setting: 'IR illuminator mode', count: 890 },
+  { setting: 'Internet viewing', count: 560 },
+  { setting: 'IP address', count: 310 },
+  { setting: 'Power light flash on viewer', count: 240 },
+  { setting: 'Camera password', count: 150 },
+].sort((a, b) => b.count - a.count);
+
 // --- Devices & Connectivity ---------------------------------------------
 
 const connectivityTable = [
@@ -719,6 +750,8 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-05', title: 'Recordings Tagged Manually', events: ['recording_action', 'recording_created'] },
   { id: 'FEA-01', title: 'Feature Usage', events: ['setting_changed', 'camera_setting_changed', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'alarm_smart_edge_suppressed'] },
   { id: 'FEA-02', title: 'Recording Schedule Adoption', events: ['camera_setting_changed'] },
+  { id: 'FEA-03', title: 'Most-Used App Settings', events: ['setting_changed'] },
+  { id: 'FEA-04', title: 'Most-Used Camera Settings', events: ['camera_setting_changed'] },
   { id: 'DEV-01', title: 'Device Family', events: [] },
   { id: 'DEV-02', title: 'OS Version Breakdown', events: [] },
 ];
@@ -860,6 +893,16 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
   const scaledScheduleAdoption = useMemo(
     () => scheduleAdoption.map((d) => ({ ...d, value: scaleCount(d.value) })),
+    [platformMultiplier]
+  );
+
+  const scaledAppSettingsUsage = useMemo(
+    () => appSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledCameraSettingsUsage = useMemo(
+    () => cameraSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -1278,6 +1321,45 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </PieChart>
                 </ResponsiveContainer>
               </ChartCard>
+
+              <div className="grid grid-cols-2 gap-6">
+                <ChartCard
+                  title="Most-Used App Settings"
+                  answers="Which App Settings do people change the most?"
+                  chartId="FEA-03"
+                  onViewEvents={() => goToChartEvents('FEA-03')}
+                >
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={scaledAppSettingsUsage} layout="vertical" margin={{ left: 8 }}>
+                      <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis type="category" dataKey="setting" tick={{ fontSize: 11, fill: '#111827' }} width={150} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Changes (30d)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <p className="text-xs text-gray-500 mt-3">
+                    Excludes not-yet-wired settings (border size, recording transfers, hide-shorter-than, Google Drive backup, telemetry, mobile data override) — see Open Items in the Event Catalog.
+                  </p>
+                </ChartCard>
+
+                <ChartCard
+                  title="Most-Used Camera Settings"
+                  answers="Which Camera Settings do people change the most?"
+                  chartId="FEA-04"
+                  onViewEvents={() => goToChartEvents('FEA-04')}
+                >
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={scaledCameraSettingsUsage} layout="vertical" margin={{ left: 8 }}>
+                      <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis type="category" dataKey="setting" tick={{ fontSize: 11, fill: '#111827' }} width={150} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.purple} radius={[0, 6, 6, 0]} name="Changes (30d)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+              </div>
             </div>
           )}
 
