@@ -3,7 +3,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import {
   ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
-  Settings as SettingsIcon, Smartphone, ChevronDown, Search,
+  Settings as SettingsIcon, Smartphone, ChevronDown, Search, Info,
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -228,7 +228,7 @@ function ChartCard({
   className,
 }: {
   title: string;
-  answers: ReactNode;
+  answers?: ReactNode;
   badge?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
@@ -240,7 +240,7 @@ function ChartCard({
         <h3 className="text-[15px] font-semibold text-[#111827]">{title}</h3>
         {badge}
       </div>
-      <Answers>{answers}</Answers>
+      {answers && <Answers>{answers}</Answers>}
       {children}
       {footer && <div className="mt-4 pt-4 border-t border-[#EEF1F6]">{footer}</div>}
     </div>
@@ -282,10 +282,11 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
   );
 }
 
-// Same idea as SimpleTable, but columns wrap (event descriptions run long),
-// the event-name column is monospaced, and there's a Reference column for
-// the handful of events (setting_changed, camera_setting_changed) whose
-// `setting` enum is documented separately — blank for every other row.
+// Same idea as SimpleTable, but columns wrap (event descriptions run long)
+// and the event-name column is monospaced. A handful of events
+// (setting_changed, camera_setting_changed) have a documented `setting`
+// enum reference — shown as a hover tooltip on an info icon next to the
+// event name, rather than its own mostly-empty column.
 function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string }[] }) {
   return (
     <div className="overflow-x-auto">
@@ -293,20 +294,30 @@ function CatalogTable({ rows }: { rows: { category: string; event: string; when:
         <thead>
           <tr className="border-b border-[#E5E9F2]">
             <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[160px]">Category</th>
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[200px]">Event</th>
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[220px]">When it fires</th>
-            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top">Event-specific data</th>
-            <th className="text-left font-medium text-gray-500 py-2 align-top w-[260px]">Setting Values Reference</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[220px]">Event</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[240px]">When it fires</th>
+            <th className="text-left font-medium text-gray-500 py-2 align-top">Event-specific data</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={i} className="border-b border-[#F3F5F9] last:border-0 align-top">
               <td className="py-2.5 pr-4 text-gray-500 whitespace-nowrap">{r.category}</td>
-              <td className="py-2.5 pr-4 font-mono text-xs text-[#2F6FEB]">{r.event}</td>
+              <td className="py-2.5 pr-4 font-mono text-xs text-[#2F6FEB]">
+                <span className="inline-flex items-center gap-1.5">
+                  {r.event}
+                  {r.reference && (
+                    <span className="group relative inline-flex">
+                      <Info className="w-3.5 h-3.5 text-gray-400 cursor-help shrink-0" />
+                      <span className="hidden group-hover:block absolute left-0 top-5 z-10 w-72 bg-[#111827] text-gray-100 text-xs font-sans normal-case whitespace-pre-line rounded-lg shadow-lg p-3 leading-snug">
+                        {r.reference}
+                      </span>
+                    </span>
+                  )}
+                </span>
+              </td>
               <td className="py-2.5 pr-4 text-[#1F2937]">{r.when}</td>
-              <td className="py-2.5 pr-4 text-gray-600">{r.data}</td>
-              <td className="py-2.5 text-gray-500 text-xs whitespace-pre-line">{r.reference ?? ''}</td>
+              <td className="py-2.5 text-gray-600">{r.data}</td>
             </tr>
           ))}
         </tbody>
@@ -434,7 +445,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
-    title: 'Onboarding — Verify Camera is Ready',
+    title: 'Onboarding — Verify Camera',
     description: 'Confirms the camera power light is green and the device is on the same Wi-Fi network.',
     events: [
       { event: 'onboarding_camera_ready_viewed', when: 'Verify Camera is Ready screen is shown', data: '—' },
@@ -1158,7 +1169,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 From the &quot;Analytics — Event Catalog &amp; Metadata&quot; Confluence doc (Engineering space). This is real, documented content — not dummy data — kept here for quick reference alongside the dashboard.
               </div>
 
-              <ChartCard title="All Events" answers="Every event in the catalog, in one table — grouped by category.">
+              <ChartCard title="All Events">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
                   <Dropdown
                     label="Category"
