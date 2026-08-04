@@ -258,17 +258,15 @@ const cameraSettingsUsage = [
 
 // --- Devices & Connectivity ---------------------------------------------
 
-// Inferred from wifi_quality — a shared property attached to every event
-// (not a dedicated event of its own), reporting the camera's Wi-Fi SNR
-// bucket. UNKNOWN is read as "no Wi-Fi signal to measure" i.e. likely wired
-// (Ethernet); POOR/OK/EXCELLENT as connected over Wi-Fi. This is an
-// inference, not a labeled wired-vs-wireless field — nobody has confirmed
-// UNKNOWN specifically means "on Ethernet" rather than "not measured yet".
+// Reconstructed from camera_wifi — the `setting` value on camera_setting_
+// changed that fires when a camera's network changes ("Network changed
+// e.g. wired / Wi-Fi SSID"). It's a change event, not a live property, so
+// this takes the last known value per camera from that event's history
+// rather than a real-time read. new_value is literally "wired" or a Wi-Fi
+// SSID string, so this is an explicit field, not an inference.
 const connectivityTable = [
-  { type: 'UNKNOWN — inferred Wired (Ethernet)', cameras: 170, pct: '17.3%' },
-  { type: 'POOR (Wi‑Fi)', cameras: 96, pct: '9.8%' },
-  { type: 'OK (Wi‑Fi)', cameras: 412, pct: '42.0%' },
-  { type: 'EXCELLENT (Wi‑Fi)', cameras: 304, pct: '31.0%' },
+  { type: 'Wireless (Wi‑Fi)', cameras: 812, pct: '82.7%' },
+  { type: 'Wired (Ethernet)', cameras: 170, pct: '17.3%' },
 ];
 
 const deviceFamily = [
@@ -819,7 +817,7 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 // Amplitude's auto-captured properties on every event, not one specific event.
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
-  { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: [] },
+  { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: ['camera_setting_changed'] },
   { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
   { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
@@ -1171,10 +1169,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 onViewEvents={() => goToChartEvents('USG-02')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  A current snapshot, not a trend over time — each camera&apos;s most recently reported wifi_quality. Wired vs. wireless is inferred, not a labeled field: UNKNOWN means no Wi‑Fi signal was measured (read here as likely Ethernet), while POOR/OK/EXCELLENT are Wi‑Fi signal-strength buckets. Nobody has confirmed UNKNOWN specifically means &quot;on Ethernet&quot; rather than &quot;not measured yet&quot;.
+                  A current snapshot, not a trend over time — each camera&apos;s last known value of camera_wifi (fires on camera_setting_changed whenever the network changes, e.g. to a Wi‑Fi SSID or &quot;wired&quot;). This is an explicit field, not an inference — but since it only updates on change, this is the last reported value per camera, not a real-time read.
                 </p>
                 <SimpleTable
-                  columns={['wifi_quality', 'Cameras', '% of fleet']}
+                  columns={['Connection type', 'Cameras', '% of fleet']}
                   rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
                 />
               </ChartCard>
