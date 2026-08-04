@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Activity, Bell, RefreshCw,
+  ArrowLeft, Activity, Bell, RefreshCw, BookOpen,
   Settings as SettingsIcon, Smartphone, ChevronDown,
 } from 'lucide-react';
 import {
@@ -282,6 +282,34 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
   );
 }
 
+// Same idea as SimpleTable, but columns wrap (event descriptions run long)
+// and the event-name column is monospaced, styled after Amplitude's own
+// event catalog / taxonomy views.
+function CatalogTable({ rows }: { rows: { event: string; when: string; data: string }[] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="border-b border-[#E5E9F2]">
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[220px]">Event</th>
+            <th className="text-left font-medium text-gray-500 py-2 pr-4 align-top w-[240px]">When it fires</th>
+            <th className="text-left font-medium text-gray-500 py-2 align-top">Event-specific data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i} className="border-b border-[#F3F5F9] last:border-0 align-top">
+              <td className="py-2.5 pr-4 font-mono text-xs text-[#2F6FEB]">{r.event}</td>
+              <td className="py-2.5 pr-4 text-[#1F2937]">{r.when}</td>
+              <td className="py-2.5 text-gray-600">{r.data}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function Dropdown({
   label,
   options,
@@ -313,16 +341,328 @@ function Dropdown({
 }
 
 // ---------------------------------------------------------------------------
+// Event Catalog — transcribed from the "Analytics — Event Catalog &
+// Metadata" Confluence doc (space: Engineering, page 352157699), last
+// fetched live on the date this section was built. Unlike the rest of the
+// dashboard, this is real documented content, not dummy data.
+// ---------------------------------------------------------------------------
+
+const CATALOG_CONVENTIONS = [
+  'Event & property naming: snake_case (e.g. recording_deleted, camera_signal_strength).',
+  'Analytics identity: the app has no user account/login (the camera is local), so the device is the analytics identity. There is no user_id.',
+  'Value typing (Snowflake BI): mixed-type property values are avoided so each property maps to a single, castable column in the Amplitude → Snowflake export. new_value / previous_value on setting_changed and camera_setting_changed are sent as strings; cast per setting in SQL.',
+];
+
+const CATALOG_SHARED_PROPERTIES = {
+  columns: ['Property', 'Type', 'Example', 'Source / Notes'],
+  rows: [
+    ['camera_status', 'enum', 'Online', 'CameraStatus: Offline / Connecting / BadPassword / NeedsReboot / Online'],
+    ['camera_signal_strength', 'integer', '3', 'Signal level 1–4 from StreamHealth.Healthy.level (0 when degraded/disconnected)'],
+    ['wifi_quality', 'enum', 'OK', 'WifiQualityLevel: UNKNOWN / POOR / OK / EXCELLENT (camera-reported SNR bucket)'],
+    ['app_build', 'integer', '1420', 'Build number (versionCode / CFBundleVersion) — Amplitude only auto-captures the marketing version, so we send the build explicitly'],
+    ['device_timezone', 'string', 'America/Los_Angeles', 'IANA tz ID from the device (not captured by default)'],
+  ],
+};
+
+const CATALOG_IDENTITY_PROPERTIES = {
+  columns: ['Property', 'Type', 'Example', 'Source / Notes'],
+  rows: [
+    ['camera_mac_address', 'string', 'B8:27:EB:1A:2B:3C', 'Camera HWADDR, uppercased — primary device key'],
+    ['camera_model', 'string', 'SAMi3', 'Camera.model'],
+    ['camera_firmware_version', 'string | null', '3.2.1', 'From the camera system-info raw fields (requires parsing — see open items)'],
+  ],
+};
+
+const CATALOG_AUTO_CAPTURED = {
+  columns: ['Field', 'Amplitude property', 'Example', 'Notes'],
+  rows: [
+    ['App version', 'version (Version)', '2.4.0', 'Marketing version only — see app_build above for the build number'],
+    ['OS name', 'os_name', 'android', ''],
+    ['OS version', 'os_version', '14', ''],
+    ['Device manufacturer', 'device_manufacturer', 'Samsung', ''],
+    ['Device model', 'device_model', 'SM-G991B', ''],
+    ['Locale', 'language + country', 'English + US', 'Captured as two separate fields, not a single en-US'],
+    ['Device identity', 'device_id', '7f3c…', 'SDK-generated per-install ID; serves as the analytics identity'],
+    ['Session', 'session_id, event_time', '—', 'Session start/end auto-tracked by the SDK'],
+  ],
+};
+
+type CatalogEvent = { event: string; when: string; data: string };
+type CatalogSection = { title: string; description?: string; events: CatalogEvent[]; noteTable?: { title: string; columns: string[]; rows: string[][] } };
+
+const EVENT_CATALOG: CatalogSection[] = [
+  {
+    title: 'App & Session',
+    description: 'App lifecycle and how long the app runs. Permission prompts live in Onboarding, not here. Running time is measured via a periodic heartbeat (survives crashes/kills) rather than relying on Amplitude’s built-in session length.',
+    events: [
+      { event: 'app_opened', when: 'App cold start / first launch into memory', data: 'permissions_already_granted (bool)' },
+      { event: 'app_foregrounded', when: 'App returns to the foreground', data: '—' },
+      { event: 'app_backgrounded', when: 'App sent to the background', data: 'active_screen (enum: live, recordings, settings, help), foreground_duration_seconds (int) — duration of the run just ended' },
+      { event: 'app_heartbeat', when: 'Hourly while the app is active in the foreground', data: 'elapsed_seconds (int) — continuous foreground time so far; is_streaming (bool) — live video playing at heartbeat time; stream_elapsed_seconds (int) — continuous streaming time so far' },
+    ],
+  },
+  {
+    title: 'Onboarding — Welcome Screen',
+    description: 'Entry screen introducing the app, with Configure My Sami Camera and Learn More About Sami actions.',
+    events: [
+      { event: 'onboarding_welcome_viewed', when: 'Welcome screen is shown', data: '—' },
+      { event: 'onboarding_welcome_option_selected', when: 'User taps one of the two buttons', data: 'option (enum: configure_camera, learn_more)' },
+    ],
+  },
+  {
+    title: 'Onboarding — Disclaimers Screen (step 1 of 4)',
+    description: 'Lists safety/legal disclaimers as toggles, a Terms & Conditions / Privacy Policy checkbox, and Accept All / Cancel.',
+    events: [
+      { event: 'onboarding_disclaimers_viewed', when: 'Disclaimers step is shown', data: '—' },
+      { event: 'onboarding_disclaimers_accepted', when: 'Accept All tapped', data: 'accepted_disclaimers (array of enum — toggles ON at accept, e.g. nocturnal_movement_monitor, no_guarantee_of_effectiveness; full list TBD), terms_agreed (bool)' },
+      { event: 'onboarding_disclaimers_cancelled', when: 'Cancel tapped', data: '—' },
+    ],
+  },
+  {
+    title: 'Onboarding — Setup Guide Screen (step 2 of 4)',
+    description: 'Recommends a setup guide based on connection method; an early signal of hardware configuration.',
+    events: [
+      { event: 'onboarding_guide_viewed', when: 'Setup Guide step is shown', data: '—' },
+      { event: 'onboarding_guide_option_selected', when: 'User taps a guide card', data: 'guide (enum: complete_kit, camera_plus_hub, camera_only)' },
+      { event: 'onboarding_guide_continued', when: 'Continue Setup tapped', data: '—' },
+      { event: 'onboarding_guide_cancelled', when: 'Cancel tapped', data: '—' },
+    ],
+  },
+  {
+    title: 'Onboarding — Verify Camera is Ready Screen',
+    description: 'Confirms the camera power light is green and the device is on the same Wi-Fi network.',
+    events: [
+      { event: 'onboarding_camera_ready_viewed', when: 'Verify Camera is Ready screen is shown', data: '—' },
+      { event: 'onboarding_camera_ready_option_selected', when: 'User taps a button', data: 'option (enum: light_green, having_trouble)' },
+    ],
+  },
+  {
+    title: 'Onboarding — Permissions Screen (step 3 of 4)',
+    description: 'Requests Location, Local Network, and Notifications permissions, one event per permission.',
+    events: [
+      { event: 'onboarding_permissions_viewed', when: 'Permissions step is shown', data: '—' },
+      { event: 'onboarding_permission_requested', when: 'A permission’s system prompt is presented', data: 'permission (enum: location, local_network, notifications)' },
+      { event: 'onboarding_permission_result', when: 'User responds, or returns from system settings', data: 'permission (enum, same), granted (bool), location_precision (enum: precise, approximate, none — location only), trigger (enum: prompt, settings_return)' },
+      { event: 'onboarding_permissions_continued', when: 'User advances to the Connect step', data: 'all_granted (bool)' },
+    ],
+  },
+  {
+    title: 'Onboarding — Connect Screen (step 4 of 4)',
+    description: 'Camera discovery, selection, password configuration, and the onboarding-completion event. Password/hint text is never sent, only whether a hint was provided.',
+    events: [
+      { event: 'onboarding_connect_viewed', when: 'Connect step is shown (search starts automatically)', data: '—' },
+      { event: 'onboarding_camera_search_started', when: 'Camera discovery begins (auto on display, or via Search Again)', data: 'trigger (enum: auto, search_again)' },
+      { event: 'onboarding_camera_search_succeeded', when: 'One or more cameras found (list screen shown)', data: 'cameras_found (array of MAC addresses)' },
+      { event: 'onboarding_camera_search_failed', when: 'Search ends with the error screen', data: 'error_reason (enum: no_cameras_found, network_error, timeout — full list TBD)' },
+      { event: 'onboarding_camera_selected', when: 'User taps a camera in the found list', data: 'camera_mac_address (string)' },
+      { event: 'onboarding_camera_password_viewed', when: 'Password configuration screen shown after a camera is selected', data: 'mode (enum: new_camera, existing), camera_mac_address (string)' },
+      { event: 'onboarding_camera_password_submitted', when: 'User submits the password form', data: 'mode (enum, same), camera_mac_address (string), hint_provided (bool — new_camera only)' },
+      { event: 'onboarding_camera_add_requested', when: 'Add Selected Camera tapped', data: 'camera_mac_address (string)' },
+      { event: 'onboarding_camera_added', when: 'Camera successfully added / connected — onboarding complete', data: 'camera_mac_address (string)' },
+      { event: 'onboarding_camera_add_failed', when: 'Add / connect attempt fails', data: 'camera_mac_address (string), error_reason (enum: e.g. bad_password, connection_failed — full list TBD)' },
+      { event: 'onboarding_connect_back', when: 'Go Back tapped', data: '—' },
+    ],
+  },
+  {
+    title: 'App Settings',
+    description: 'The Settings screen. All control changes are captured with one consolidated setting_changed event rather than one event per control. Sliders/steppers fire once on commit, not per drag.',
+    events: [
+      { event: 'settings_viewed', when: 'Settings screen is shown', data: '—' },
+      { event: 'setting_changed', when: 'A setting is changed (on commit — see slider rule)', data: 'setting (enum — see setting values below), new_value (string), previous_value (string), section (enum: devices, alarms, schedule, audio, display, recordings, mobile_data)' },
+      { event: 'settings_reset_viewed', when: 'Reset dialog is shown (Reset tapped)', data: '—' },
+      { event: 'settings_reset', when: 'A reset option is confirmed', data: 'reset_type (enum: user_settings, app_settings, erase_all_content)' },
+      { event: 'settings_reset_cancelled', when: 'Cancel tapped in the Reset dialog', data: '—' },
+    ],
+    noteTable: {
+      title: 'setting values, grouped by section (some not yet wired: border_size, recording_transfers_enabled, hide_shorter_than, google_drive_backup, disable_telemetry, always_allow_mobile_data)',
+      columns: ['Section', 'setting values'],
+      rows: [
+        ['Devices', 'selected_device'],
+        ['Alarms', 'alarm_enabled, motion_threshold, alarm_threshold, sensitivity_boost, max_pause_time, border_size (not wired), smart_edge, beep_camera_fault, beep_app_not_active'],
+        ['Schedule', 'schedule_enabled, alarm_enable_time, alarm_disable_time'],
+        ['Audio', 'alarm_volume, alarm_sound (values A–F), alarm_duration, vibrate_on_alarm, microphone_boost, noise_reduction'],
+        ['Display', 'screen_timeout_to_clock, screen_timeout_delay'],
+        ['Recordings', 'recording_transfers_enabled (not wired), storage_limit_gb, hide_shorter_than (not wired), google_drive_backup (not wired)'],
+        ['Mobile Data', 'disable_telemetry (not wired), always_allow_mobile_data (not wired)'],
+      ],
+    },
+  },
+  {
+    title: 'Camera Settings',
+    description: 'Reached via Camera Settings on the Settings screen. Every change is pushed to the camera over an HTTP REST call that can fail, so each event carries the call outcome.',
+    events: [
+      { event: 'camera_settings_viewed', when: 'Camera Settings screen is shown', data: '—' },
+      { event: 'camera_setting_changed', when: 'A camera setting’s REST update completes (on commit)', data: 'setting (enum — see setting values below), new_value (string), previous_value (string), success (bool), error_reason (enum, when success=false — full list TBD)' },
+      { event: 'camera_action_requested', when: 'An operation button is tapped (after any confirmation dialog)', data: 'action (enum: remove_camera, format_sd_card, firmware_update, reboot, factory_reset)' },
+      { event: 'camera_action_result', when: 'The operation’s REST call completes', data: 'action (enum, same), success (bool), error_reason (enum, when success=false — full list TBD)' },
+    ],
+    noteTable: {
+      title: 'setting values for camera settings',
+      columns: ['setting', 'Values / notes'],
+      rows: [
+        ['camera_password', 'Edited — password value never sent'],
+        ['camera_wifi', 'Network changed (e.g. wired / Wi-Fi SSID)'],
+        ['night_vision_mode', 'off / on / auto / auto_plus'],
+        ['ir_illuminator_mode', 'off / on / auto'],
+        ['record_mode', 'never / motion_only / everything'],
+        ['record_threshold', 'Percentage (slider — commit only)'],
+        ['record_schedule', 'Edited schedule'],
+        ['internet_viewing', 'enabled / disabled'],
+        ['power_light_flash_on_internet_viewer', 'Toggle (bool)'],
+        ['ip_address', 'automatic / manual'],
+      ],
+    },
+  },
+  {
+    title: 'Clock Mode',
+    description: 'Replaces the live view with a dimmable clock, driven by the screen-timeout-to-clock display setting.',
+    events: [
+      { event: 'clock_mode_shown', when: 'Clock mode is displayed', data: 'trigger (enum: auto_timeout, manual)' },
+      { event: 'clock_mode_hidden', when: 'Clock mode is dismissed', data: 'trigger (enum: manual, alarm_triggered)' },
+      { event: 'clock_mode_brightness_adjusted', when: 'User swipes the screen to change brightness (fires once on swipe end, not per frame)', data: 'brightness (number 0–1), previous_brightness (number 0–1)' },
+    ],
+  },
+  {
+    title: 'Lock Screen',
+    description: 'The live view can be manually locked to prevent accidental touches. Locking is always manual; there is no automatic unlock.',
+    events: [
+      { event: 'screen_locked', when: 'User taps lock (always manual)', data: '—' },
+      { event: 'screen_unlocked', when: 'User unlocks (onUnlock)', data: 'reason (enum: manual, alarm_dismiss — alarm was triggered at unlock and this unlock also dismissed it)' },
+    ],
+  },
+  {
+    title: 'Live Monitoring',
+    description: 'The live camera view: overlay toggles, monitored region, Smart Edge suppression, stream health, and streaming duration.',
+    events: [
+      { event: 'live_view_opened', when: 'Live view (video player) is shown', data: '—' },
+      { event: 'live_border_toggled', when: 'Border / detection-zone overlay toggled', data: 'enabled (bool), coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1)' },
+      { event: 'live_detection_zone_changed', when: 'User adjusts the monitored region (debounced commit, not per drag)', data: 'coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1)' },
+      { event: 'live_motion_overlay_toggled', when: 'Red motion overlay toggled', data: 'enabled (bool)' },
+      { event: 'alarm_smart_edge_suppressed', when: 'Smart Edge suppresses an alarm (border-only motion → Paused instead of trigger)', data: 'edge_motion (number), motion_threshold (number)' },
+      { event: 'stream_health_changed', when: 'Stream health transitions between states', data: 'health (enum: searching, low_frame_rate, healthy), signal_level (int 1–4, healthy only), fps (number)' },
+      { event: 'stream_session_ended', when: 'Streaming stops (leave live view, backgrounded, or stream lost)', data: 'duration_seconds (int), end_reason (enum: left_screen, backgrounded, stream_lost)' },
+    ],
+  },
+  {
+    title: 'Alarm',
+    description: 'Runtime alarm behavior on the live view (alarm configuration settings live in App Settings). Four states: disabled, inactive, paused, active.',
+    events: [
+      { event: 'alarm_state_changed', when: 'Alarm status moves between states', data: 'from_state / to_state (enum: disabled, inactive, paused, active), trigger (enum: manual_tap, long_press, countdown_elapsed, smart_edge, schedule, alarm_dismissed)' },
+      { event: 'alarm_arm_blocked', when: 'User taps the alarm button to arm but the action is refused', data: 'reason (enum: no_connection — stream still Searching, disabled — alarm globally disabled / kill-switch)' },
+      { event: 'alarm_triggered', when: 'Motion exceeds threshold while Active — alarm sounds', data: 'motion_level (number), motion_threshold (number), audible (bool — alarm volume > 0), was_locked (bool), clock_mode_active (bool)' },
+      { event: 'alarm_dismissed', when: 'Alarm stops and returns to Paused', data: 'method (enum: manual, auto_timeout — auto-stop after the alarm-duration setting)' },
+      { event: 'mic_toggled', when: 'Microphone turned on or off', data: 'enabled (bool), source (enum: manual, alarm_auto — auto-enabled on alarm dismiss, auto_timeout — auto-off after the post-dismiss timeout)' },
+    ],
+  },
+  {
+    title: 'Recordings — Screen Views',
+    events: [
+      { event: 'recordings_viewed', when: 'Recordings list is shown', data: '—' },
+      { event: 'trash_viewed', when: 'Trash view is shown', data: '—' },
+    ],
+  },
+  {
+    title: 'Recordings — Downloading',
+    events: [
+      { event: 'recording_download_requested', when: 'Download requested', data: 'recording_ids (array), item_count (int), source (enum: video_player, list)' },
+      { event: 'recording_download_completed', when: 'A download finishes (fires per recording)', data: 'recording_id (string)' },
+      { event: 'recording_download_failed', when: 'A download fails', data: 'recording_id (string), error_reason (enum: no_space, network_error, timeout — full list TBD)' },
+    ],
+  },
+  {
+    title: 'Recordings — Selection',
+    description: 'Single-vs-multiple is captured by item_count / recording_ids on the action itself, so per-row selection toggles aren’t tracked separately.',
+    events: [
+      { event: 'recordings_edit_mode_toggled', when: 'User enters / exits multi-select (Edit)', data: 'enabled (bool)' },
+      { event: 'recordings_select_all', when: 'A select-all control is used', data: 'scope (enum: all, all_unlocked)' },
+    ],
+  },
+  {
+    title: 'Recordings — Filter',
+    events: [
+      { event: 'recordings_filter_changed', when: 'A filter is applied, de-selected, or cleared', data: 'active_filters (array of enum: alarmed, locked, duration_at_least_20s, last_24_hours) — the full resulting set after the change; an empty array means all filters were cleared' },
+    ],
+  },
+  {
+    title: 'Recordings — Actions',
+    description: 'Actions operate on a set of recording IDs, invoked from the video player (always single), a single row action, or a bulk edit-mode selection. Trash/restore/delete_forever are folded in here as action values.',
+    events: [
+      { event: 'recording_action', when: 'A recording action is performed (single or bulk)', data: 'action (enum: trash, restore, delete_forever, lock, unlock, mark_alarmed, unmark_alarmed, share), source (enum: video_player, single, bulk), recording_ids (array), item_count (int)' },
+    ],
+  },
+  {
+    title: 'Recordings — Playback',
+    events: [
+      { event: 'recording_played', when: 'A recording starts playing in the player', data: 'recording_id (string), source (enum: recordings, trash)' },
+      { event: 'recording_player_navigated', when: 'User moves to the previous / next recording within the player', data: 'direction (enum: previous, next)' },
+    ],
+  },
+  {
+    title: 'Recordings — Storage',
+    description: 'recordings_auto_deleted is defined ahead of implementation — the garbage collector is not built yet.',
+    events: [
+      { event: 'recordings_storage_full_shown', when: 'The "no space for more recordings" dialog is displayed', data: 'storage_limit_gb (number)' },
+      { event: 'recordings_auto_deleted', when: 'Garbage collection auto-deletes older recordings per the GC / storage setting (not yet implemented)', data: 'deleted_count (int), recording_ids (array), storage_limit_gb (number)' },
+    ],
+  },
+  {
+    title: 'Connectivity — Dialogs',
+    description: 'Connectivity issues surfaced as dialogs. SSID names are intentionally not sent.',
+    events: [
+      { event: 'connectivity_dialog_shown', when: 'A connectivity issue dialog is displayed', data: 'dialog (enum: network_error — no Wi-Fi/mobile network; camera_not_found — "Can’t find Sami Camera"; wrong_network — device on a different Wi-Fi than the camera)' },
+      { event: 'connectivity_dialog_dismissed', when: 'User dismisses / resolves the dialog', data: 'dialog (enum, same)' },
+    ],
+  },
+  {
+    title: 'Connectivity — Notifications',
+    description: 'Posted only while the alarm is enabled. The shown/opened ratio is a safety signal.',
+    events: [
+      { event: 'notification_shown', when: 'A monitoring notification is posted', data: 'type (enum: camera_fault — camera disconnected while armed; app_not_active — app backgrounded while armed)' },
+      { event: 'notification_opened', when: 'User taps the notification (returns to the app)', data: 'type (enum, same)' },
+    ],
+  },
+  {
+    title: 'Help',
+    description: 'Switches between an online and offline view based on connectivity. mode records which view was shown.',
+    events: [
+      { event: 'help_viewed', when: 'Help screen is shown', data: 'mode (enum: online, offline)' },
+      { event: 'help_link_clicked', when: 'A help link is tapped', data: 'link (enum: support, user_manual, installation_instructions)' },
+      { event: 'help_logs_sent', when: 'Send Logs is tapped', data: 'success (bool), error_reason (enum, when success=false — full list TBD)' },
+    ],
+  },
+];
+
+const CATALOG_OPEN_ITEMS = [
+  'Not-yet-wired settings — border_size, recording_transfers_enabled, hide_shorter_than, google_drive_backup, disable_telemetry, always_allow_mobile_data are present in the UI but no-op/local-only; their setting_changed events apply only once wired.',
+  'active_screen coverage — extend the enum on app_backgrounded beyond live/recordings/settings/help to also include trash, recording_player, camera_selection (and onboarding once it ships).',
+  'Post-onboarding "Add Camera" — the Connect/camera-add events also fire when adding a camera from Settings → Add Sami Network Camera; add a source (onboarding vs. settings) to those events, or factor out a shared Add-Camera section.',
+  'error_reason enum values — define the full lists for onboarding search/add failures, camera-settings/action failures, recording download failures, and Help send-logs.',
+  'Full disclaimer list — complete the accepted_disclaimers enum from the Disclaimers screen.',
+  'Device identifier — Amplitude auto device_id vs. a custom persisted app-install UUID.',
+  'camera_firmware_version — confirm parsing it from the camera system-info raw fields.',
+  'Garbage collector — recordings_auto_deleted is defined ahead of implementation (GC not built yet).',
+  'Live sensitivity tuning — to be removed from the code, so not tracked.',
+];
+
+// ---------------------------------------------------------------------------
 
 const CATEGORIES = [
   { id: 'usage', label: 'Usage & Connectivity', icon: Activity },
   { id: 'retention', label: 'Retention', icon: RefreshCw },
   { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
-  { id: 'devices', label: 'Devices', icon: Smartphone },
+  { id: 'devices', label: 'Amplitude Auto-Data', icon: Smartphone },
 ] as const;
 
-type CategoryId = typeof CATEGORIES[number]['id'];
+// Its own sidebar group, below "Sami Analytics" — a reference doc (real,
+// not dummy data), not a data view, so it doesn't get Platform/Time filters.
+const DOCS_CATEGORIES = [
+  { id: 'catalog', label: 'Event Catalog', icon: BookOpen },
+] as const;
+
+const ALL_CATEGORIES = [...CATEGORIES, ...DOCS_CATEGORIES];
+
+type CategoryId = typeof CATEGORIES[number]['id'] | typeof DOCS_CATEGORIES[number]['id'];
 
 // Shown for Usage & Connectivity, Alarms, and Recordings only — their
 // time-series/summable charts (Active Cameras, Alarms Triggered, the
@@ -469,13 +809,28 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </button>
             );
           })}
+
+          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1 mt-5">
+            Reference
+          </div>
+          {DOCS_CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const active = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-colors ${
+                  active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="p-4 border-t border-[#E5E9F2]">
-          <button className="w-full text-sm text-center text-gray-500 border border-[#E5E9F2] rounded-lg py-1.5 hover:bg-[#F7F8FB]">
-            Export Data
-          </button>
-        </div>
       </div>
 
       {/* Main */}
@@ -483,23 +838,26 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         {/* Top bar */}
         <div className="h-16 border-b border-[#E5E9F2] bg-white flex items-center justify-between px-6 flex-shrink-0">
           <div className="text-lg font-semibold">
-            {CATEGORIES.find((c) => c.id === activeCategory)?.label}
+            {ALL_CATEGORIES.find((c) => c.id === activeCategory)?.label}
           </div>
         </div>
 
-        {/* Filters row */}
-        <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
-          <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
-          {(activeCategory === 'usage' || activeCategory === 'alarms') && (
-            <Dropdown
-              label="Time range"
-              options={TIME_RANGES.map((r) => r.label)}
-              value={timeRange}
-              onChange={setTimeRange}
-            />
-          )}
-          <span className="text-xs text-gray-400 ml-auto">All figures below are illustrative / dummy data</span>
-        </div>
+        {/* Filters row — hidden for the Event Catalog, which is reference
+            documentation, not a filterable data view. */}
+        {activeCategory !== 'catalog' && (
+          <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
+            <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
+            {(activeCategory === 'usage' || activeCategory === 'alarms') && (
+              <Dropdown
+                label="Time range"
+                options={TIME_RANGES.map((r) => r.label)}
+                value={timeRange}
+                onChange={setTimeRange}
+              />
+            )}
+            <span className="text-xs text-gray-400 ml-auto">All figures below are illustrative / dummy data</span>
+          </div>
+        )}
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6">
@@ -757,6 +1115,54 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   rows={filteredOsVersionTable.map((r) => [r.os, r.devices, r.pct])}
                 />
                 <p className="text-xs text-gray-500 mt-3">From Amplitude&apos;s auto-captured <code className="font-mono">os_name</code> / <code className="font-mono">os_version</code>.</p>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'catalog' && (
+            <div className="space-y-6">
+              <div className="text-xs text-gray-400 -mt-1">
+                From the &quot;Analytics — Event Catalog &amp; Metadata&quot; Confluence doc (Engineering space). This is real, documented content — not dummy data — kept here for quick reference alongside the dashboard.
+              </div>
+
+              <ChartCard title="Conventions" answers="How is this catalog structured?">
+                <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
+                  {CATALOG_CONVENTIONS.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+              </ChartCard>
+
+              <ChartCard title="Shared Event Properties" answers="Sent on every event — volatile, point-in-time context plus fields Amplitude doesn't capture for us.">
+                <SimpleTable columns={CATALOG_SHARED_PROPERTIES.columns} rows={CATALOG_SHARED_PROPERTIES.rows} />
+              </ChartCard>
+
+              <ChartCard title="Camera / Device Identity" answers="Set once via Amplitude Identify when the camera connects; attached to all subsequent events automatically.">
+                <SimpleTable columns={CATALOG_IDENTITY_PROPERTIES.columns} rows={CATALOG_IDENTITY_PROPERTIES.rows} />
+              </ChartCard>
+
+              <ChartCard title="Automatically Captured by Amplitude" answers="Built-in properties the SDK collects on every event — we do not send these ourselves.">
+                <SimpleTable columns={CATALOG_AUTO_CAPTURED.columns} rows={CATALOG_AUTO_CAPTURED.rows} />
+              </ChartCard>
+
+              {EVENT_CATALOG.map((section) => (
+                <ChartCard key={section.title} title={section.title} answers={section.description ?? `Events in the ${section.title} section.`}>
+                  <CatalogTable rows={section.events} />
+                  {section.noteTable && (
+                    <div className="mt-4 pt-4 border-t border-[#EEF1F6]">
+                      <p className="text-xs text-gray-500 mb-2">{section.noteTable.title}</p>
+                      <SimpleTable columns={section.noteTable.columns} rows={section.noteTable.rows} />
+                    </div>
+                  )}
+                </ChartCard>
+              ))}
+
+              <ChartCard title="Open Items" answers="What's still being finalized before sign-off?">
+                <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
+                  {CATALOG_OPEN_ITEMS.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
               </ChartCard>
             </div>
           )}
