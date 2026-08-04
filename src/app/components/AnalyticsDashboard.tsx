@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft, Activity, Bell, RefreshCw, BookOpen,
+  ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
   Settings as SettingsIcon, Smartphone, ChevronDown,
 } from 'lucide-react';
 import {
@@ -668,6 +668,7 @@ const CATEGORIES = [
 // not dummy data), not a data view, so it doesn't get Platform/Time filters.
 const DOCS_CATEGORIES = [
   { id: 'catalog', label: 'Event Catalog', icon: BookOpen },
+  { id: 'conventions', label: 'Conventions and Regular Data', icon: FileText },
 ] as const;
 
 const ALL_CATEGORIES = [...CATEGORIES, ...DOCS_CATEGORIES];
@@ -854,7 +855,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
         {/* Filters row — hidden for the Event Catalog, which is reference
             documentation, not a filterable data view. */}
-        {activeCategory !== 'catalog' && (
+        {activeCategory !== 'catalog' && activeCategory !== 'conventions' && (
           <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
             <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
             {(activeCategory === 'usage' || activeCategory === 'alarms') && (
@@ -1135,6 +1136,29 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 From the &quot;Analytics — Event Catalog &amp; Metadata&quot; Confluence doc (Engineering space). This is real, documented content — not dummy data — kept here for quick reference alongside the dashboard.
               </div>
 
+              <ChartCard title="All Events" answers="Every event in the catalog, in one table — grouped by category.">
+                <CatalogTable rows={EVENT_CATALOG_ROWS} />
+              </ChartCard>
+
+              <ChartCard title="Category Descriptions" answers="What each category above covers, for context.">
+                <div className="space-y-3 text-sm">
+                  {EVENT_CATALOG.filter((section) => section.description).map((section) => (
+                    <p key={section.title}>
+                      <span className="font-medium text-[#111827]">{section.title}</span>
+                      <span className="text-gray-600"> — {section.description}</span>
+                    </p>
+                  ))}
+                </div>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'conventions' && (
+            <div className="space-y-6">
+              <div className="text-xs text-gray-400 -mt-1">
+                Shared conventions and metadata that apply across the Event Catalog — how it&apos;s structured, what&apos;s sent on every event, and what Amplitude captures automatically.
+              </div>
+
               <ChartCard title="Conventions" answers="How is this catalog structured?">
                 <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
                   {CATALOG_CONVENTIONS.map((c, i) => (
@@ -1153,21 +1177,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
               <ChartCard title="Automatically Captured by Amplitude" answers="Built-in properties the SDK collects on every event — we do not send these ourselves.">
                 <SimpleTable columns={CATALOG_AUTO_CAPTURED.columns} rows={CATALOG_AUTO_CAPTURED.rows} />
-              </ChartCard>
-
-              <ChartCard title="All Events" answers="Every event in the catalog, in one table — grouped by category.">
-                <CatalogTable rows={EVENT_CATALOG_ROWS} />
-              </ChartCard>
-
-              <ChartCard title="Category Descriptions" answers="What each category above covers, for context.">
-                <div className="space-y-3 text-sm">
-                  {EVENT_CATALOG.filter((section) => section.description).map((section) => (
-                    <p key={section.title}>
-                      <span className="font-medium text-[#111827]">{section.title}</span>
-                      <span className="text-gray-600"> — {section.description}</span>
-                    </p>
-                  ))}
-                </div>
               </ChartCard>
 
               <ChartCard title="Open Items" answers="What's still being finalized before sign-off?">
