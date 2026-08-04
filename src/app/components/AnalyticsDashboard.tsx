@@ -221,7 +221,6 @@ const featureUsage = [
   { feature: 'Motion overlay toggled', count: 1710 },
   { feature: 'Clock mode used', count: 1490 },
   { feature: 'Screen locked (manual)', count: 1120 },
-  { feature: 'Help section viewed', count: 310 },
 ].sort((a, b) => b.count - a.count);
 
 // Which "setting" values on setting_changed / camera_setting_changed get
@@ -241,6 +240,9 @@ const appSettingsUsage = [
   { setting: 'Selected device', count: 420 },
   { setting: 'Recording transfers enabled', count: 260 },
   { setting: 'Auto-delete older videos', count: 190 },
+  { setting: 'Reset: User Settings', count: 40 },
+  { setting: 'Reset: App Settings', count: 25 },
+  { setting: 'Reset: Erase All Content', count: 10 },
 ].sort((a, b) => b.count - a.count);
 
 const cameraSettingsUsage = [
@@ -283,6 +285,17 @@ const osVersionTable = [
   { os: 'Android 15', devices: 210, pct: '55.1%' },
   { os: 'Android 14', devices: 129, pct: '33.9%' },
   { os: 'Android 13 or earlier', devices: 42, pct: '11.0%' },
+];
+
+// camera_firmware_version — Camera / Device Identity property, set once via
+// Identify when the camera connects. Marked "requires parsing" in the
+// catalog (see Open Items), so treat this as illustrative until that's
+// confirmed.
+const firmwareVersionTable = [
+  { version: '3.2.1', cameras: 512, pct: '52.1%' },
+  { version: '3.1.0', cameras: 298, pct: '30.3%' },
+  { version: '3.0.4', cameras: 110, pct: '11.2%' },
+  { version: '2.x or earlier', cameras: 62, pct: '6.3%' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -828,11 +841,12 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
   { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
   { id: 'ALM-07', title: 'Recordings — Actions', events: ['recording_played', 'recording_download_requested', 'recording_action', 'recordings_filter_changed', 'recordings_edit_mode_toggled'] },
-  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'help_viewed'] },
-  { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed'] },
+  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked'] },
+  { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed', 'settings_reset'] },
   { id: 'FEA-04', title: 'Most-Changed Camera Settings', events: ['camera_setting_changed'] },
   { id: 'DEV-01', title: 'Device Family', events: [] },
   { id: 'DEV-02', title: 'OS Version Breakdown', events: [] },
+  { id: 'DEV-03', title: 'Firmware Version Breakdown', events: [] },
 ];
 
 const CATALOG_OPEN_ITEMS = [
@@ -854,7 +868,7 @@ const CATEGORIES = [
   { id: 'retention', label: 'Retention', icon: RefreshCw },
   { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
-  { id: 'devices', label: 'Amplitude Auto-Data', icon: Smartphone },
+  { id: 'devices', label: 'Devices Info', icon: Smartphone },
 ] as const;
 
 // Its own sidebar group, below "Sami Analytics" — a reference doc (real,
@@ -1169,7 +1183,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 onViewEvents={() => goToChartEvents('USG-02')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  Each camera&apos;s last known value of Camera Wifi Value . This is the last reported value per camera, not a real-time read. Julio (eng) has agreed to also capture this at setup on onboarding_camera_added, so every camera will have a baseline value even if it never changes networks afterward — pending Confluence update.
+                  Each camera&apos;s last known value of Camera Wifi Value . This is the last reported value per camera, not a real-time read.
                 </p>
                 <SimpleTable
                   columns={['Connection type', 'Cameras', '% of fleet']}
@@ -1374,9 +1388,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="ALM-07"
                 onViewEvents={() => goToChartEvents('ALM-07')}
               >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  recording_action is split out by its action value (trash, restore, delete forever, lock, unlock, mark/unmark alarmed, share).
-                </p>
                 <ResponsiveContainer width="100%" height={420}>
                   <BarChart data={scaledRecordingsActionEvents} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
@@ -1398,7 +1409,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="FEA-01"
                 onViewEvents={() => goToChartEvents('FEA-01')}
               >
-                <ResponsiveContainer width="100%" height={320}>
+                <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1416,7 +1427,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   chartId="FEA-03"
                   onViewEvents={() => goToChartEvents('FEA-03')}
                 >
-                  <ResponsiveContainer width="100%" height={360}>
+                  <ResponsiveContainer width="100%" height={440}>
                     <BarChart data={scaledAppSettingsUsage} layout="vertical" margin={{ left: 8 }}>
                       <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1482,6 +1493,19 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   rows={filteredOsVersionTable.map((r) => [r.os, r.devices, r.pct])}
                 />
                 <p className="text-xs text-gray-500 mt-3">From Amplitude&apos;s auto-captured <code className="font-mono">os_name</code> / <code className="font-mono">os_version</code>.</p>
+              </ChartCard>
+
+              <ChartCard
+                title="Firmware Version Breakdown"
+                answers="What firmware version are cameras running?"
+                chartId="DEV-03"
+                onViewEvents={() => goToChartEvents('DEV-03')}
+              >
+                <SimpleTable
+                  columns={['Firmware Version', 'Cameras', '% of fleet']}
+                  rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
               </ChartCard>
             </div>
           )}
