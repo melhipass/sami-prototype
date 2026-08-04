@@ -153,7 +153,7 @@ const recordingsCreatedLong = longDates.map((date, i) => {
   return { date, created: Math.max(200, Math.round(trend + weekly + noise)) };
 });
 const RECORDINGS_WATCHED_RATE = 18420 / 104820;
-const RECORDINGS_DOWNLOADED_RATE = 8500 / 104820;
+const RECORDINGS_DOWNLOADED_RATE = 19500 / 104820;
 const RECORDINGS_SHARED_RATE = 2210 / 104820;
 const RECORDINGS_LOCKED_RATE = 10900 / 104820;
 const RECORDINGS_ALARMED_RATE = 9800 / 104820;
@@ -166,26 +166,33 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   alarms: alarmsOverTimeLong[i].alarms,
 }));
 
-// Raw event-name frequency within the Recordings section of the catalog —
-// how often each actual analytics event fires, not a feature/UI label. Split
-// into 2 charts: events that just move the user between screens or happen
-// automatically with no user action (recording_created and
-// recordings_auto_deleted included here since neither is a deliberate user
-// action, even though one isn't literally "navigation" either), vs. events
-// where the user actively did something to a recording. recording_action is
-// broken out by its `action` enum value (trash, restore, delete_forever,
-// lock, unlock, mark_alarmed, unmark_alarmed, share) instead of one combined
-// row. recordings_auto_deleted is 0 since the garbage collector isn't built
-// yet (see Open Items); recording_created is the proposed CLAUDE event.
-const recordingsNavigationEvents = [
-  { event: 'Recording Created', count: 8400 },
+// App-wide navigation — every real screen-shown event in the catalog (all 7
+// onboarding screens, Settings, Camera Settings, Recordings, Trash, Live
+// View, Help), plus Recording Player Navigated (prev/next within the
+// player). Excludes app-lifecycle events (app_opened, app_foregrounded) and
+// confirmation dialogs (settings_reset_viewed) — those aren't screens.
+const navigationEvents = [
+  { event: 'Live View Opened', count: 9200 },
   { event: 'Recordings Viewed', count: 5200 },
+  { event: 'Settings Viewed', count: 2100 },
+  { event: 'Camera Settings Viewed', count: 980 },
   { event: 'Trash Viewed', count: 640 },
   { event: 'Recording Player Navigated', count: 520 },
-  { event: 'Recordings Storage Full Shown', count: 90 },
-  { event: 'Recordings Auto Deleted', count: 0 },
+  { event: 'Help Viewed', count: 310 },
+  { event: 'Onboarding Welcome Viewed', count: 260 },
+  { event: 'Onboarding Disclaimers Viewed', count: 240 },
+  { event: 'Onboarding Guide Viewed', count: 220 },
+  { event: 'Onboarding Camera Ready Viewed', count: 205 },
+  { event: 'Onboarding Permissions Viewed', count: 195 },
+  { event: 'Onboarding Connect Viewed', count: 180 },
+  { event: 'Onboarding Camera Password Viewed', count: 165 },
 ].sort((a, b) => b.count - a.count);
 
+// Raw event-name frequency within the Recordings section of the catalog —
+// how often each actual analytics event fires, not a feature/UI label.
+// recording_action is broken out by its `action` enum value (trash, restore,
+// delete_forever, lock, unlock, mark_alarmed, unmark_alarmed, share) instead
+// of one combined row.
 const recordingsActionEvents = [
   { event: 'Recording Played', count: 3100 },
   { event: 'Recording Download Requested', count: 1450 },
@@ -214,7 +221,6 @@ const featureUsage = [
   { feature: 'Motion overlay toggled', count: 1710 },
   { feature: 'Clock mode used', count: 1490 },
   { feature: 'Screen locked (manual)', count: 1120 },
-  { feature: 'Smart Edge suppression', count: 640 },
   { feature: 'Help section viewed', count: 310 },
 ].sort((a, b) => b.count - a.count);
 
@@ -806,6 +812,7 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
   { id: 'USG-02', title: 'Camera Connectivity (Right Now)', events: ['camera_setting_changed'] },
+  { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'trash_viewed', 'recording_player_navigated', 'help_viewed', 'onboarding_welcome_viewed', 'onboarding_disclaimers_viewed', 'onboarding_guide_viewed', 'onboarding_camera_ready_viewed', 'onboarding_permissions_viewed', 'onboarding_connect_viewed', 'onboarding_camera_password_viewed'] },
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
   { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
   { id: 'RET-03', title: 'Days Until Reconnection', events: ['stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
@@ -815,9 +822,8 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
   { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
   { id: 'ALM-05', title: 'Recordings Tagged Manually', events: ['recording_action', 'recording_created'] },
-  { id: 'ALM-06', title: 'Recordings — Navigation & Automatic Events', events: ['recording_created', 'recordings_viewed', 'trash_viewed', 'recording_player_navigated', 'recordings_storage_full_shown', 'recordings_auto_deleted'] },
   { id: 'ALM-07', title: 'Recordings — Actions', events: ['recording_played', 'recording_download_requested', 'recording_action', 'recordings_filter_changed', 'recordings_edit_mode_toggled'] },
-  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'alarm_smart_edge_suppressed', 'help_viewed'] },
+  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'help_viewed'] },
   { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed'] },
   { id: 'FEA-04', title: 'Most-Changed Camera Settings', events: ['camera_setting_changed'] },
   { id: 'DEV-01', title: 'Device Family', events: [] },
@@ -920,10 +926,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     const alarmed = Math.round(created * RECORDINGS_ALARMED_RATE);
     return [
       { stage: 'Created', count: created },
-      { stage: 'Watched', count: watched },
       { stage: 'Downloaded', count: downloaded },
-      { stage: 'Locked', count: locked },
+      { stage: 'Watched', count: watched },
       { stage: 'Alarmed', count: alarmed },
+      { stage: 'Locked', count: locked },
       { stage: 'Shared', count: shared },
     ];
   }, [platformMultiplier, timeRangeDays]);
@@ -966,8 +972,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier]
   );
 
-  const scaledRecordingsNavigationEvents = useMemo(
-    () => recordingsNavigationEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
+  const scaledNavigationEvents = useMemo(
+    () => navigationEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -1165,6 +1171,23 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
                 />
               </ChartCard>
+
+              <ChartCard
+                title="Navigation Events"
+                answers="Across the whole app, which screens do people actually go to?"
+                chartId="USG-03"
+                onViewEvents={() => goToChartEvents('USG-03')}
+              >
+                <ResponsiveContainer width="100%" height={420}>
+                  <BarChart data={scaledNavigationEvents} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
             </div>
           )}
 
@@ -1358,26 +1381,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Recordings — Navigation & Automatic Events"
-                answers="Within Recordings, which events are just the user moving between screens, or happen automatically with no user action?"
-                chartId="ALM-06"
-                onViewEvents={() => goToChartEvents('ALM-06')}
-              >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  Recording Created and Recordings Auto Deleted aren&apos;t literally navigation, but neither is a deliberate user action either — grouped here for that reason. Recordings Auto Deleted is 0 since the garbage collector isn&apos;t built yet.
-                </p>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={scaledRecordingsNavigationEvents} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name="Events (30d)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard
                 title="Recordings — Actions"
                 answers="Within Recordings, which events are a deliberate user action on a recording?"
                 chartId="ALM-07"
@@ -1407,7 +1410,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="FEA-01"
                 onViewEvents={() => goToChartEvents('FEA-01')}
               >
-                <ResponsiveContainer width="100%" height={360}>
+                <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
