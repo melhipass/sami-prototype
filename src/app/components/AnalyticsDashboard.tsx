@@ -227,6 +227,7 @@ function ChartCard({
   footer,
   className,
   chartId,
+  onViewEvents,
 }: {
   title: string;
   answers?: ReactNode;
@@ -235,6 +236,7 @@ function ChartCard({
   footer?: ReactNode;
   className?: string;
   chartId?: string;
+  onViewEvents?: () => void;
 }) {
   return (
     <div className={`bg-white border border-[#E5E9F2] rounded-xl shadow-sm p-5${className ? ` ${className}` : ''}`}>
@@ -245,7 +247,16 @@ function ChartCard({
       {answers && <Answers>{answers}</Answers>}
       {children}
       {footer && <div className="mt-4 pt-4 border-t border-[#EEF1F6]">{footer}</div>}
-      {chartId && <div className="mt-3 text-[10px] text-gray-300 font-mono tracking-wide">{chartId}</div>}
+      {chartId && (
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-[10px] text-gray-500 font-mono tracking-wide">{chartId}</span>
+          {onViewEvents && (
+            <button onClick={onViewEvents} className="text-[11px] text-[#2F6FEB] hover:underline">
+              View events used →
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -290,7 +301,7 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
 // (setting_changed, camera_setting_changed) have a documented `setting`
 // enum reference — shown as a hover tooltip on an info icon next to the
 // event name, rather than its own mostly-empty column.
-function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string }[] }) {
+function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string; isProposed?: boolean }[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
@@ -308,6 +319,11 @@ function CatalogTable({ rows }: { rows: { category: string; event: string; when:
               <td className="py-2.5 pr-4 text-gray-500 whitespace-nowrap">{r.category}</td>
               <td className="py-2.5 pr-4 font-mono text-xs text-[#2F6FEB]">
                 <span className="inline-flex items-center gap-1.5">
+                  {r.isProposed && (
+                    <span className="font-sans text-[9px] font-semibold text-[#8A5A00] bg-[#FFF3D6] border border-[#F5D98B] rounded px-1 py-0.5 tracking-wide">
+                      CLAUDE
+                    </span>
+                  )}
                   {r.event}
                   {r.reference && (
                     <span className="group relative inline-flex">
@@ -406,7 +422,7 @@ const CATALOG_AUTO_CAPTURED = {
   ],
 };
 
-type CatalogEvent = { event: string; when: string; data: string; reference?: string };
+type CatalogEvent = { event: string; when: string; data: string; reference?: string; isProposed?: boolean };
 type CatalogSection = { title: string; description?: string; events: CatalogEvent[] };
 
 const EVENT_CATALOG: CatalogSection[] = [
@@ -571,6 +587,18 @@ const EVENT_CATALOG: CatalogSection[] = [
       { event: 'alarm_triggered', when: 'Motion exceeds threshold while Active — alarm sounds', data: 'motion_level (number), motion_threshold (number), audible (bool — alarm volume > 0), was_locked (bool), clock_mode_active (bool)' },
       { event: 'alarm_dismissed', when: 'Alarm stops and returns to Paused', data: 'method (enum: manual, auto_timeout — auto-stop after the alarm-duration setting)' },
       { event: 'mic_toggled', when: 'Microphone turned on or off', data: 'enabled (bool), source (enum: manual, alarm_auto — auto-enabled on alarm dismiss, auto_timeout — auto-off after the post-dismiss timeout)' },
+    ],
+  },
+  {
+    title: 'Recordings — Creation',
+    description: 'Proposed — not yet in the live Confluence catalog. Every existing Recordings event only fires when a user interacts with a recording that already exists (plays, downloads, tags it); nothing fires when a recording is first created, so there is no way to count total recording volume or know whether a recording coincided with an active alarm.',
+    events: [
+      {
+        event: 'recording_created',
+        when: 'A new recording becomes available to the app — synced from the camera’s SD card into the local Recordings list. Fires once per recording, the first time the app registers it.',
+        data: 'recording_id (string), duration_seconds (int), record_mode_at_creation (enum: motion_only, everything — mirrors the camera’s record_mode setting at capture time), was_during_alarm (bool — true if the alarm was in the active state, per alarm_state_changed, at the moment this recording started capturing)',
+        isProposed: true,
+      },
     ],
   },
   {
@@ -835,17 +863,22 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     []
   );
   const catalogChartOptions = useMemo(
-    () => ['All Charts', ...CHART_REGISTRY.map((c) => `${c.id} — ${c.title}`)],
+    () => ['All Charts', 'None (unused by any chart)', ...CHART_REGISTRY.map((c) => `${c.id} — ${c.title}`)],
     []
   );
   const selectedChart = useMemo(
     () => CHART_REGISTRY.find((c) => `${c.id} — ${c.title}` === catalogChartFilter),
     [catalogChartFilter]
   );
+  const chartMappedEvents = useMemo(
+    () => new Set(CHART_REGISTRY.flatMap((c) => c.events)),
+    []
+  );
   const filteredCatalogRows = useMemo(() => {
     const q = catalogSearch.trim().toLowerCase();
     return EVENT_CATALOG_ROWS.filter((r) => {
       if (catalogCategoryFilter !== 'All Categories' && r.category !== catalogCategoryFilter) return false;
+      if (catalogChartFilter === 'None (unused by any chart)' && chartMappedEvents.has(r.event)) return false;
       if (selectedChart && !selectedChart.events.includes(r.event)) return false;
       if (!q) return true;
       return (
@@ -855,7 +888,19 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         r.category.toLowerCase().includes(q)
       );
     });
-  }, [catalogCategoryFilter, catalogSearch, selectedChart]);
+  }, [catalogCategoryFilter, catalogChartFilter, catalogSearch, selectedChart, chartMappedEvents]);
+
+  // "View events used" CTA on each chart — jumps to the Event Catalog with
+  // the Chart filter pre-set to that chart, and clears the other filters
+  // so nothing hides the result.
+  const goToChartEvents = (id: string) => {
+    const chart = CHART_REGISTRY.find((c) => c.id === id);
+    if (!chart) return;
+    setCatalogCategoryFilter('All Categories');
+    setCatalogSearch('');
+    setCatalogChartFilter(`${chart.id} — ${chart.title}`);
+    setActiveCategory('catalog');
+  };
 
   return (
     <div className="w-screen h-screen bg-[#F7F8FB] text-[#111827] flex overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -949,6 +994,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Online Cameras Over Time"
                 answers="How many cameras are online each day?"
                 chartId="USG-01"
+                onViewEvents={() => goToChartEvents('USG-01')}
               >
                 <ResponsiveContainer width="100%" height={220}>
                   <AreaChart data={scaledNightly}>
@@ -965,6 +1011,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Camera Connectivity (Right Now)"
                 answers="Connectivity: how many cameras connect wirelessly vs. wired?"
                 chartId="USG-02"
+                onViewEvents={() => goToChartEvents('USG-02')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
                   A current snapshot, not a trend over time — each camera&apos;s most recently known connection type.
@@ -983,6 +1030,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Internet Connection Retention"
                 answers="Are cameras still connecting to the internet weeks after setup?"
                 chartId="RET-01"
+                onViewEvents={() => goToChartEvents('RET-01')}
                 footer={
                   <SimpleTable
                     columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
@@ -1012,6 +1060,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   title="Connection Consistency"
                   answers="Consistent vs. sporadic internet check-ins — how many cameras connect daily vs. only occasionally?"
                   chartId="RET-02"
+                  onViewEvents={() => goToChartEvents('RET-02')}
                 >
                   <p className="text-xs text-gray-500 -mt-1 mb-3">
                     Cameras grouped by how many days a week they are online.
@@ -1031,6 +1080,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   title="Days Until Reconnection"
                   answers="When a camera goes quiet, how long does it typically take to reconnect?"
                   chartId="RET-03"
+                  onViewEvents={() => goToChartEvents('RET-03')}
                 >
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={reconnectionGaps}>
@@ -1057,6 +1107,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   answers="How many recordings are being made?"
                   badge={<NewEventBadge eventName="recording_created" />}
                   chartId="ALM-01"
+                  onViewEvents={() => goToChartEvents('ALM-01')}
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <AreaChart data={scaledRecordingsAndAlarms}>
@@ -1073,6 +1124,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   title="Alarms Triggered Over Time"
                   answers="How many alarms are being triggered?"
                   chartId="ALM-02"
+                  onViewEvents={() => goToChartEvents('ALM-02')}
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <LineChart data={scaledRecordingsAndAlarms}>
@@ -1090,6 +1142,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Alarms per Camera per Day"
                 answers="How many alarms are triggered per camera per day — are they concentrated on a few cameras, or spread evenly across all of them?"
                 chartId="ALM-03"
+                onViewEvents={() => goToChartEvents('ALM-03')}
               >
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={scaledAlarmsDistribution}>
@@ -1107,6 +1160,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 answers="How many recordings are being made, watched, locked, marked alarmed, and shared?"
                 badge={<NewEventBadge eventName="recording_created" />}
                 chartId="ALM-04"
+                onViewEvents={() => goToChartEvents('ALM-04')}
               >
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={recordingsStageTotals} layout="vertical" margin={{ left: 24 }}>
@@ -1126,6 +1180,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Recordings Tagged Manually"
                 answers="In total, how many recordings were tagged as locked or alarmed manually?"
                 chartId="ALM-05"
+                onViewEvents={() => goToChartEvents('ALM-05')}
               >
                 <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={recordingsStageTotals.filter((d) => d.stage === 'Locked' || d.stage === 'Alarmed')} layout="vertical" margin={{ left: 24 }}>
@@ -1146,6 +1201,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Feature Usage"
                 answers="What features are being used? How many times do people utilize a given feature?"
                 chartId="FEA-01"
+                onViewEvents={() => goToChartEvents('FEA-01')}
               >
                 <ResponsiveContainer width="100%" height={320}>
                   <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
@@ -1162,6 +1218,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="Recording Schedule Adoption"
                 answers="How many cameras are setting recording schedules?"
                 chartId="FEA-02"
+                onViewEvents={() => goToChartEvents('FEA-02')}
               >
                 <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
@@ -1185,6 +1242,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   title="Device Family"
                   answers="Apple device: what device type is being used to monitor?"
                   chartId="DEV-01"
+                  onViewEvents={() => goToChartEvents('DEV-01')}
                 >
                   <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
@@ -1205,6 +1263,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 title="OS Version Breakdown"
                 answers="What iOS / Android version are monitoring devices running?"
                 chartId="DEV-02"
+                onViewEvents={() => goToChartEvents('DEV-02')}
               >
                 <SimpleTable
                   columns={['OS Version', 'Devices', '% of platform']}
