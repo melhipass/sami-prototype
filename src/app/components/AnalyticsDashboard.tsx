@@ -167,31 +167,38 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
 }));
 
 // Raw event-name frequency within the Recordings section of the catalog —
-// how often each actual analytics event fires, not a feature/UI label.
-// recording_action is broken out by its `action` enum value (trash, restore,
-// delete_forever, lock, unlock, mark_alarmed, unmark_alarmed, share) instead
-// of one combined row, since that's the actual signal analysts would filter
-// on. recordings_auto_deleted is 0 since the garbage collector isn't built
+// how often each actual analytics event fires, not a feature/UI label. Split
+// into 2 charts: events that just move the user between screens or happen
+// automatically with no user action (recording_created and
+// recordings_auto_deleted included here since neither is a deliberate user
+// action, even though one isn't literally "navigation" either), vs. events
+// where the user actively did something to a recording. recording_action is
+// broken out by its `action` enum value (trash, restore, delete_forever,
+// lock, unlock, mark_alarmed, unmark_alarmed, share) instead of one combined
+// row. recordings_auto_deleted is 0 since the garbage collector isn't built
 // yet (see Open Items); recording_created is the proposed CLAUDE event.
-const recordingsEventFrequency = [
+const recordingsNavigationEvents = [
   { event: 'Recording Created', count: 8400 },
   { event: 'Recordings Viewed', count: 5200 },
-  { event: 'Recording Played', count: 3100 },
-  { event: 'Recording Trashed', count: 980 },
-  { event: 'Recording Download Requested', count: 1450 },
-  { event: 'Recordings Filter Changed', count: 980 },
-  { event: 'Recording Locked', count: 640 },
   { event: 'Trash Viewed', count: 640 },
   { event: 'Recording Player Navigated', count: 520 },
+  { event: 'Recordings Storage Full Shown', count: 90 },
+  { event: 'Recordings Auto Deleted', count: 0 },
+].sort((a, b) => b.count - a.count);
+
+const recordingsActionEvents = [
+  { event: 'Recording Played', count: 3100 },
+  { event: 'Recording Download Requested', count: 1450 },
+  { event: 'Recording Trashed', count: 980 },
+  { event: 'Recordings Filter Changed', count: 980 },
+  { event: 'Recording Locked', count: 640 },
   { event: 'Recording Unlocked', count: 310 },
   { event: 'Recordings Edit Mode Toggled', count: 310 },
   { event: 'Recording Marked Alarmed', count: 280 },
   { event: 'Recording Unmarked Alarmed', count: 150 },
   { event: 'Recording Shared', count: 140 },
-  { event: 'Recordings Storage Full Shown', count: 90 },
   { event: 'Recording Restored', count: 70 },
   { event: 'Recording Deleted Forever', count: 30 },
-  { event: 'Recordings Auto Deleted', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
 // --- Feature Adoption --------------------------------------------------
@@ -210,11 +217,6 @@ const featureUsage = [
   { feature: 'Smart Edge suppression', count: 640 },
   { feature: 'Help section viewed', count: 310 },
 ].sort((a, b) => b.count - a.count);
-
-const scheduleAdoption = [
-  { name: 'Using a recording schedule', value: 356 },
-  { name: 'No schedule set', value: 626 },
-];
 
 // Which "setting" values on setting_changed / camera_setting_changed get
 // changed most. Excludes not-yet-wired settings (border_size,
@@ -813,9 +815,9 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
   { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
   { id: 'ALM-05', title: 'Recordings Tagged Manually', events: ['recording_action', 'recording_created'] },
-  { id: 'ALM-06', title: 'Recordings — Most Frequent Events', events: ['recording_created', 'recordings_viewed', 'recording_played', 'recording_action', 'recording_download_requested', 'recordings_filter_changed', 'trash_viewed', 'recording_player_navigated', 'recordings_edit_mode_toggled', 'recordings_storage_full_shown', 'recordings_auto_deleted'] },
+  { id: 'ALM-06', title: 'Recordings — Navigation & Automatic Events', events: ['recording_created', 'recordings_viewed', 'trash_viewed', 'recording_player_navigated', 'recordings_storage_full_shown', 'recordings_auto_deleted'] },
+  { id: 'ALM-07', title: 'Recordings — Actions', events: ['recording_played', 'recording_download_requested', 'recording_action', 'recordings_filter_changed', 'recordings_edit_mode_toggled'] },
   { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'alarm_smart_edge_suppressed', 'help_viewed'] },
-  { id: 'FEA-02', title: 'Recording Schedule Adoption', events: ['camera_setting_changed'] },
   { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed'] },
   { id: 'FEA-04', title: 'Most-Changed Camera Settings', events: ['camera_setting_changed'] },
   { id: 'DEV-01', title: 'Device Family', events: [] },
@@ -959,18 +961,18 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier]
   );
 
-  const scaledScheduleAdoption = useMemo(
-    () => scheduleAdoption.map((d) => ({ ...d, value: scaleCount(d.value) })),
-    [platformMultiplier]
-  );
-
   const scaledAppSettingsUsage = useMemo(
     () => appSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
-  const scaledRecordingsEventFrequency = useMemo(
-    () => recordingsEventFrequency.map((d) => ({ ...d, count: scaleCount(d.count) })),
+  const scaledRecordingsNavigationEvents = useMemo(
+    () => recordingsNavigationEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsActionEvents = useMemo(
+    () => recordingsActionEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -1356,16 +1358,36 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Recordings — Most Frequent Events"
-                answers="Within the Recordings section, which analytics events fire most often?"
+                title="Recordings — Navigation & Automatic Events"
+                answers="Within Recordings, which events are just the user moving between screens, or happen automatically with no user action?"
                 chartId="ALM-06"
                 onViewEvents={() => goToChartEvents('ALM-06')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  Raw event names, not features — recording_action is split out by its action value (trash, restore, delete forever, lock, unlock, mark/unmark alarmed, share); recordings_auto_deleted is 0 since the garbage collector isn&apos;t built yet.
+                  Recording Created and Recordings Auto Deleted aren&apos;t literally navigation, but neither is a deliberate user action either — grouped here for that reason. Recordings Auto Deleted is 0 since the garbage collector isn&apos;t built yet.
                 </p>
-                <ResponsiveContainer width="100%" height={520}>
-                  <BarChart data={scaledRecordingsEventFrequency} layout="vertical" margin={{ left: 8 }}>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={scaledRecordingsNavigationEvents} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard
+                title="Recordings — Actions"
+                answers="Within Recordings, which events are a deliberate user action on a recording?"
+                chartId="ALM-07"
+                onViewEvents={() => goToChartEvents('ALM-07')}
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  recording_action is split out by its action value (trash, restore, delete forever, lock, unlock, mark/unmark alarmed, share).
+                </p>
+                <ResponsiveContainer width="100%" height={420}>
+                  <BarChart data={scaledRecordingsActionEvents} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
@@ -1393,25 +1415,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Tooltip />
                     <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Events (30d)" />
                   </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard
-                title="Recording Schedule Adoption"
-                answers="How many cameras are setting recording schedules?"
-                chartId="FEA-02"
-                onViewEvents={() => goToChartEvents('FEA-02')}
-              >
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie data={scaledScheduleAdoption} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={2}>
-                      {scaledScheduleAdoption.map((_, i) => (
-                        <Cell key={i} fill={i === 0 ? COLORS.teal : COLORS.grid} />
-                      ))}
-                    </Pie>
-                    <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: 12 }} />
-                    <Tooltip />
-                  </PieChart>
                 </ResponsiveContainer>
               </ChartCard>
 
