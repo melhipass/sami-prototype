@@ -1587,14 +1587,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <ChartCard title="Automatically Captured by Amplitude">
                 <SimpleTable columns={CATALOG_AUTO_CAPTURED.columns} rows={CATALOG_AUTO_CAPTURED.rows} />
               </ChartCard>
-
-              <ChartCard title="Open Items">
-                <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
-                  {CATALOG_OPEN_ITEMS.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              </ChartCard>
             </div>
           )}
         </div>
