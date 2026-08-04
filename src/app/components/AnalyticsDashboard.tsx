@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
   Settings as SettingsIcon, Smartphone, ChevronDown, Search, Info,
@@ -773,6 +773,13 @@ const TIME_RANGES = [
 
 export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const [activeCategory, setActiveCategory] = useState<CategoryId>('usage');
+  const contentScrollRef = useRef<HTMLDivElement>(null);
+  // Always land at the top of the page on any category switch — otherwise a
+  // scrolled-down position from a previous visit (e.g. to Event Catalog)
+  // sticks around and the "View events used" CTA looks like it did nothing.
+  useEffect(() => {
+    contentScrollRef.current?.scrollTo({ top: 0 });
+  }, [activeCategory]);
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
   const [timeRange, setTimeRange] = useState('30 Days');
   const [catalogCategoryFilter, setCatalogCategoryFilter] = useState('All Categories');
@@ -1006,7 +1013,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         )}
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div ref={contentScrollRef} className="flex-1 overflow-y-auto p-6">
           {activeCategory === 'usage' && (
             <div className="space-y-6">
               <ChartCard
