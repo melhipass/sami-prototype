@@ -165,18 +165,38 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   alarms: alarmsOverTimeLong[i].alarms,
 }));
 
+// Raw event-name frequency within the Recordings section of the catalog —
+// how often each actual analytics event fires, not a feature/UI label.
+// recordings_auto_deleted is 0 since the garbage collector isn't built yet
+// (see Open Items); recording_created is the proposed CLAUDE event.
+const recordingsEventFrequency = [
+  { event: 'recording_created', count: 8400 },
+  { event: 'recordings_viewed', count: 5200 },
+  { event: 'recording_played', count: 3100 },
+  { event: 'recording_action', count: 2600 },
+  { event: 'recording_download_requested', count: 1450 },
+  { event: 'recordings_filter_changed', count: 980 },
+  { event: 'trash_viewed', count: 640 },
+  { event: 'recording_player_navigated', count: 520 },
+  { event: 'recordings_edit_mode_toggled', count: 310 },
+  { event: 'recordings_storage_full_shown', count: 90 },
+  { event: 'recordings_auto_deleted', count: 0 },
+].sort((a, b) => b.count - a.count);
+
 // --- Feature Adoption --------------------------------------------------
 
+// Excludes anything already covered by Most-Used App Settings / Most-Used
+// Camera Settings (alarm threshold, record schedule, night vision mode, IR
+// illuminator mode) so the same setting change isn't counted on 2 charts.
 const featureUsage = [
-  { feature: 'Alarm threshold changed', count: 4210 },
-  { feature: 'Record schedule set', count: 2870 },
-  { feature: 'Night vision mode changed', count: 2340 },
+  { feature: 'Alarm button (arm/disarm)', count: 3380 },
+  { feature: 'Mic toggled (manual)', count: 2150 },
   { feature: 'Border / detection zone adjusted', count: 1980 },
   { feature: 'Motion overlay toggled', count: 1710 },
   { feature: 'Clock mode used', count: 1490 },
   { feature: 'Screen locked (manual)', count: 1120 },
-  { feature: 'IR illuminator mode changed', count: 860 },
   { feature: 'Smart Edge suppression', count: 640 },
+  { feature: 'Help section viewed', count: 310 },
 ].sort((a, b) => b.count - a.count);
 
 const scheduleAdoption = [
@@ -200,14 +220,8 @@ const appSettingsUsage = [
   { setting: 'Vibrate on alarm', count: 740 },
   { setting: 'Sensitivity boost', count: 610 },
   { setting: 'Selected device', count: 420 },
-  // Not-yet-wired settings — present in the UI but no-op/local-only today, so
-  // 0 real usage until they're implemented (see Open Items in the catalog).
-  { setting: 'Border size (not wired)', count: 0 },
-  { setting: 'Recording transfers enabled (not wired)', count: 0 },
-  { setting: 'Hide shorter than (not wired)', count: 0 },
-  { setting: 'Google Drive backup (not wired)', count: 0 },
-  { setting: 'Disable telemetry (not wired)', count: 0 },
-  { setting: 'Always allow mobile data (not wired)', count: 0 },
+  { setting: 'Border size', count: 0 },
+  { setting: 'Recording transfers enabled', count: 0 },
 ].sort((a, b) => b.count - a.count);
 
 const cameraSettingsUsage = [
@@ -788,7 +802,8 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
   { id: 'ALM-04', title: 'Recordings: Created, Watched, Locked, Alarmed, Shared', events: ['recording_created', 'recording_played', 'recording_action'] },
   { id: 'ALM-05', title: 'Recordings Tagged Manually', events: ['recording_action', 'recording_created'] },
-  { id: 'FEA-01', title: 'Feature Usage', events: ['setting_changed', 'camera_setting_changed', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'alarm_smart_edge_suppressed'] },
+  { id: 'ALM-06', title: 'Recordings — Most Frequent Events', events: ['recording_created', 'recordings_viewed', 'recording_played', 'recording_action', 'recording_download_requested', 'recordings_filter_changed', 'trash_viewed', 'recording_player_navigated', 'recordings_edit_mode_toggled', 'recordings_storage_full_shown', 'recordings_auto_deleted'] },
+  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked', 'alarm_smart_edge_suppressed', 'help_viewed'] },
   { id: 'FEA-02', title: 'Recording Schedule Adoption', events: ['camera_setting_changed'] },
   { id: 'FEA-03', title: 'Most-Used App Settings', events: ['setting_changed'] },
   { id: 'FEA-04', title: 'Most-Used Camera Settings', events: ['camera_setting_changed'] },
@@ -938,6 +953,11 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
   const scaledAppSettingsUsage = useMemo(
     () => appSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsEventFrequency = useMemo(
+    () => recordingsEventFrequency.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
 
@@ -1321,6 +1341,26 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
+
+              <ChartCard
+                title="Recordings — Most Frequent Events"
+                answers="Within the Recordings section, which analytics events fire most often?"
+                chartId="ALM-06"
+                onViewEvents={() => goToChartEvents('ALM-06')}
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  Raw event names, not features — recordings_auto_deleted is 0 since the garbage collector isn&apos;t built yet.
+                </p>
+                <ResponsiveContainer width="100%" height={340}>
+                  <BarChart data={scaledRecordingsEventFrequency} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827', fontFamily: 'monospace' }} width={200} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.teal} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
             </div>
           )}
 
@@ -1369,7 +1409,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   chartId="FEA-03"
                   onViewEvents={() => goToChartEvents('FEA-03')}
                 >
-                  <ResponsiveContainer width="100%" height={460}>
+                  <ResponsiveContainer width="100%" height={360}>
                     <BarChart data={scaledAppSettingsUsage} layout="vertical" margin={{ left: 8 }}>
                       <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                       <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1378,9 +1418,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                       <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Changes (30d)" />
                     </BarChart>
                   </ResponsiveContainer>
-                  <p className="text-xs text-gray-500 mt-3">
-                    The 6 settings marked "(not wired)" show 0 — they&apos;re present in the UI but no-op/local-only today, so no real change events fire for them yet. See Open Items in the Event Catalog.
-                  </p>
                 </ChartCard>
 
                 <ChartCard
