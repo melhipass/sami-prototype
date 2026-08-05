@@ -1314,6 +1314,19 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
+                title="Firmware Version Breakdown"
+                answers="What firmware version are cameras running?"
+                chartId="DEV-03"
+                onViewEvents={() => goToChartEvents('DEV-03')}
+              >
+                <SimpleTable
+                  columns={['Firmware Version', 'Cameras', '% of fleet']}
+                  rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
+              </ChartCard>
+
+              <ChartCard
                 title="Internet Connection Retention"
                 answers="Are cameras still connecting to the internet weeks after setup?"
                 chartId="RET-01"
@@ -1326,7 +1339,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 }
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  % of newly paired cameras still reporting camera_status online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage. Not affected by the Platform filter — camera_status belongs to the camera, not to whichever phone last checked it.
+                  % of newly paired cameras still reporting camera_status online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage.
                 </p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
@@ -1613,19 +1626,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   rows={filteredOsVersionTable.map((r) => [r.os, r.devices, r.pct])}
                 />
                 <p className="text-xs text-gray-500 mt-3">From Amplitude&apos;s auto-captured <code className="font-mono">os_name</code> / <code className="font-mono">os_version</code>.</p>
-              </ChartCard>
-
-              <ChartCard
-                title="Firmware Version Breakdown"
-                answers="What firmware version are cameras running?"
-                chartId="DEV-03"
-                onViewEvents={() => goToChartEvents('DEV-03')}
-              >
-                <SimpleTable
-                  columns={['Firmware Version', 'Cameras', '% of fleet']}
-                  rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
-                />
-                <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
               </ChartCard>
 
               <ChartCard
