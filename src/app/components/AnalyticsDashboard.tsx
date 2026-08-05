@@ -867,8 +867,8 @@ const CATALOG_OPEN_ITEMS = [
 // ---------------------------------------------------------------------------
 
 const CATEGORIES = [
-  { id: 'usage', label: 'Usage & Connectivity', icon: Activity },
-  { id: 'retention', label: 'Retention', icon: RefreshCw },
+  { id: 'cameraConnectivity', label: 'Camera Connectivity', icon: Activity },
+  { id: 'appConnectivity', label: 'App Connectivity', icon: RefreshCw },
   { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
   { id: 'devices', label: 'Devices Info', icon: Smartphone },
@@ -901,7 +901,7 @@ const TIME_RANGES = [
 ] as const;
 
 export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('usage');
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('cameraConnectivity');
   const contentScrollRef = useRef<HTMLDivElement>(null);
   // Always land at the top of the page on any category switch — otherwise a
   // scrolled-down position from a previous visit (e.g. to Event Catalog)
@@ -925,18 +925,22 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   // churn-vs-alarms comparison (a rate, not a count), or camera-level data
   // like Recordings-by-Camera / Connectivity (a camera's recordings and its
   // own Wi-Fi connection aren't tied to which platform happens to view it).
-  // Same reason it doesn't touch the 3 connection-retention charts (Internet
-  // Connection Retention, Connection Consistency, Days Until Reconnection):
-  // they're built on camera_status, a property of the camera itself, not of
-  // whichever phone platform happened to be checking it.
+  // Same reason it doesn't touch any chart in Camera Connectivity (Online
+  // Cameras Over Time, Camera Connectivity, Internet Connection Retention,
+  // Connection Consistency, Days Until Reconnection): the whole category is
+  // camera-side data (camera_status, camera_wifi, camera counts), not scoped
+  // to whichever phone platform happened to be checking it — the Platform
+  // dropdown is hidden entirely on that category's page for this reason.
   const platformMultiplier = platformFilter === 'iOS' ? 0.61 : platformFilter === 'Android' ? 0.39 : 1;
   const scaleCount = (n: number) => Math.round(n * platformMultiplier);
 
-  // Overview-only, range-picker-aware versions (sliced from the long 400-day
-  // datasets according to the selected range, then platform-scaled).
+  // Overview-only, range-picker-aware slice of the long 400-day dataset.
+  // Not platform-scaled: a camera being online isn't scoped to whichever
+  // phone platform happens to be checking it (same reasoning as the rest of
+  // Camera Connectivity).
   const scaledNightly = useMemo(
-    () => lastNDays(nightlyActiveCameras, timeRangeDays).map((d) => ({ ...d, cameras: scaleCount(d.cameras) })),
-    [platformMultiplier, timeRangeDays]
+    () => lastNDays(nightlyActiveCameras, timeRangeDays),
+    [timeRangeDays]
   );
 
   // Single source of truth for Created/Watched/Shared/Locked/Alarmed —
@@ -1134,11 +1138,16 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Filters row — hidden for the Event Catalog, which is reference
-            documentation, not a filterable data view. */}
+            documentation, not a filterable data view. Platform is also
+            hidden for Camera Connectivity: nothing in that category is
+            scoped to a phone platform (it's all camera-side data), so the
+            filter would just sit there doing nothing. */}
         {activeCategory !== 'catalog' && activeCategory !== 'conventions' && (
           <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
-            <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
-            {(activeCategory === 'usage' || activeCategory === 'alarms') && (
+            {activeCategory !== 'cameraConnectivity' && (
+              <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
+            )}
+            {(activeCategory === 'cameraConnectivity' || activeCategory === 'alarms') && (
               <Dropdown
                 label="Time range"
                 options={TIME_RANGES.map((r) => r.label)}
@@ -1152,7 +1161,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
 
         {/* Scrollable content */}
         <div ref={contentScrollRef} className="flex-1 overflow-y-auto p-6">
-          {activeCategory === 'usage' && (
+          {activeCategory === 'cameraConnectivity' && (
             <div className="space-y-6">
               <ChartCard
                 title="Online Cameras Over Time"
@@ -1186,27 +1195,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 />
               </ChartCard>
 
-              <ChartCard
-                title="Navigation Events"
-                answers="Across the whole app, which screens do people actually go to?"
-                chartId="USG-03"
-                onViewEvents={() => goToChartEvents('USG-03')}
-              >
-                <ResponsiveContainer width="100%" height={360}>
-                  <BarChart data={scaledNavigationEvents} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name="Events (30d)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </div>
-          )}
-
-          {activeCategory === 'retention' && (
-            <div className="space-y-6">
               <ChartCard
                 title="Internet Connection Retention"
                 answers="Are cameras still connecting to the internet weeks after setup?"
@@ -1275,6 +1263,27 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </p>
                 </ChartCard>
               </div>
+            </div>
+          )}
+
+          {activeCategory === 'appConnectivity' && (
+            <div className="space-y-6">
+              <ChartCard
+                title="Navigation Events"
+                answers="Across the whole app, which screens do people actually go to?"
+                chartId="USG-03"
+                onViewEvents={() => goToChartEvents('USG-03')}
+              >
+                <ResponsiveContainer width="100%" height={360}>
+                  <BarChart data={scaledNavigationEvents} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
 
               <ChartCard
                 title="Onboarding Funnel"
