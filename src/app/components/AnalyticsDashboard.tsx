@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
-  Settings as SettingsIcon, Smartphone, ChevronDown, Search, Info,
+  Settings as SettingsIcon, Smartphone, ChevronDown, Search, Info, AlertTriangle,
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -977,6 +977,13 @@ const CATALOG_OPEN_ITEMS = [
 
 // ---------------------------------------------------------------------------
 
+// Standalone item shown above the "Sami Analytics" group — frames how to
+// read every category below it, so it isn't nested under Reference /
+// Conventions & Metadata like the rest of the documentation content.
+const TOP_CATEGORIES = [
+  { id: 'assumptions', label: 'Assumptions & Limitations', icon: AlertTriangle },
+] as const;
+
 const CATEGORIES = [
   { id: 'cameraConnectivity', label: 'Camera Connectivity', icon: Activity },
   { id: 'appConnectivity', label: 'App Navigation', icon: RefreshCw },
@@ -992,9 +999,9 @@ const DOCS_CATEGORIES = [
   { id: 'conventions', label: 'Conventions & Metadata', icon: FileText },
 ] as const;
 
-const ALL_CATEGORIES = [...CATEGORIES, ...DOCS_CATEGORIES];
+const ALL_CATEGORIES = [...TOP_CATEGORIES, ...CATEGORIES, ...DOCS_CATEGORIES];
 
-type CategoryId = typeof CATEGORIES[number]['id'] | typeof DOCS_CATEGORIES[number]['id'];
+type CategoryId = typeof TOP_CATEGORIES[number]['id'] | typeof CATEGORIES[number]['id'] | typeof DOCS_CATEGORIES[number]['id'];
 
 // Shown for Usage & Connectivity, Alarms, and Recordings only — their
 // time-series/summable charts (Active Cameras, Alarms Triggered, the
@@ -1203,7 +1210,24 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         </div>
 
         <div className="px-3 py-2 flex-1 overflow-y-auto">
-          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1 mt-2">
+          {TOP_CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const active = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 mt-1 transition-colors ${
+                  active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </button>
+            );
+          })}
+
+          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1 mt-5">
             Sami Analytics
           </div>
           {CATEGORIES.map((cat) => {
@@ -1260,7 +1284,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             hidden for Camera Connectivity: nothing in that category is
             scoped to a phone platform (it's all camera-side data), so the
             filter would just sit there doing nothing. */}
-        {activeCategory !== 'catalog' && activeCategory !== 'conventions' && (
+        {activeCategory !== 'catalog' && activeCategory !== 'conventions' && activeCategory !== 'assumptions' && (
           <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
             {activeCategory !== 'cameraConnectivity' && (
               <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
@@ -1697,16 +1721,13 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          {activeCategory === 'conventions' && (
+          {activeCategory === 'assumptions' && (
             <div className="space-y-6">
               <div className="text-xs text-gray-400 -mt-1">
-                Shared conventions and metadata that apply across the Event Catalog — how it&apos;s structured, what&apos;s sent on every event, and what Amplitude captures automatically.
+                What this data can and can&apos;t actually tell us — worth reading before drawing conclusions from any chart in this dashboard.
               </div>
 
               <ChartCard title="Assumptions & Limitations">
-                <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  What this data can and can&apos;t actually tell us — worth reading before drawing conclusions from any chart above.
-                </p>
                 <ul className="list-disc pl-5 space-y-2 text-sm text-[#1F2937] mb-5">
                   {CATALOG_ASSUMPTIONS.map((c, i) => (
                     <li key={i}>{c}</li>
@@ -1720,6 +1741,14 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   <DataFlowDiagram />
                 </div>
               </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'conventions' && (
+            <div className="space-y-6">
+              <div className="text-xs text-gray-400 -mt-1">
+                Shared conventions and metadata that apply across the Event Catalog — how it&apos;s structured, what&apos;s sent on every event, and what Amplitude captures automatically.
+              </div>
 
               <ChartCard title="Conventions">
                 <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
