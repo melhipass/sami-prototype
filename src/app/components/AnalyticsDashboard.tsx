@@ -102,14 +102,26 @@ const retentionTable = [
 // Onboarding funnel — each step corresponds to a real screen-viewed event
 // from the Event Catalog (Welcome → Disclaimers → Setup Guide → Verify
 // Camera → Permissions → Connect), ending in onboarding_camera_added.
-const onboardingFunnel = [
-  { step: 'Welcome', count: 1000 },
-  { step: 'Disclaimers', count: 927 },
-  { step: 'Setup Guide', count: 861 },
-  { step: 'Verify Camera', count: 803 },
-  { step: 'Permissions', count: 758 },
-  { step: 'Connect', count: 706 },
-  { step: 'Completed', count: 642 },
+// Long daily history of onboarding starts, driving the shared time-range
+// picker (App Connectivity) — averages ~33/day so the trailing 30-day sum
+// lands close to the original 1,000-start baseline this funnel was built
+// from. The per-step conversion rates below are reapplied to whatever total
+// the selected range sums to.
+const onboardingStartsLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 24 + progress * 20;
+  const weekly = Math.sin(i / 3.5) * 4;
+  const noise = Math.round(Math.random() * 6 - 3);
+  return { date, starts: Math.max(5, Math.round(trend + weekly + noise)) };
+});
+const ONBOARDING_STEP_RATES = [
+  { step: 'Welcome', rate: 1 },
+  { step: 'Disclaimers', rate: 0.927 },
+  { step: 'Setup Guide', rate: 0.861 },
+  { step: 'Verify Camera', rate: 0.803 },
+  { step: 'Permissions', rate: 0.758 },
+  { step: 'Connect', rate: 0.706 },
+  { step: 'Completed', rate: 0.642 },
 ];
 
 // --- Alarms --------------------------------------------------------------
@@ -173,7 +185,9 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
 // app-lifecycle events (app_opened, app_foregrounded) and confirmation
 // dialogs (settings_reset_viewed) — those aren't screens. Onboarding screens
 // are excluded too — that's covered by the Onboarding Funnel chart.
-const navigationEvents = [
+// Original flat 30-day snapshot this chart was built from (total 22,800) —
+// kept only to derive each event's share of the whole below.
+const navigationEventsBaseline = [
   { event: 'Live View Opened', count: 9200 },
   { event: 'Recordings Viewed', count: 5200 },
   { event: 'Settings Viewed', count: 2100 },
@@ -184,7 +198,26 @@ const navigationEvents = [
   { event: 'Trash Viewed', count: 640 },
   { event: 'Recording Player Navigated', count: 520 },
   { event: 'Help Viewed', count: 310 },
-].sort((a, b) => b.count - a.count);
+];
+const NAVIGATION_TOTAL_BASELINE = navigationEventsBaseline.reduce((sum, d) => sum + d.count, 0);
+const NAVIGATION_EVENT_SHARES = navigationEventsBaseline.map((d) => ({
+  event: d.event,
+  share: d.count / NAVIGATION_TOTAL_BASELINE,
+}));
+
+// Long daily history of total navigation events, driving the shared
+// time-range picker (App Connectivity) — averages ~760/day so the trailing
+// 30-day sum lands close to the 22,800 baseline above. Each event's share of
+// the whole (from the baseline) is reapplied to whatever total the selected
+// range sums to.
+const navigationEventsTotalLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 620 + progress * 260;
+  const weekly = Math.sin(i / 3.5) * 60;
+  const weekend = i % 7 === 5 || i % 7 === 6 ? 80 : 0;
+  const noise = Math.round(Math.random() * 40 - 20);
+  return { date, events: Math.max(100, Math.round(trend + weekly + weekend + noise)) };
+});
 
 // Raw event-name frequency within the Recordings section of the catalog —
 // how often each actual analytics event fires, not a feature/UI label.
@@ -399,6 +432,48 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
   );
 }
 
+// Who actually sends this data: the camera never talks to Amplitude — the
+// mobile app does, based on what it observes from / does with the camera
+// over the local network or the camera's cloud relay. Illustrates the
+// "no user accounts, no camera-side SDK" assumptions above.
+function DataFlowDiagram() {
+  return (
+    <svg viewBox="0 0 640 140" className="w-full max-w-2xl" role="img" aria-label="The camera talks to the mobile app; the mobile app sends analytics events to Amplitude. The camera never sends analytics directly.">
+      <defs>
+        <marker id="flowArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill={COLORS.axis} />
+        </marker>
+      </defs>
+
+      {/* Camera */}
+      <rect x="10" y="40" width="150" height="60" rx="10" fill="#fff" stroke={COLORS.grid} strokeWidth="1.5" />
+      <text x="85" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Camera</text>
+      <text x="85" y="82" textAnchor="middle" fontSize="10" fill={COLORS.axis}>No Amplitude SDK</text>
+
+      {/* Camera -> App */}
+      <line x1="160" y1="70" x2="235" y2="70" stroke={COLORS.axis} strokeWidth="1.5" markerEnd="url(#flowArrow)" />
+      <line x1="235" y1="82" x2="160" y2="82" stroke={COLORS.axis} strokeWidth="1.5" markerEnd="url(#flowArrow)" />
+      <text x="197" y="55" textAnchor="middle" fontSize="9" fill={COLORS.axis}>local Wi-Fi /</text>
+      <text x="197" y="102" textAnchor="middle" fontSize="9" fill={COLORS.axis}>cloud relay</text>
+
+      {/* Mobile App */}
+      <rect x="245" y="30" width="150" height="80" rx="10" fill={COLORS.primaryLight} stroke={COLORS.primary} strokeWidth="1.5" />
+      <text x="320" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Mobile App</text>
+      <text x="320" y="82" textAnchor="middle" fontSize="10" fill="#1F2937">Logs every event</text>
+      <text x="320" y="95" textAnchor="middle" fontSize="10" fill="#1F2937">(camera_status, taps, etc.)</text>
+
+      {/* App -> Amplitude */}
+      <line x1="400" y1="70" x2="475" y2="70" stroke={COLORS.primary} strokeWidth="2" markerEnd="url(#flowArrow)" />
+      <text x="437" y="55" textAnchor="middle" fontSize="9" fill={COLORS.axis}>internet</text>
+
+      {/* Amplitude */}
+      <rect x="480" y="40" width="150" height="60" rx="10" fill="#fff" stroke={COLORS.grid} strokeWidth="1.5" />
+      <text x="555" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Amplitude</text>
+      <text x="555" y="82" textAnchor="middle" fontSize="10" fill={COLORS.axis}>Analytics backend</text>
+    </svg>
+  );
+}
+
 // Hover tooltip rendered via a portal to document.body, positioned from the
 // icon's own bounding rect. Needed because the catalog table sits inside an
 // `overflow-x-auto` wrapper — per the CSS spec, once one axis is non-visible
@@ -515,6 +590,17 @@ function Dropdown({
 // fetched live on the date this section was built. Unlike the rest of the
 // dashboard, this is real documented content, not dummy data.
 // ---------------------------------------------------------------------------
+
+// Assumptions & limitations that shape how every chart in this dashboard
+// should be read — separate from Conventions (which is about how events are
+// structured) and Shared/Identity Properties (what's on the wire). This is
+// about what the data can and can't tell us.
+const CATALOG_ASSUMPTIONS = [
+  'No user accounts: the app has no login, so there’s no reliable way to count distinct people. Cameras are the closest proxy we have to “families” or “households,” on the assumption that most households set up just 1 camera. This likely undercounts households with 2+ cameras, and can’t distinguish multiple people sharing one household’s app.',
+  'A few sections measure app usage, not camera usage, and shouldn’t be read as “per camera” or “per family”: App Navigation (Navigation Events, Onboarding Funnel), Feature Adoption (Feature Usage, Most-Changed App Settings, Most-Changed Camera Settings), Recordings — Actions, and Devices Info (Device Family, OS Version Breakdown). Keep in mind one camera can be viewed from multiple mobile devices at the same time (e.g. two family members’ phones) — so these app-side counts can overstate how many distinct households are represented.',
+  'Sami cameras can run fully offline over the local network indefinitely. Any camera that stays offline the whole time never reports analytics at all — so there’s a real, unknown population of active cameras that’s invisible to every chart in this dashboard.',
+  '“Online” only means the camera currently has an internet connection (camera_status ≠ Offline). It does not imply remote viewing is enabled, that the camera is actively streaming, or that any other internet-dependent feature is turned on.',
+];
 
 const CATALOG_CONVENTIONS = [
   'Event & property naming: snake_case (e.g. recording_deleted, camera_signal_strength).',
@@ -833,7 +919,7 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 // since that event genuinely defines the retention cohort's Day 0.
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
-  { id: 'USG-02', title: 'Camera Connectivity', events: ['camera_setting_changed'] },
+  { id: 'USG-02', title: 'Camera Type of Connection', events: ['camera_setting_changed'] },
   { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
   { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added'] },
   { id: 'RET-02', title: 'Connection Consistency', events: [] },
@@ -868,7 +954,7 @@ const CATALOG_OPEN_ITEMS = [
 
 const CATEGORIES = [
   { id: 'cameraConnectivity', label: 'Camera Connectivity', icon: Activity },
-  { id: 'appConnectivity', label: 'App Connectivity', icon: RefreshCw },
+  { id: 'appConnectivity', label: 'App Navigation', icon: RefreshCw },
   { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
   { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
   { id: 'devices', label: 'Devices Info', icon: Smartphone },
@@ -982,10 +1068,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
-  const scaledOnboardingFunnel = useMemo(
-    () => onboardingFunnel.map((d) => ({ ...d, count: scaleCount(d.count) })),
-    [platformMultiplier]
-  );
+  const scaledOnboardingFunnel = useMemo(() => {
+    const starts = lastNDays(onboardingStartsLong, timeRangeDays).reduce((sum, d) => sum + d.starts, 0);
+    return ONBOARDING_STEP_RATES.map((r) => ({ step: r.step, count: scaleCount(Math.round(starts * r.rate)) }));
+  }, [platformMultiplier, timeRangeDays]);
 
   const scaledFeatureUsage = useMemo(
     () => featureUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
@@ -997,10 +1083,12 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier]
   );
 
-  const scaledNavigationEvents = useMemo(
-    () => navigationEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
-    [platformMultiplier]
-  );
+  const scaledNavigationEvents = useMemo(() => {
+    const total = lastNDays(navigationEventsTotalLong, timeRangeDays).reduce((sum, d) => sum + d.events, 0);
+    return NAVIGATION_EVENT_SHARES.map((r) => ({ event: r.event, count: scaleCount(Math.round(total * r.share)) })).sort(
+      (a, b) => b.count - a.count
+    );
+  }, [platformMultiplier, timeRangeDays]);
 
   const scaledRecordingsActionEvents = useMemo(
     () => recordingsActionEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
@@ -1147,7 +1235,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             {activeCategory !== 'cameraConnectivity' && (
               <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
             )}
-            {(activeCategory === 'cameraConnectivity' || activeCategory === 'alarms') && (
+            {(activeCategory === 'cameraConnectivity' || activeCategory === 'alarms' || activeCategory === 'appConnectivity') && (
               <Dropdown
                 label="Time range"
                 options={TIME_RANGES.map((r) => r.label)}
@@ -1181,7 +1269,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard
-                title="Camera Connectivity"
+                title="Camera Type of Connection"
                 answers="Connectivity: how many cameras connect wirelessly vs. wired?"
                 chartId="USG-02"
                 onViewEvents={() => goToChartEvents('USG-02')}
@@ -1280,7 +1368,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
                     <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name={`Events (${timeRange})`} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -1292,7 +1380,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 onViewEvents={() => goToChartEvents('RET-04')}
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  Each step is the screen-viewed event for that part of onboarding; the last bar is cameras successfully added (onboarding complete).
+                  Each step is the screen-viewed event for that part of onboarding; the last bar is cameras successfully added (onboarding complete). Totals reflect the selected time range.
                 </p>
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={scaledOnboardingFunnel} layout="vertical" margin={{ left: 16 }}>
@@ -1300,7 +1388,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
                     <YAxis type="category" dataKey="step" tick={{ fontSize: 12, fill: '#111827' }} width={90} />
                     <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Users" />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name={`Users (${timeRange})`} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -1569,6 +1657,24 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <div className="text-xs text-gray-400 -mt-1">
                 Shared conventions and metadata that apply across the Event Catalog — how it&apos;s structured, what&apos;s sent on every event, and what Amplitude captures automatically.
               </div>
+
+              <ChartCard title="Assumptions & Limitations">
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  What this data can and can&apos;t actually tell us — worth reading before drawing conclusions from any chart above.
+                </p>
+                <ul className="list-disc pl-5 space-y-2 text-sm text-[#1F2937] mb-5">
+                  {CATALOG_ASSUMPTIONS.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+                <div className="pt-4 border-t border-[#EEF1F6]">
+                  <p className="text-sm font-medium text-[#111827] mb-1">Who actually sends this data?</p>
+                  <p className="text-xs text-gray-500 mb-3">
+                    The camera itself never talks to Amplitude. Every event in this catalog is logged by the mobile app, based on what it observes from or does with the camera — the camera has no analytics SDK of its own.
+                  </p>
+                  <DataFlowDiagram />
+                </div>
+              </ChartCard>
 
               <ChartCard title="Conventions">
                 <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
