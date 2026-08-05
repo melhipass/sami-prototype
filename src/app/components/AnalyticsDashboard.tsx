@@ -54,16 +54,16 @@ const longDates = pastDates(LONG_RANGE_DAYS);
 
 // --- Usage & Retention -------------------------------------------------
 
+// % of a setup cohort still reporting camera_status !== Offline, day by day
+// since onboarding_camera_added. camera_status is a shared property that
+// rides on every event a camera-connected session sends (see Conventions &
+// Metadata > Shared Event Properties) — it belongs to the camera, not to
+// whichever phone last checked it, so this is intentionally NOT split by
+// the Platform filter.
 const retentionData = dayLabels(31).map((day, i) => {
-  const decay = 100 * Math.pow(0.965, i) * (i === 0 ? 1 : 1) ;
   const noise = Math.sin(i / 3) * 2;
   const overall = i === 0 ? 100 : Math.max(24, Math.round((58 - i * 0.9 + noise) * (i < 3 ? 1.4 : 1) * 10) / 10);
-  return {
-    day,
-    overall: i === 0 ? 100 : Math.max(24, Math.round(overall)),
-    ios: i === 0 ? 100 : Math.max(27, Math.round(overall + 4)),
-    android: i === 0 ? 100 : Math.max(19, Math.round(overall - 6)),
-  };
+  return { day, overall: i === 0 ? 100 : Math.max(24, Math.round(overall)) };
 });
 
 // 400 days of history, ending "today" — supports the Overview time-range
@@ -97,8 +97,6 @@ const reconnectionGaps = [
 
 const retentionTable = [
   { segment: 'All Cameras', cameras: 982, day0: '100%', day1: '54%', day7: '39%', day30: '27%' },
-  { segment: 'iOS', cameras: 601, day0: '100%', day1: '58%', day7: '43%', day30: '31%' },
-  { segment: 'Android', cameras: 381, day0: '100%', day1: '48%', day7: '32%', day30: '21%' },
 ];
 
 // Onboarding funnel — each step corresponds to a real screen-viewed event
@@ -828,13 +826,18 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 // mapping (this mockup uses dummy data, not live events): Device Family and
 // OS Version Breakdown have no dedicated events since they come from
 // Amplitude's auto-captured properties on every event, not one specific event.
+// Same reasoning applies to the 3 connection-retention charts below (RET-01/
+// 02/03): they're driven by `camera_status`, a shared property that rides on
+// every event rather than a dedicated event of its own — see Conventions &
+// Metadata > Shared Event Properties. RET-01 keeps onboarding_camera_added
+// since that event genuinely defines the retention cohort's Day 0.
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
   { id: 'USG-02', title: 'Camera Connectivity', events: ['camera_setting_changed'] },
   { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
-  { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
-  { id: 'RET-02', title: 'Connection Consistency', events: ['stream_health_changed', 'connectivity_dialog_shown'] },
-  { id: 'RET-03', title: 'Days Until Reconnection', events: ['stream_health_changed', 'connectivity_dialog_shown', 'notification_shown'] },
+  { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added'] },
+  { id: 'RET-02', title: 'Connection Consistency', events: [] },
+  { id: 'RET-03', title: 'Days Until Reconnection', events: [] },
   { id: 'RET-04', title: 'Onboarding Funnel', events: ['onboarding_welcome_viewed', 'onboarding_disclaimers_viewed', 'onboarding_guide_viewed', 'onboarding_camera_ready_viewed', 'onboarding_permissions_viewed', 'onboarding_connect_viewed', 'onboarding_camera_added'] },
   { id: 'ALM-01', title: 'Recordings Created Over Time', events: ['recording_created'] },
   { id: 'ALM-02', title: 'Alarms Triggered Over Time', events: ['alarm_triggered'] },
@@ -922,6 +925,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   // churn-vs-alarms comparison (a rate, not a count), or camera-level data
   // like Recordings-by-Camera / Connectivity (a camera's recordings and its
   // own Wi-Fi connection aren't tied to which platform happens to view it).
+  // Same reason it doesn't touch the 3 connection-retention charts (Internet
+  // Connection Retention, Connection Consistency, Days Until Reconnection):
+  // they're built on camera_status, a property of the camera itself, not of
+  // whichever phone platform happened to be checking it.
   const platformMultiplier = platformFilter === 'iOS' ? 0.61 : platformFilter === 'Android' ? 0.39 : 1;
   const scaleCount = (n: number) => Math.round(n * platformMultiplier);
 
@@ -971,11 +978,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
-  const scaledUsageConsistency = useMemo(
-    () => usageConsistency.map((d) => ({ ...d, count: scaleCount(d.count) })),
-    [platformMultiplier]
-  );
-
   const scaledOnboardingFunnel = useMemo(
     () => onboardingFunnel.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
@@ -1005,13 +1007,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     () => cameraSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
   );
-
-  // Retention: pick the right line/table row directly from the global
-  // Platform filter instead of a separate local toggle.
-  const retentionKey = platformFilter === 'iOS' ? 'ios' : platformFilter === 'Android' ? 'android' : 'overall';
-  const retentionSegmentLabel = platformFilter === 'iOS' ? 'iOS' : platformFilter === 'Android' ? 'Android' : 'All Cameras';
-  const retentionLineName = platformFilter === 'iOS' ? 'iOS' : platformFilter === 'Android' ? 'Android' : 'All Cameras';
-  const retentionLineColor = platformFilter === 'iOS' ? COLORS.purple : platformFilter === 'Android' ? COLORS.teal : COLORS.primary;
 
   // Device Family / OS Version: filter rows to the selected platform.
   const filteredDeviceFamily = deviceFamily.filter((d) => {
@@ -1220,14 +1215,12 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 footer={
                   <SimpleTable
                     columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
-                    rows={retentionTable
-                      .filter((r) => r.segment === retentionSegmentLabel)
-                      .map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
+                    rows={retentionTable.map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
                   />
                 }
               >
                 <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  % of newly paired cameras still online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage.
+                  % of newly paired cameras still reporting camera_status online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage. Not affected by the Platform filter — camera_status belongs to the camera, not to whichever phone last checked it.
                 </p>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={retentionData}>
@@ -1236,7 +1229,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} unit="%" />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey={retentionKey} name={retentionLineName} stroke={retentionLineColor} strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="overall" name="All Cameras" stroke={COLORS.primary} strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -1249,10 +1242,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   onViewEvents={() => goToChartEvents('RET-02')}
                 >
                   <p className="text-xs text-gray-500 -mt-1 mb-3">
-                    Cameras grouped by how many days a week they are online.
+                    Cameras grouped by how many days a week they report camera_status online. Not affected by the Platform filter.
                   </p>
                   <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={scaledUsageConsistency}>
+                    <BarChart data={usageConsistency}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
                       <XAxis dataKey="segment" tick={{ fontSize: 10, fill: COLORS.axis }} interval={0} angle={-15} textAnchor="end" height={60} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1278,7 +1271,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     </BarChart>
                   </ResponsiveContainer>
                   <p className="text-xs text-gray-500 mt-2">
-                    Comparing consecutive connection timestamps per camera and measuring the gap whenever one exceeds a day. &quot;90+ days / never&quot; includes cameras that may simply be in ongoing offline-only use.
+                    Comparing consecutive camera_status timestamps per camera and measuring the gap whenever one exceeds a day. &quot;90+ days / never&quot; includes cameras that may simply be in ongoing offline-only use. Not affected by the Platform filter.
                   </p>
                 </ChartCard>
               </div>
