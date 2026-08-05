@@ -1155,10 +1155,37 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     () => ['All Categories', ...Array.from(new Set(EVENT_CATALOG_ROWS.map((r) => r.category)))],
     []
   );
-  const catalogChartOptions = useMemo(
-    () => ['All Charts', 'None (unused by any chart)', ...CHART_REGISTRY.map((c) => `${c.id} — ${c.title}`)],
-    []
-  );
+  // Chart dropdown is dependent on the Category filter: once a Category is
+  // chosen, only charts that actually use at least one event from that
+  // category are offered. Previously the 2 dropdowns were fully independent
+  // AND filters over the same table, so picking an unrelated Category +
+  // Chart combo (e.g. "Onboarding — Welcome" + "Internet Connection
+  // Retention") silently produced an empty table — confusing, per Luis's
+  // question. "All Charts" and "None (unused by any chart)" stay available
+  // regardless, since they're not tied to one chart's specific events.
+  const catalogChartOptions = useMemo(() => {
+    const relevantCharts =
+      catalogCategoryFilter === 'All Categories'
+        ? CHART_REGISTRY
+        : CHART_REGISTRY.filter((c) =>
+            c.events.some((ev) =>
+              EVENT_CATALOG_ROWS.some((r) => r.event === ev && r.category === catalogCategoryFilter)
+            )
+          );
+    return ['All Charts', 'None (unused by any chart)', ...relevantCharts.map((c) => `${c.id} — ${c.title}`)];
+  }, [catalogCategoryFilter]);
+  // If the Category filter changes and the currently-selected Chart is no
+  // longer one of the relevant options, fall back to "All Charts" instead of
+  // silently keeping a stale selection that would filter everything out.
+  useEffect(() => {
+    if (
+      catalogChartFilter !== 'All Charts' &&
+      catalogChartFilter !== 'None (unused by any chart)' &&
+      !catalogChartOptions.includes(catalogChartFilter)
+    ) {
+      setCatalogChartFilter('All Charts');
+    }
+  }, [catalogChartOptions, catalogChartFilter]);
   const selectedChart = useMemo(
     () => CHART_REGISTRY.find((c) => `${c.id} — ${c.title}` === catalogChartFilter),
     [catalogChartFilter]
