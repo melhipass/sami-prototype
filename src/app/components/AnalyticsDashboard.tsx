@@ -318,6 +318,30 @@ const osVersionTable = [
   { os: 'Android 13 or earlier', devices: 42, pct: '11.0%' },
 ];
 
+// Raw device_model, as Amplitude actually reports it — no name resolution
+// applied. On iOS this is Apple's internal hardware identifier (e.g.
+// "iPhone15,3"), not a marketing name; turning that into "iPhone 14 Pro Max"
+// would need a separate identifier→name lookup table we don't have yet. On
+// Android, device_model is whatever the manufacturer put in Build.MODEL —
+// sometimes a model number (Samsung), sometimes already human-readable
+// (Google Pixel). `family` mirrors the Device Family bucket each row rolls
+// up into, so this can be filtered the same way by the Platform dropdown.
+const deviceModelTable = [
+  { model: 'iPhone15,3', family: 'iPhone', devices: 58, pct: '5.9%' },
+  { model: 'iPhone14,7', family: 'iPhone', devices: 47, pct: '4.8%' },
+  { model: 'iPhone14,2', family: 'iPhone', devices: 39, pct: '4.0%' },
+  { model: 'iPhone13,2', family: 'iPhone', devices: 31, pct: '3.2%' },
+  { model: 'iPhone12,1', family: 'iPhone', devices: 25, pct: '2.5%' },
+  { model: 'iPad13,18', family: 'iPad', devices: 210, pct: '21.4%' },
+  { model: 'iPad13,1', family: 'iPad', devices: 120, pct: '12.2%' },
+  { model: 'iPad11,6', family: 'iPad', devices: 71, pct: '7.2%' },
+  { model: 'SM-G991B', family: 'Android Phone', devices: 62, pct: '6.3%' },
+  { model: 'SM-A536B', family: 'Android Phone', devices: 55, pct: '5.6%' },
+  { model: 'Pixel 7', family: 'Android Phone', devices: 33, pct: '3.4%' },
+  { model: 'SM-X200', family: 'Android Tablet', devices: 140, pct: '14.3%' },
+  { model: 'SM-T500', family: 'Android Tablet', devices: 91, pct: '9.3%' },
+];
+
 // camera_firmware_version — Camera / Device Identity property, set once via
 // Identify when the camera connects. Marked "requires parsing" in the
 // catalog (see Open Items), so treat this as illustrative until that's
@@ -936,6 +960,7 @@ const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
   { id: 'DEV-01', title: 'Device Family', events: [] },
   { id: 'DEV-02', title: 'OS Version Breakdown', events: [] },
   { id: 'DEV-03', title: 'Firmware Version Breakdown', events: [] },
+  { id: 'DEV-04', title: 'Device Model Breakdown', events: [] },
 ];
 
 const CATALOG_OPEN_ITEMS = [
@@ -1109,6 +1134,11 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const filteredOsVersionTable = osVersionTable.filter((d) => {
     if (platformFilter === 'iOS') return d.os.startsWith('iOS');
     if (platformFilter === 'Android') return d.os.startsWith('Android');
+    return true;
+  });
+  const filteredDeviceModelTable = deviceModelTable.filter((d) => {
+    if (platformFilter === 'iOS') return d.family === 'iPhone' || d.family === 'iPad';
+    if (platformFilter === 'Android') return d.family === 'Android Phone' || d.family === 'Android Tablet';
     return true;
   });
 
@@ -1596,6 +1626,21 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
                 />
                 <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
+              </ChartCard>
+
+              <ChartCard
+                title="Device Model Breakdown"
+                answers="Which specific device models are people using to monitor — beyond just iPhone vs. iPad vs. Android?"
+                chartId="DEV-04"
+                onViewEvents={() => goToChartEvents('DEV-04')}
+              >
+                <SimpleTable
+                  columns={['Device model (raw)', 'Family', 'Devices', '% of fleet']}
+                  rows={filteredDeviceModelTable.map((r) => [r.model, r.family, r.devices, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">
+                  From Amplitude&apos;s auto-captured <code className="font-mono">device_model</code>, shown raw/unresolved. On iOS this is Apple&apos;s internal hardware identifier, not a marketing name — e.g. <code className="font-mono">iPhone15,3</code> is what Apple calls the iPhone 14 Pro Max, but resolving that reliably would need a separate identifier→name lookup table we don&apos;t have yet.
+                </p>
               </ChartCard>
             </div>
           )}
