@@ -1582,9 +1582,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="ALM-07"
                 onViewEvents={() => goToChartEvents('ALM-07')}
               >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  The 4 &quot;Filter: …&quot; rows break down recordings_filter_changed by which individual filter was turned on. They&apos;re not mutually exclusive — a single change can turn on more than one at once (e.g. Alarmed + Last 24 Hours together).
-                </p>
                 <ResponsiveContainer width="100%" height={520}>
                   <BarChart data={scaledRecordingsActionEvents} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
