@@ -228,7 +228,17 @@ const recordingsActionEvents = [
   { event: 'Recording Played', count: 3100 },
   { event: 'Recording Download Requested', count: 1450 },
   { event: 'Recording Trashed', count: 980 },
-  { event: 'Recordings Filter Changed', count: 980 },
+  // recordings_filter_changed sends the full active_filters set on every
+  // change (an array, since multiple filters can be on at once — see
+  // Conventions & Metadata). Broken out per filter here, per Luis's
+  // feedback: how often each individual filter gets turned on, not one
+  // combined "a filter changed" total. Not mutually exclusive — a single
+  // change can toggle more than one of these together (e.g. Alarmed +
+  // Last 24 Hours), so these don't need to sum to a single "total" figure.
+  { event: 'Filter: Alarmed', count: 430 },
+  { event: 'Filter: Last 24 Hours', count: 340 },
+  { event: 'Filter: Locked', count: 140 },
+  { event: 'Filter: Duration 20s+', count: 70 },
   { event: 'Recording Locked', count: 640 },
   { event: 'Recording Unlocked', count: 310 },
   { event: 'Recordings Edit Mode Toggled', count: 310 },
@@ -1572,7 +1582,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                 chartId="ALM-07"
                 onViewEvents={() => goToChartEvents('ALM-07')}
               >
-                <ResponsiveContainer width="100%" height={420}>
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  The 4 &quot;Filter: …&quot; rows break down recordings_filter_changed by which individual filter was turned on. They&apos;re not mutually exclusive — a single change can turn on more than one at once (e.g. Alarmed + Last 24 Hours together).
+                </p>
+                <ResponsiveContainer width="100%" height={520}>
                   <BarChart data={scaledRecordingsActionEvents} layout="vertical" margin={{ left: 8 }}>
                     <CartesianGrid stroke={COLORS.grid} horizontal={false} />
                     <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
