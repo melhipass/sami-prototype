@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Bell, History, Trash2, HardDrive, Lock, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, AlertTriangle, RotateCcw, Check, Camera, Activity, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Bell, History, Trash2, HardDrive, Lock, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, AlertTriangle, Info, RotateCcw, Check, Camera, Activity, Share2 } from 'lucide-react';
 const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
 
 const SETTINGS_ACCENT_COLOR = '#5A8BBF';
@@ -1051,6 +1051,7 @@ export function RecordingsScreen({
             {/* Archived section info banner */}
             {showArchivedSection && (
               <div className="-mx-5 -mt-3 mb-4 bg-gray-900 py-3 px-6 flex items-center justify-center gap-2 border-b border-gray-800">
+                <Info className="w-5 h-5 text-[#FCEAAD] flex-shrink-0" />
                 <span className="text-[#FCEAAD] text-base font-medium">
                   These videos will be deleted once your Mobile Device gets out of storage or you can delete them permanently manually
                 </span>
