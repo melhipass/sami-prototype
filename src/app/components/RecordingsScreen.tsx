@@ -312,7 +312,7 @@ export function RecordingsScreen({
                            (HPDSAMi3.m:5528) — surfaced there as "Recording no longer
                            available" (HPDPlayerViewController.m:416). */
                         <>
-                          <AlertTriangle className="w-16 h-16 text-[#E5534B]" strokeWidth={1.5} />
+                          <AlertTriangle className="w-16 h-16 text-[#B95555]" strokeWidth={1.5} />
                           <h2 className="text-2xl text-white font-semibold">Recording no longer available</h2>
                         </>
                       ) : isWaitingForCamera ? (
