@@ -1050,10 +1050,11 @@ export function RecordingsScreen({
           <div className="flex-1 bg-black overflow-y-auto px-5 py-3">
             {/* Archived section info banner */}
             {showArchivedSection && (
-              <div className="mb-4 px-4 py-3 bg-gray-800/50 border border-yellow-900/30 rounded-lg">
-                <p className="text-yellow-500 text-sm font-medium">
+              <div className="-mx-5 -mt-3 mb-4 bg-gray-900 py-3 px-6 flex items-center justify-center gap-2 border-b border-gray-800">
+                <AlertCircle className="w-5 h-5 text-[#FCEAAD] flex-shrink-0" />
+                <span className="text-[#FCEAAD] text-base font-medium">
                   These videos will be deleted once your Mobile Device gets out of storage or you can delete them permanently manually
-                </p>
+                </span>
               </div>
             )}
 
