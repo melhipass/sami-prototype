@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Bell, History, Trash2, HardDrive, Lock, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, RotateCcw, Check, Camera, Activity, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Bell, History, Trash2, HardDrive, Lock, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, AlertTriangle, RotateCcw, Check, Camera, Activity, Share2 } from 'lucide-react';
 const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
 
 const SETTINGS_ACCENT_COLOR = '#5A8BBF';
@@ -203,6 +203,11 @@ export function RecordingsScreen({
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [shareProgress, setShareProgress] = useState(0);
   const [isWaitingForCamera, setIsWaitingForCamera] = useState(false);
+  // Simulates the legacy "file no longer on camera" download failure
+  // (NSURLErrorNetworkConnectionLost mid-transfer, per HPDSAMi3.m:5528) —
+  // the 3rd recording in the list (index 2) always fails partway through
+  // its download instead of completing, so this state can be reviewed.
+  const [isRecordingMissing, setIsRecordingMissing] = useState(false);
   const shareIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startShare = () => {
@@ -292,6 +297,7 @@ export function RecordingsScreen({
                     <div
                       className="w-full h-full bg-gray-900 flex flex-col items-center justify-center gap-6 cursor-pointer"
                       onClick={() => {
+                        if (isRecordingMissing) return;
                         // Pause download due to simulated connection issue
                         if (activeDownloadInterval) {
                           clearInterval(activeDownloadInterval);
@@ -300,7 +306,16 @@ export function RecordingsScreen({
                         setIsWaitingForCamera(true);
                       }}
                     >
-                      {isWaitingForCamera ? (
+                      {isRecordingMissing ? (
+                        /* Legacy-equivalent: NSURLErrorNetworkConnectionLost mid-download
+                           is treated as the file no longer being on the camera
+                           (HPDSAMi3.m:5528) — surfaced there as "Recording no longer
+                           available" (HPDPlayerViewController.m:416). */
+                        <>
+                          <AlertTriangle className="w-16 h-16 text-[#E5534B]" strokeWidth={1.5} />
+                          <h2 className="text-2xl text-white font-semibold">Recording no longer available</h2>
+                        </>
+                      ) : isWaitingForCamera ? (
                         <>
                           <h2 className="text-3xl text-white font-medium">Waiting for Camera...</h2>
                           <h3 className="text-xl text-gray-400">Will retry automatically</h3>
@@ -1471,13 +1486,56 @@ export function RecordingsScreen({
                                     } else {
                                       setSelectedRecordingIndex(recording.id);
                                       setIsVideoPlaying(false);
+                                      setIsRecordingMissing(false);
 
-                                      // Check if this is one of the first 2 recordings and not yet downloaded
-                                      if (index < 2 && !downloadedRecordingIds.has(recording.id)) {
+                                      // Check if this is one of the first 3 recordings and not yet downloaded
+                                      if (index < 3 && !downloadedRecordingIds.has(recording.id)) {
                                         // If already downloading, just show the player with current progress
                                         if (downloadingRecordingIds.has(recording.id)) {
                                           setIsDownloadingRecording(true);
                                           setDownloadProgress(downloadingRecordingIds.get(recording.id) || 0);
+                                        } else if (index === 2) {
+                                          // 3rd recording: simulate the camera no longer having this
+                                          // file — download starts normally, then fails partway through
+                                          // instead of ever reaching 100%.
+                                          setIsDownloadingRecording(true);
+                                          setDownloadProgress(0);
+
+                                          if (activeDownloadInterval) {
+                                            clearInterval(activeDownloadInterval);
+                                          }
+
+                                          setDownloadingRecordingIds(prev => new Map(prev).set(recording.id, 0));
+
+                                          const interval = setInterval(() => {
+                                            setDownloadProgress(prev => {
+                                              const newProgress = prev + 10;
+
+                                              if (newProgress >= 20) {
+                                                clearInterval(interval);
+                                                setActiveDownloadInterval(null);
+                                                setIsRecordingMissing(true);
+                                                // Never mark as downloaded, and clear it from the
+                                                // downloading map so the list thumbnail doesn't get
+                                                // stuck showing a frozen progress bar.
+                                                setDownloadingRecordingIds(prevMap => {
+                                                  const newMap = new Map(prevMap);
+                                                  newMap.delete(recording.id);
+                                                  return newMap;
+                                                });
+                                                return newProgress;
+                                              }
+
+                                              setDownloadingRecordingIds(prevMap => {
+                                                const newMap = new Map(prevMap);
+                                                newMap.set(recording.id, newProgress);
+                                                return newMap;
+                                              });
+                                              return newProgress;
+                                            });
+                                          }, 300);
+
+                                          setActiveDownloadInterval(interval);
                                         } else {
                                           // Start new download
                                           setIsDownloadingRecording(true);
@@ -1556,7 +1614,7 @@ export function RecordingsScreen({
 
                                   {/* Thumbnail with night vision effect */}
                                   <div className="relative w-[90px] h-16 rounded-lg overflow-hidden flex-shrink-0 border border-gray-700">
-                                    {index < 2 && !downloadedRecordingIds.has(recording.id) ? (
+                                    {index < 3 && !downloadedRecordingIds.has(recording.id) ? (
                                       <div className="w-full h-full bg-gray-700 flex flex-col items-center justify-center gap-2 px-2">
                                         {downloadingRecordingIds.has(recording.id) ? (
                                           /* Downloading state - show "Downloading..." text and progress bar */
