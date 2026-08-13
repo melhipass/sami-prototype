@@ -3276,34 +3276,51 @@ export function SettingsScreen({
 
       {/* IP Address Editor */}
       {showIpEditor && (
-        <div className="absolute inset-0 bg-[#1a1a2e] z-50 flex flex-col">
-          {/* Header */}
-          <div className="flex items-center px-4 pt-5 pb-3 border-b border-gray-700">
-            <button onClick={() => setShowIpEditor(false)} className="text-gray-400 hover:text-white p-2 mr-2">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <div className="absolute inset-0 bg-black z-50 flex flex-col" style={{ animation: 'slideInRight 0.3s ease-out forwards' }}>
+          {/* Top Navigation Bar — matches Internet Viewing / Camera Settings header */}
+          <div className="bg-black py-4 flex items-center justify-between flex-shrink-0">
+            <button
+              onClick={() => setShowIpEditor(false)}
+              className="ml-6 flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              <span>Camera Settings</span>
             </button>
-            <span className="text-white text-lg font-medium flex-1">IP Address</span>
-            <button onClick={handleIpSave} className="text-white px-4 py-2 rounded text-sm font-semibold hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Save</button>
+            <span className="text-white text-lg font-medium">IP Address</span>
+            <button
+              onClick={handleIpSave}
+              className="mr-6 px-4 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition-colors"
+              style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
+            >
+              Save
+            </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto px-6" style={{ backgroundColor: SETTINGS_BG_COLOR }}>
             {/* Mode toggle */}
-            <div className="flex rounded-xl overflow-hidden border border-gray-600">
-              {(['automatic', 'manual'] as IpMode[]).map(m => (
-                <button
-                  key={m}
-                  onClick={() => { setIpEditorMode(m); setIpErrors({}); }}
-                  className="flex-1 py-3 text-base font-medium transition-colors capitalize"
-                  style={ipEditorMode === m ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: '#fff' } : { backgroundColor: '#2a2a3e', color: '#aaa' }}
-                >
-                  {m === 'automatic' ? 'Automatic' : 'Manual'}
-                </button>
-              ))}
+            <div className="flex items-center justify-between py-4 border-b border-gray-700">
+              <span className="text-white text-base">Mode</span>
+              <div className="flex rounded-lg overflow-hidden border border-gray-600">
+                {(['automatic', 'manual'] as IpMode[]).map(m => (
+                  <button
+                    key={m}
+                    onClick={() => { setIpEditorMode(m); setIpErrors({}); }}
+                    className="px-4 py-2 text-sm font-medium transition-colors"
+                    style={ipEditorMode === m ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: '#fff' } : { backgroundColor: '#1a1a1a', color: '#888' }}
+                  >
+                    {m === 'automatic' ? 'Automatic' : 'Manual'}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {ipEditorMode === 'manual' && (() => {
               const ipField = (label: string, key: 'ip' | 'subnet' | 'gateway' | 'dns1' | 'dns2', placeholder: string) => (
-                <div key={key}>
-                  <label className="text-gray-400 text-sm mb-1 block">{label}</label>
+                <div key={key} className="py-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white text-base">{label}</span>
+                  </div>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -3314,27 +3331,27 @@ export function SettingsScreen({
                       setIpEditorConfig(c => ({ ...c, [key]: val }));
                       setIpErrors(er => ({ ...er, [key]: undefined }));
                     }}
-                    className={`w-full px-4 py-3 rounded-xl bg-gray-900 text-white border focus:outline-none text-base ${ipErrors[key] ? 'border-[#FFC7BD]' : 'border-gray-600 focus:border-[#6BA3D4]'}`}
+                    className={`w-full px-4 py-3 rounded-lg bg-gray-900 text-white border focus:outline-none text-base ${ipErrors[key] ? 'border-[#FFC7BD]' : 'border-gray-600 focus:border-[#5A8BBF]'}`}
                   />
                   {ipErrors[key] && <p className="text-sm mt-1" style={{ color: '#FFC7BD' }}>{ipErrors[key]}</p>}
                 </div>
               );
               return (
-                <div className="space-y-4">
+                <>
                   {ipField('IP Address', 'ip', '192.168.0.100')}
                   {ipField('Subnet Mask', 'subnet', '255.255.255.0')}
                   {ipField('Router / Gateway IP Address', 'gateway', '192.168.0.1')}
 
                   {/* DNS Proto */}
-                  <div>
-                    <label className="text-gray-400 text-sm mb-1 block">DNS Proto</label>
-                    <div className="flex rounded-xl overflow-hidden border border-gray-600">
+                  <div className="flex items-center justify-between py-4 border-b border-gray-700">
+                    <span className="text-white text-base">DNS Proto</span>
+                    <div className="flex rounded-lg overflow-hidden border border-gray-600">
                       {(['dynamic', 'static'] as const).map(p => (
                         <button
                           key={p}
                           onClick={() => setIpEditorConfig(c => ({ ...c, dnsProto: p }))}
-                          className="flex-1 py-3 text-base font-medium transition-colors capitalize"
-                          style={ipEditorConfig.dnsProto === p ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: '#fff' } : { backgroundColor: '#2a2a3e', color: '#aaa' }}
+                          className="px-4 py-2 text-sm font-medium transition-colors"
+                          style={ipEditorConfig.dnsProto === p ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: '#fff' } : { backgroundColor: '#1a1a1a', color: '#888' }}
                         >
                           {p === 'dynamic' ? 'Dynamic' : 'Static'}
                         </button>
@@ -3348,7 +3365,7 @@ export function SettingsScreen({
                       {ipField('DNS 2', 'dns2', '8.8.4.4')}
                     </>
                   )}
-                </div>
+                </>
               );
             })()}
           </div>
