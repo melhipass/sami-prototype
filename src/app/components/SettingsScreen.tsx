@@ -644,15 +644,26 @@ export function SettingsScreen({
 
   const isValidIp = (val: string) => /^(\d{1,3}\.){3}\d{1,3}$/.test(val) && val.split('.').every(n => Number(n) <= 255);
 
+  // Error text matches legacy (HPDSAMi3IpTableViewController.m) word-for-word,
+  // including its quirks: every field's example is "192.168.0.100" (even
+  // Subnet Mask, which isn't actually a valid netmask shape — that's a
+  // legacy bug we're intentionally replicating, not fixing here), and DNS 2
+  // is the only field allowed to stay blank.
   const validateIpFields = (): boolean => {
     if (ipEditorMode === 'automatic') return true;
     const errs: Partial<Record<keyof IpConfig, string>> = {};
     if (!isValidIp(ipEditorConfig.ip)) errs.ip = 'IP Address is not valid (should be in the form: 192.168.0.100)';
-    if (!isValidIp(ipEditorConfig.subnet)) errs.subnet = 'Subnet Mask is not valid (should be in the form: 255.255.255.0)';
-    if (!isValidIp(ipEditorConfig.gateway)) errs.gateway = 'Router IP Address is not valid (should be in the form: 192.168.0.1)';
+    if (!isValidIp(ipEditorConfig.subnet)) errs.subnet = 'Subnet Mask is not valid (should be in the form: 192.168.0.100)';
+    if (!isValidIp(ipEditorConfig.gateway)) errs.gateway = 'Router IP address is not valid (should be in the form: 192.168.0.100)';
     if (ipEditorConfig.dnsProto === 'static') {
-      if (!isValidIp(ipEditorConfig.dns1)) errs.dns1 = 'DNS 1 is not valid (should be in the form: 8.8.8.8)';
-      if (!isValidIp(ipEditorConfig.dns2)) errs.dns2 = 'DNS 2 is not valid (should be in the form: 8.8.4.4)';
+      // DNS 1 is required — an empty value falls through to the same
+      // generic "is not valid" message as a malformed one (no separate
+      // "required" message exists in legacy).
+      if (!isValidIp(ipEditorConfig.dns1)) errs.dns1 = 'DNS 1 IP address is not valid (should be in the form: 192.168.0.100)';
+      // DNS 2 is optional — only validated if the user actually entered something.
+      if (ipEditorConfig.dns2 !== '' && !isValidIp(ipEditorConfig.dns2)) {
+        errs.dns2 = 'DNS 2 IP address is not valid (should be in the form: 192.168.0.100)';
+      }
     }
     setIpErrors(errs);
     return Object.keys(errs).length === 0;
