@@ -632,12 +632,12 @@ export function SettingsScreen({
 
   // IP Address
   type IpMode = 'automatic' | 'manual';
-  interface IpConfig { ip: string; subnet: string; gateway: string; dnsProto: 'dynamic' | 'static'; dns1: string; dns2: string; }
+  interface IpConfig { ip: string; subnet: string; gateway: string; dnsProto: 'automatic' | 'manual'; dns1: string; dns2: string; }
   const [ipMode, setIpMode] = useState<IpMode>('automatic');
   const [showIpEditor, setShowIpEditor] = useState(false);
   const [ipEditorMode, setIpEditorMode] = useState<IpMode>('automatic');
-  const [ipConfig, setIpConfig] = useState<IpConfig>({ ip: '', subnet: '', gateway: '', dnsProto: 'dynamic', dns1: '', dns2: '' });
-  const [ipEditorConfig, setIpEditorConfig] = useState<IpConfig>({ ip: '', subnet: '', gateway: '', dnsProto: 'dynamic', dns1: '', dns2: '' });
+  const [ipConfig, setIpConfig] = useState<IpConfig>({ ip: '', subnet: '', gateway: '', dnsProto: 'automatic', dns1: '', dns2: '' });
+  const [ipEditorConfig, setIpEditorConfig] = useState<IpConfig>({ ip: '', subnet: '', gateway: '', dnsProto: 'automatic', dns1: '', dns2: '' });
   const [ipErrors, setIpErrors] = useState<Partial<Record<keyof IpConfig, string>>>({});
   const [showIpWarning, setShowIpWarning] = useState(false);
   const [ipRestartMsg, setIpRestartMsg] = useState(false);
@@ -655,7 +655,7 @@ export function SettingsScreen({
     if (!isValidIp(ipEditorConfig.ip)) errs.ip = 'IP Address is not valid (should be in the form: 192.168.0.100)';
     if (!isValidIp(ipEditorConfig.subnet)) errs.subnet = 'Subnet Mask is not valid (should be in the form: 192.168.0.100)';
     if (!isValidIp(ipEditorConfig.gateway)) errs.gateway = 'Router IP address is not valid (should be in the form: 192.168.0.100)';
-    if (ipEditorConfig.dnsProto === 'static') {
+    if (ipEditorConfig.dnsProto === 'manual') {
       // DNS 1 is required — an empty value falls through to the same
       // generic "is not valid" message as a malformed one (no separate
       // "required" message exists in legacy).
@@ -3351,26 +3351,26 @@ export function SettingsScreen({
                 <>
                   {ipField('IP Address', 'ip', '192.168.0.100')}
                   {ipField('Subnet Mask', 'subnet', '255.255.255.0')}
-                  {ipField('Router / Gateway IP Address', 'gateway', '192.168.0.1')}
+                  {ipField('Router', 'gateway', '192.168.0.1')}
 
-                  {/* DNS Proto */}
+                  {/* Configure DNS */}
                   <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                    <span className="text-white text-base">DNS Proto</span>
+                    <span className="text-white text-base">Configure DNS</span>
                     <div className="flex rounded-lg overflow-hidden border border-gray-600">
-                      {(['dynamic', 'static'] as const).map(p => (
+                      {(['automatic', 'manual'] as const).map(p => (
                         <button
                           key={p}
                           onClick={() => setIpEditorConfig(c => ({ ...c, dnsProto: p }))}
                           className="px-4 py-2 text-sm font-medium transition-colors"
                           style={ipEditorConfig.dnsProto === p ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: '#fff' } : { backgroundColor: '#1a1a1a', color: '#888' }}
                         >
-                          {p === 'dynamic' ? 'Dynamic' : 'Static'}
+                          {p === 'automatic' ? 'Automatic' : 'Manual'}
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {ipEditorConfig.dnsProto === 'static' && (
+                  {ipEditorConfig.dnsProto === 'manual' && (
                     <>
                       {ipField('DNS 1', 'dns1', '8.8.8.8')}
                       {ipField('DNS 2', 'dns2', '8.8.4.4')}
