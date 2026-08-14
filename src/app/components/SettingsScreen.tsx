@@ -2324,7 +2324,7 @@ export function SettingsScreen({
                       <span className="text-white text-base">IP Address</span>
                       <div className="flex items-center gap-4">
                         <span className="text-gray-300 text-base">{ipMode === 'automatic' ? 'Automatic' : 'Manual'}</span>
-                        <button onClick={() => { setIpEditorMode(ipMode); setIpEditorConfig({ ...ipConfig }); setIpErrors({}); setShowIpEditor(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
+                        <button onClick={() => { if (!ipSaveError) { setIpEditorMode(ipMode); setIpEditorConfig({ ...ipConfig }); } setIpSaveError(false); setIpErrors({}); setShowIpEditor(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
                       </div>
                     </div>
                     {ipRestartMsg && <p className="text-sm mt-2" style={{ color: '#BFE3D9' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
