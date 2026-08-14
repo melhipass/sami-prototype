@@ -641,6 +641,11 @@ export function SettingsScreen({
   const [ipErrors, setIpErrors] = useState<Partial<Record<keyof IpConfig, string>>>({});
   const [showIpWarning, setShowIpWarning] = useState(false);
   const [ipRestartMsg, setIpRestartMsg] = useState(false);
+  const [ipSaveError, setIpSaveError] = useState(false);
+  // Prototype-only: the first "Make Change" confirmation simulates the
+  // camera not responding, so the error state can be demoed; the next
+  // attempt succeeds normally.
+  const [ipSaveAttemptFailed, setIpSaveAttemptFailed] = useState(false);
 
   const isValidIp = (val: string) => /^(\d{1,3}\.){3}\d{1,3}$/.test(val) && val.split('.').every(n => Number(n) <= 255);
 
@@ -680,6 +685,14 @@ export function SettingsScreen({
 
   const commitIpSave = () => {
     setShowIpWarning(false);
+    if (!ipSaveAttemptFailed) {
+      // Simulate the camera not responding on the first save attempt.
+      setIpSaveAttemptFailed(true);
+      setShowIpEditor(false);
+      setIpSaveError(true);
+      setTimeout(() => setIpSaveError(false), 5000);
+      return;
+    }
     setIpMode(ipEditorMode);
     setIpConfig({ ...ipEditorConfig });
     setShowIpEditor(false);
@@ -2315,6 +2328,7 @@ export function SettingsScreen({
                       </div>
                     </div>
                     {ipRestartMsg && <p className="text-sm mt-2" style={{ color: '#BFE3D9' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
+                    {ipSaveError && <p className="text-sm mt-2" style={{ color: '#FFC7BD' }}>Couldn't save network settings, camera didn't respond.</p>}
                   </div>
                 </div>
               </div>
