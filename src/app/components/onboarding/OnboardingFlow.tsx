@@ -48,7 +48,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const [passwordHint, setPasswordHint] = useState(savedPasswordHint);
   const [connectionType, setConnectionType] = useState<'hub' | 'wifi'>('hub');
   const [isFirstNetworkCheck, setIsFirstNetworkCheck] = useState(true);
-  // Demo-only sequence: 0 = show "VPN Detected", 1 = show "No Wi-Fi Connection Found",
+  // Demo-only sequence: 0 = show "No Wi-Fi Connection Found", 1 = show "VPN Detected",
   // 2+ = run the real search (which will show "No Cameras Found" once, then succeed).
   const [networkCheckAttempt, setNetworkCheckAttempt] = useState(0);
   const [selectedWifi, setSelectedWifi] = useState('');
@@ -174,8 +174,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     setStep(7); // Go back to Network Check
   };
 
-  // Advances the demo error sequence inside NetworkCheck: VPN Detected -> No Wi-Fi
-  // Connection Found -> real search (No Cameras Found, then success).
+  // Advances the demo error sequence inside NetworkCheck: No Wi-Fi Connection Found ->
+  // VPN Detected -> real search (No Cameras Found, then success).
   const handleNetworkCheckSearchAgain = () => {
     setNetworkCheckAttempt((prev) => prev + 1);
   };
@@ -310,7 +310,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
           isFirstAttempt={isFirstNetworkCheck}
           selectedWifi={isAndroid && selectedWifi ? selectedWifi : undefined}
           platform={platform}
-          errorType={networkCheckAttempt === 0 ? 'vpn' : networkCheckAttempt === 1 ? 'no-wifi' : null}
+          errorType={networkCheckAttempt === 0 ? 'no-wifi' : networkCheckAttempt === 1 ? 'vpn' : null}
           onSearchAgain={handleNetworkCheckSearchAgain}
         />
       )}
