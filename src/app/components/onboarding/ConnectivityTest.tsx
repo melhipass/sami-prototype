@@ -42,7 +42,7 @@ export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestPro
         </p>
 
         {/* Progress Bar */}
-        <div className="w-full max-w-xs bg-app-green rounded-full h-3 overflow-hidden border border-app-amber/30">
+        <div className="w-full max-w-xs bg-app-mint rounded-full h-3 overflow-hidden border border-app-amber/30">
           <div
             className="bg-app-amber h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}

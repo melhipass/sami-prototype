@@ -25,3 +25,4 @@ pnpm-debug.log*
 
 # typescript
 *.tsbuildinfo
+*.fuse_hidden*

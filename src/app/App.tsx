@@ -1989,7 +1989,7 @@ function AppContent({
 
           {/* Question */}
           <p className="text-app-content-soft text-lg mb-10" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
-            Which device are you using?
+            Choose a device?
           </p>
 
           {/* OS Buttons */}

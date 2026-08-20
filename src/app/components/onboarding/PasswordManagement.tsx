@@ -107,10 +107,10 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
       {showForgotPasswordDialog && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 px-6">
           <div className="bg-app-card rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
-            <h2 className="text-2xl font-semibold text-app-green-ink mb-4 text-center">Forgot Password</h2>
+            <h2 className="text-2xl font-semibold text-app-mint-ink mb-4 text-center">Forgot Password</h2>
 
             <div className="mb-4">
-              <label className="block text-sm mb-2 text-app-green-ink text-left">Password Hint:</label>
+              <label className="block text-sm mb-2 text-app-mint-ink text-left">Password Hint:</label>
               <div className="bg-app-sunken rounded-lg p-4">
                 <p className="text-app-content text-lg text-center">{passwordHint}</p>
               </div>

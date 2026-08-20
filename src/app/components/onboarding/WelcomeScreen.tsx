@@ -28,13 +28,13 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
 
         <div className="bg-app-card border border-app-quiet/30 rounded-xl p-6 mb-8">
           <div className="flex items-start gap-3 mb-4">
-            <Info className="w-6 h-6 text-app-green-ink flex-shrink-0 mt-1" />
+            <Info className="w-6 h-6 text-app-mint-ink flex-shrink-0 mt-1" />
             {isAndroid ? (
-              <p className="text-base text-app-green-ink text-left leading-relaxed">
+              <p className="text-base text-app-mint-ink text-left leading-relaxed">
                 This tablet is configured exclusively for Sami use. Please follow the instructions on your package to connect the Sami Camera before you start.
               </p>
             ) : (
-              <p className="text-base text-app-green-ink text-left leading-relaxed">
+              <p className="text-base text-app-mint-ink text-left leading-relaxed">
                 This app is designed to work exclusively with Sami Camera hardware.
                 You'll need a Sami Camera to use this application.
               </p>

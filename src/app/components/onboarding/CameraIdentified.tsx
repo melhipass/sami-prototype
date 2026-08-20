@@ -30,8 +30,8 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
         {cameras.length > 0 ? (
           <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
             <Camera className="w-10 h-10 text-app-amber" />
-            <div className="absolute -top-2 -right-2 bg-app-green rounded-full p-1 border-2 border-app-card">
-              <CheckCircle className="w-6 h-6 text-app-green-ink" />
+            <div className="absolute -top-2 -right-2 bg-app-mint rounded-full p-1 border-2 border-app-card">
+              <CheckCircle className="w-6 h-6 text-app-mint-ink" />
             </div>
           </div>
         ) : (
@@ -62,8 +62,8 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
                   <p className="text-base font-semibold text-app-content">{camera.name}</p>
                 </div>
                 {selectedCamera === camera.id && (
-                  <div className="w-6 h-6 bg-app-yellow rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-app-yellow-ink" />
+                  <div className="w-6 h-6 bg-app-cream rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check className="w-4 h-4 text-app-cream-ink" />
                   </div>
                 )}
               </button>
