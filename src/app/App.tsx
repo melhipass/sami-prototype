@@ -1980,17 +1980,15 @@ function AppContent({
   if (selectedOS === null) {
     return (
       <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
-        <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex flex-col items-center justify-center"
-          style={{ background: 'linear-gradient(135deg, #0d1b2e 0%, #1a2f4a 50%, #0d2233 100%)' }}
-        >
+        <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex flex-col items-center justify-center bg-app-surface">
           {/* Logo */}
           <div className="flex flex-col items-center gap-3 mb-16">
             <img src={splashLogo} alt="Sami" className="w-24 h-24 object-contain" />
-            <span className="text-white text-3xl font-semibold tracking-wide" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Sami</span>
+            <span className="text-app-content text-3xl font-semibold tracking-wide" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Sami</span>
           </div>
 
           {/* Question */}
-          <p className="text-gray-300 text-lg mb-10" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
+          <p className="text-app-content-soft text-lg mb-10" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
             Which device are you using?
           </p>
 
@@ -1998,33 +1996,31 @@ function AppContent({
           <div className="flex gap-8">
             <button
               onClick={() => setSelectedOS('ios')}
-              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-gray-600 hover:border-[#22C7E8] transition-all group"
-              style={{ background: 'rgba(255,255,255,0.05)' }}
+              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 hover:border-app-link transition-all group bg-app-content/5"
             >
               {/* Apple logo SVG */}
-              <svg className="w-14 h-14 text-white group-hover:text-[#22C7E8] transition-colors" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-14 h-14 text-app-content group-hover:text-app-link transition-colors" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
               </svg>
-              <span className="text-white text-xl font-semibold group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>iOS</span>
+              <span className="text-app-content text-xl font-semibold group-hover:text-app-link transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>iOS</span>
             </button>
 
             <button
               onClick={() => setSelectedOS('android')}
-              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-gray-600 hover:border-[#22C7E8] transition-all group"
-              style={{ background: 'rgba(255,255,255,0.05)' }}
+              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 hover:border-app-link transition-all group bg-app-content/5"
             >
               {/* Android logo SVG */}
-              <svg className="w-14 h-14 text-white group-hover:text-[#22C7E8] transition-colors" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-14 h-14 text-app-content group-hover:text-app-link transition-colors" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.523 15.341a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m-9.546 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0M2.976 8.25h18.048v8.625c0 .621-.504 1.125-1.125 1.125H4.1a1.125 1.125 0 0 1-1.125-1.125V8.25zM8.358 3.102l-1.56-2.7a.375.375 0 0 1 .65-.376l1.58 2.737A9.77 9.77 0 0 1 12 2.25c1.12 0 2.196.188 3.196.537l1.558-2.699a.375.375 0 0 1 .65.376l-1.56 2.7A9.754 9.754 0 0 1 21.024 8.25H2.976a9.754 9.754 0 0 1 5.382-5.148z"/>
               </svg>
-              <span className="text-white text-xl font-semibold group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Android</span>
+              <span className="text-app-content text-xl font-semibold group-hover:text-app-link transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Android</span>
             </button>
           </div>
 
           {/* Analytics Dashboard CTA */}
           <button
             onClick={() => setShowAnalyticsDashboard(true)}
-            className="mt-12 flex items-center gap-2 text-gray-400 hover:text-[#22C7E8] transition-colors text-sm underline underline-offset-4"
+            className="mt-12 flex items-center gap-2 text-app-content-faint hover:text-app-link transition-colors text-sm underline underline-offset-4"
             style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}
           >
             View Analytics Dashboard →
@@ -2032,12 +2028,12 @@ function AppContent({
 
           {/* Normal / Night skin toggle (prototype-only control) */}
           <div className="mt-6 flex items-center gap-3" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
-            <span className="text-gray-400 text-sm">Light Mode</span>
+            <span className="text-app-content-faint text-sm">Light Mode</span>
             <Switch
               checked={themeMode === 'dark'}
               onCheckedChange={(checked) => setThemeMode(checked ? 'dark' : 'light')}
             />
-            <span className="text-gray-400 text-sm">Dark Mode</span>
+            <span className="text-app-content-faint text-sm">Dark Mode</span>
           </div>
         </div>
       </div>
@@ -2130,8 +2126,7 @@ function AppContent({
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
         <div
-          className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex items-center justify-center"
-          style={{ backgroundColor: '#293891' }}
+          className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex items-center justify-center bg-app-navy"
           onClick={() => {
             setShowSplash(false);
             setOnboardingInitialStep(0);
@@ -3312,11 +3307,11 @@ IP is Dynamic`}
         )}
 
         {/* Video Feed Area */}
-        <div className="relative flex-1 overflow-hidden bg-app-surface">
+        <div className="relative flex-1 overflow-hidden bg-app-card">
           {/* Baby monitor video feed */}
           <div
             onClick={handleScreenClick}
-            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-app-surface flex items-center justify-center cursor-pointer"
+            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-app-card flex items-center justify-center cursor-pointer"
           >
             {!cameraPaired ? (
               <div className="flex flex-col items-center justify-center text-center px-8 max-w-md">
@@ -3666,7 +3661,7 @@ IP is Dynamic`}
           )}
 
           {/* Right side control panel */}
-          <div className={`absolute top-0 right-0 h-full flex flex-col items-center justify-between py-3 px-3 z-10 w-28 transition-opacity bg-[#2C3B4A] select-none ${
+          <div className={`absolute top-0 right-0 h-full flex flex-col items-center justify-between py-3 px-3 z-10 w-28 transition-opacity bg-app-surface border-l border-app-line/15 select-none ${
             isLocked ? 'pointer-events-none opacity-50' : ''
           }`}>
             {/* Mute Alarm Button - shown after 5 seconds of alarm simulation */}
@@ -3729,7 +3724,7 @@ IP is Dynamic`}
             <div className="flex gap-6 items-center justify-center">
               {/* Movement Meter Slider (Green) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-[#5B6C7E] rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-app-sunken border border-app-line/20 rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div 
                     className="absolute bottom-0 left-0 right-0 rounded-full transition-all"
@@ -3760,7 +3755,7 @@ IP is Dynamic`}
 
               {/* Time Detection Slider (Coral Red) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-[#5B6C7E] rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-app-sunken border border-app-line/20 rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div
                     className="absolute bottom-0 left-0 right-0 rounded-full transition-all"
@@ -3819,7 +3814,7 @@ IP is Dynamic`}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
                   ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50 text-app-content'
-                  : micOn ? 'text-app-content' : 'bg-[#5B6C7E] text-app-content'
+                  : micOn ? 'text-app-content' : 'bg-app-navy text-app-baby'
               }`}
               style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
             >
@@ -3850,16 +3845,16 @@ IP is Dynamic`}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="absolute bottom-0 left-0 right-0 bg-[#2C3B4A] z-20"
+                className="absolute bottom-0 left-0 right-0 bg-app-surface border-t border-app-line/15 z-20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-around gap-3 py-3 px-3">
                   <button 
                     onClick={() => setShowClock(!showClock)}
-                    className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Clock className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Clock</span>
+                    <Clock className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Clock</span>
                   </button>
 
                   <button
@@ -3887,11 +3882,11 @@ IP is Dynamic`}
                         ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50'
                         : borderActive
                           ? 'bg-app-cyan'
-                          : 'bg-[#5B6C7E]'
+                          : 'bg-app-navy'
                     }`}
                   >
-                    <ScanFace className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Border</span>
+                    <ScanFace className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Border</span>
                   </button>
 
                   <button
@@ -3905,45 +3900,45 @@ IP is Dynamic`}
                         ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50'
                         : motionActive
                           ? 'bg-app-cyan'
-                          : 'bg-[#5B6C7E]'
+                          : 'bg-app-navy'
                     }`}
                   >
-                    <MotionDetectionIcon className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Motion</span>
+                    <MotionDetectionIcon className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Motion</span>
                   </button>
 
                   <button 
                     onClick={handleLockToggle}
-                    className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Lock className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Lock</span>
+                    <Lock className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Lock</span>
                   </button>
 
                   <button 
                     onClick={() => setShowRecordings(!showRecordings)}
-                    className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Video className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Recordings</span>
+                    <Video className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Recordings</span>
                   </button>
 
                   <button 
                     onClick={() => setShowHelp(!showHelp)}
-                    className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <CircleHelp className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Help</span>
+                    <CircleHelp className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Help</span>
                   </button>
 
                   <button 
                     onClick={() => {
                       setShowSettings(!showSettings);
                     }}
-                    className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Settings className="w-10 h-10 text-app-content" />
-                    <span className="text-sm text-white/80">Settings</span>
+                    <Settings className="w-10 h-10 text-app-baby" />
+                    <span className="text-sm text-app-baby/70">Settings</span>
                   </button>
                 </div>
               </motion.div>

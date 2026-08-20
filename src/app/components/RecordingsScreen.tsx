@@ -460,7 +460,7 @@ export function RecordingsScreen({
                     disabled={isDownloadingRecording}
                     className={`px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 ${
                       isDownloadingRecording
-                        ? 'bg-app-sunken text-app-content-faint cursor-not-allowed'
+                        ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
                         : 'bg-app-navy hover:bg-app-navy-700 dark:hover:bg-app-navy/90 text-white'
                     }`}
                   >
@@ -489,7 +489,7 @@ export function RecordingsScreen({
                         onClick={() => {
                           setShowDeleteConfirmation(true);
                         }}
-                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B85555] hover:bg-[#B85555]/90 text-app-content"
+                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B85555] hover:bg-[#B85555]/90 text-white"
                       >
                         <X className="w-4 h-4" />
                         <span className="text-sm font-semibold">Delete</span>
@@ -521,7 +521,7 @@ export function RecordingsScreen({
                           }, 3000);
                         }
                       }}
-                      className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B95555] hover:bg-[#B95555]/90 text-app-content"
+                      className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B95555] hover:bg-[#B95555]/90 text-white"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span className="text-sm font-semibold">Trash</span>
@@ -946,7 +946,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.alarmOnly
                       ? 'bg-[#FCEAAD] text-[#2C3B4A]'
-                      : 'bg-app-sunken text-app-content-soft hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >Alarmed<Bell className="w-4 h-4" /></button>
                 <button
@@ -954,7 +954,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.lockedOnly
                       ? 'bg-[#FFC7BD] text-gray-900'
-                      : 'bg-app-sunken text-app-content-soft hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >Locked<Lock className="w-4 h-4" /></button>
                 <button
@@ -962,7 +962,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.longVideosOnly
                       ? 'bg-[#BFE3D9] text-[#2C3B4A]'
-                      : 'bg-app-sunken text-app-content-soft hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >
                   <HardDrive className="w-4 h-4" />
@@ -973,7 +973,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.last24Hours
                       ? 'bg-app-navy text-white'
-                      : 'bg-app-sunken text-app-content-soft hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >
                   <History className="w-4 h-4" />
@@ -1004,7 +1004,7 @@ export function RecordingsScreen({
                       setCollapsedDateGroups(new Set(allDateLabels));
                     }
                   }}
-                  className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 bg-app-sunken text-app-content-soft hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
+                  className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
                 >
                   {(() => {
                     const allMonthLabels = Object.keys(groupedRecordings);
@@ -1037,7 +1037,7 @@ export function RecordingsScreen({
                   setIsEditingRecordings(false);
                   setSelectedRecordingIds([]);
                 }}
-                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ml-3 bg-app-sunken text-app-content-soft hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
+                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ml-3 bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
               >
                 <Trash2 className="w-4 h-4" />
                 Trashed
@@ -1400,7 +1400,7 @@ export function RecordingsScreen({
                                         setTrashedSwipedId(null);
                                         setTrashedSwipeOffset(0);
                                       }}
-                                      className="flex flex-col items-center justify-center gap-1 text-app-content font-semibold w-full h-full hover:bg-[#B95555]/90 transition-colors"
+                                      className="flex flex-col items-center justify-center gap-1 text-white font-semibold w-full h-full hover:bg-[#B95555]/90 transition-colors"
                                     >
                                       <Trash2 className="w-6 h-6" />
                                       <span className="text-sm">Delete</span>
@@ -1781,7 +1781,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
                           : 'bg-[#BFE3D9] text-[#2C3B4A] hover:bg-[#BFE3D9]/90'
                       }`}
                     >
@@ -1797,8 +1797,8 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint cursor-not-allowed'
-                          : 'bg-[#B85555] text-app-content hover:bg-[#B85555]/90'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          : 'bg-[#B85555] text-white hover:bg-[#B85555]/90'
                       }`}
                     >
                       <X className="w-4 h-4" />
@@ -1819,7 +1819,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
                           : 'bg-[#FFC7BD] text-gray-900 hover:bg-[#FFC7BD]/90'
                       }`}
                     >
@@ -1837,7 +1837,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
                           : 'bg-[#FCEAAD] text-[#2C3B4A] hover:bg-[#FCEAAD]/90'
                       }`}
                     >
@@ -1875,8 +1875,8 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint cursor-not-allowed'
-                          : 'bg-[#B95555] text-app-content hover:bg-[#B95555]/90'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          : 'bg-[#B95555] text-white hover:bg-[#B95555]/90'
                       }`}
                     >
                       <Trash2 className="w-4 h-4" />

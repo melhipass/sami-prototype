@@ -34,8 +34,8 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
         </p>
 
         {showError && (
-          <div className="mb-4 px-4 py-3 bg-[#B85555]/20 border border-[#B85555]/50 rounded-xl">
-            <p className="text-[#F08080] text-sm text-center">Incorrect password. Please try again.</p>
+          <div className="mb-4 px-4 py-3 bg-app-card border border-app-alert/50 rounded-xl">
+            <p className="text-app-alert text-sm text-center">Incorrect password. Please try again.</p>
           </div>
         )}
 
@@ -69,7 +69,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
           </button>
           <button
             onClick={onCancel}
-            className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
           >
             Back
           </button>

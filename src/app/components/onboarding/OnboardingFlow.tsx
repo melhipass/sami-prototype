@@ -262,19 +262,19 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <div className="space-y-3">
               <button
                 onClick={handleLocationPermission}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Allow Once
               </button>
               <button
                 onClick={handleLocationPermission}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Allow While Using App
               </button>
               <button
                 onClick={() => setStep(12)}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Do Not Allow
               </button>
@@ -289,13 +289,13 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <div className="space-y-3">
               <button
                 onClick={handleLocalNetworkPermission}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Allow
               </button>
               <button
                 onClick={() => setStep(12)}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Do Not Allow
               </button>
@@ -398,7 +398,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 12 && (
         <div className="flex items-center justify-center min-h-screen bg-app-surface px-6 py-8">
           <div className="flex flex-col items-center max-w-md w-full text-center">
-            <div className="w-32 h-32 bg-app-green rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
+            <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
               <AlertCircle className="w-16 h-16 text-app-alert" />
             </div>
 
@@ -419,7 +419,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
 
               <button
                 onClick={() => setStep(5)}
-                className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Try Again
               </button>

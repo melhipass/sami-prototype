@@ -90,7 +90,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
         <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
           >
             Cancel
           </button>

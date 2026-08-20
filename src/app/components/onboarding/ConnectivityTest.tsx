@@ -31,7 +31,7 @@ export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestPro
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-green rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
+        <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
           <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
         </div>
 

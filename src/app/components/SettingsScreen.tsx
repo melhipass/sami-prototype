@@ -2134,7 +2134,7 @@ export function SettingsScreen({
                       </button>
                       <button
                         onClick={() => setShowRemoveCameraConfirm(true)}
-                        className="px-4 py-2 bg-[#B95555] hover:bg-[#B95555]/80 text-app-content rounded transition-colors text-sm"
+                        className="px-4 py-2 bg-[#B95555] hover:bg-[#B95555]/80 text-white rounded transition-colors text-sm"
                       >Remove</button>
                     </div>
                   </div>
@@ -3031,7 +3031,7 @@ export function SettingsScreen({
                     <div className="flex flex-col items-center gap-3 ml-4">
                       {(['AM','PM'] as const).map(p => (
                         <button key={p} onClick={() => setEditingSchedule({...editingSchedule, startPeriod: p})}
-                          className={`px-5 py-3 rounded-lg text-lg font-semibold transition-colors ${editingSchedule.startPeriod === p ? 'text-app-content' : 'bg-app-sunken text-app-content-faint hover:bg-app-content/10 dark:hover:bg-[#4b5563]'}`}
+                          className={`px-5 py-3 rounded-lg text-lg font-semibold transition-colors ${editingSchedule.startPeriod === p ? 'text-app-content' : 'bg-app-sunken text-app-content-faint border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'}`}
                           style={editingSchedule.startPeriod === p ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                         >{p}</button>
                       ))}
@@ -3067,7 +3067,7 @@ export function SettingsScreen({
                     <div className="flex flex-col items-center gap-3 ml-4">
                       {(['AM','PM'] as const).map(p => (
                         <button key={p} onClick={() => setEditingSchedule({...editingSchedule, endPeriod: p})}
-                          className={`px-5 py-3 rounded-lg text-lg font-semibold transition-colors ${editingSchedule.endPeriod === p ? 'text-app-content' : 'bg-app-sunken text-app-content-faint hover:bg-app-content/10 dark:hover:bg-[#4b5563]'}`}
+                          className={`px-5 py-3 rounded-lg text-lg font-semibold transition-colors ${editingSchedule.endPeriod === p ? 'text-app-content' : 'bg-app-sunken text-app-content-faint border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'}`}
                           style={editingSchedule.endPeriod === p ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                         >{p}</button>
                       ))}
@@ -3745,7 +3745,7 @@ export function SettingsScreen({
               <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
                 <button
                   onClick={() => { setShowCameraWifiPicker(false); setCameraWifiPickerStep('select'); }}
-                  className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                  className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
                 >Cancel</button>
                 <button
                   onClick={() => {
@@ -3779,8 +3779,8 @@ export function SettingsScreen({
               </div>
               <p className="text-sm text-app-content-faint mb-6 text-center">Enter the password for this network</p>
               {cwPickerPwError && (
-                <div className="mb-4 px-4 py-3 bg-[#B85555]/20 border border-[#B85555]/50 rounded-xl">
-                  <p className="text-[#F08080] text-sm text-center">Incorrect password. Please try again.</p>
+                <div className="mb-4 px-4 py-3 bg-app-card border border-app-alert/50 rounded-xl">
+                  <p className="text-app-alert text-sm text-center">Incorrect password. Please try again.</p>
                 </div>
               )}
               <div className="mb-6">
@@ -3808,7 +3808,7 @@ export function SettingsScreen({
                   style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                 >Connect</button>
                 <button onClick={() => { setCwPickerPwError(false); setCameraWifiPickerStep('select'); }}
-                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors">Back</button>
+                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors">Back</button>
               </div>
             </div>
           )}

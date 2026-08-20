@@ -47,7 +47,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-32 h-32 bg-app-green rounded-3xl flex items-center justify-center mb-6 border-2 border-app-amber">
+        <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-6 border-2 border-app-amber">
           <Lock className="w-16 h-16 text-app-amber" />
         </div>
 
@@ -57,8 +57,8 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
         </p>
 
         {showError && (
-          <div className="mb-4 px-4 py-3 bg-[#B85555]/20 border border-[#B85555]/50 rounded-xl w-full">
-            <p className="text-[#F08080] text-sm text-center">Wrong password. Please try again.</p>
+          <div className="mb-4 px-4 py-3 bg-app-card border border-app-alert/50 rounded-xl w-full">
+            <p className="text-app-alert text-sm text-center">Wrong password. Please try again.</p>
           </div>
         )}
 
@@ -78,7 +78,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
           {passwordHint && (
             <button
               onClick={() => setShowForgotPasswordDialog(true)}
-              className="mt-2 text-sm text-[#5B8BBF] underline hover:text-[#5B8BBF]/80"
+              className="mt-2 text-sm text-app-link underline hover:text-app-link/80"
             >
               Forgot password?
             </button>
@@ -106,11 +106,11 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
       {/* Forgot Password Dialog */}
       {showForgotPasswordDialog && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 px-6">
-          <div className="bg-app-green rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
+          <div className="bg-app-card rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
             <h2 className="text-2xl font-semibold text-app-green-ink mb-4 text-center">Forgot Password</h2>
 
             <div className="mb-4">
-              <label className="block text-sm mb-2 text-app-content-faint text-left">Password Hint:</label>
+              <label className="block text-sm mb-2 text-app-green-ink text-left">Password Hint:</label>
               <div className="bg-app-sunken rounded-lg p-4">
                 <p className="text-app-content text-lg text-center">{passwordHint}</p>
               </div>
@@ -139,7 +139,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
                   // Open customer service link
                   window.open('https://support.samialert.com/hc/en-us/requests/new', '_blank');
                 }}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
               >
                 Contact Customer Service
               </button>

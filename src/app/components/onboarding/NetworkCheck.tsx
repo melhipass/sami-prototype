@@ -65,14 +65,14 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
         <div className="flex flex-col items-center max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-app-green rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
+          <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
             <AlertCircle className="w-10 h-10 text-app-alert" />
           </div>
 
           <h1 className="text-3xl mb-3 text-app-content">VPN Detected</h1>
           <p className="text-base text-app-content-faint mb-6">Your VPN may be blocking the camera search</p>
 
-          <div className="w-full mb-8 bg-app-green rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
+          <div className="w-full mb-8 bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
             <p className="text-sm text-app-alert text-left">
               It looks like you are using a VPN. This can prevent the Sami app from having the necessary access to your local network. Please disable your VPN, then press Search Again.
@@ -82,7 +82,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
           <div className="space-y-3 w-full">
             <button
               onClick={onSearchAgain}
-              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
             >
               Search Again
             </button>
@@ -102,14 +102,14 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
         <div className="flex flex-col items-center max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-app-green rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
+          <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
             <AlertCircle className="w-10 h-10 text-app-alert" />
           </div>
 
           <h1 className="text-3xl mb-3 text-app-content">No Wi-Fi Connection Found</h1>
           <p className="text-base text-app-content-faint mb-6">Your device isn't connected to a Wi-Fi network</p>
 
-          <div className="w-full mb-8 bg-app-green rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
+          <div className="w-full mb-8 bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
             <p className="text-sm text-app-alert text-left">
               No Wi-Fi connection found. Connect to your Wi-Fi network and try again
@@ -129,7 +129,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
             )}
             <button
               onClick={onSearchAgain}
-              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
             >
               Search Again
             </button>
@@ -148,7 +148,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-green rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
+        <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
           <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
         </div>
 
