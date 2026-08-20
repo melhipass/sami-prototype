@@ -80,6 +80,15 @@
   --app-text-3: #6B72A8; /* muted text (was gray-400) */
   --app-text-4: #8890BE; /* most-muted text (was gray-500 / gray-600) */
 
+  /* Onboarding-only overrides (Light Mode). Onboarding screens use Baby Blue
+     for the page background itself, instead of white — so their info boxes
+     and icon badges (which otherwise use --app-surface-1, also Baby Blue)
+     need a distinct fill, and their inputs/checkboxes/choice-cards need a
+     neutral one so they don't get mistaken for informational content. */
+  --app-onboard-bg: #EEF6FD;    /* screen background: Baby Blue */
+  --app-onboard-box: #BFE3D9;   /* info boxes / icon badges: Gentle Green, Dark Blue text on top per brand book */
+  --app-onboard-input: #FFFFFF; /* inputs / checkboxes / choice-cards: neutral white */
+
   /* App chrome — border tiers (was border-gray-700 / 600 / 800) */
   --app-line-1: #D7E1F0; /* default border (was border-gray-700) */
   --app-line-2: #C3D0E8; /* stronger border (was border-gray-600) */
