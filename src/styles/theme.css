@@ -169,6 +169,12 @@
   --app-surface-3: #4b5563; /* was bg-gray-600 */
   --app-surface-4: #9ca3af; /* was bg-gray-400 */
 
+  /* Onboarding-only overrides (Dark Mode) — identical to what these elements
+     already used, so Dark Mode is unaffected by the Light Mode redesign. */
+  --app-onboard-bg: #000000;    /* was bg-app-root-bg / bg-black */
+  --app-onboard-box: #1f2937;   /* was bg-app-surface-1 / bg-gray-800 */
+  --app-onboard-input: #1f2937; /* was bg-app-surface-1 / bg-gray-800 */
+
   --app-text-2: #d1d5db; /* was text-gray-300 */
   --app-text-3: #9ca3af; /* was text-gray-400 */
   --app-text-4: #6b7280; /* was text-gray-500 / gray-600 */
@@ -258,6 +264,9 @@
   --color-app-status-bad: var(--app-status-bad);
   --color-app-status-warning: var(--app-status-warning);
   --color-app-status-good: var(--app-status-good);
+  --color-app-onboard-bg: var(--app-onboard-bg);
+  --color-app-onboard-box: var(--app-onboard-box);
+  --color-app-onboard-input: var(--app-onboard-input);
 }
 
 @layer base {
