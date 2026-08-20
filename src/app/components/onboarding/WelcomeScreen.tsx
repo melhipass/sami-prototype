@@ -45,7 +45,7 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
         <div className="space-y-3 w-full">
           <button
             onClick={onConfigure}
-            className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
+            className="w-full bg-app-cta text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-cta/80 transition-colors"
           >
             Configure My Sami Camera
           </button>

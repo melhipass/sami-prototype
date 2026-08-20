@@ -63,7 +63,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
           <button
             onClick={handleSubmit}
             disabled={password.length === 0}
-            className="w-full bg-[#5B8BBF] text-app-root-fg py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#5B8BBF]/80 transition-colors"
+            className="w-full bg-app-cta text-white py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-app-cta/80 transition-colors"
           >
             Connect
           </button>

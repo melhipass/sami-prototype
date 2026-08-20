@@ -50,7 +50,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
         <div className="space-y-3 w-full">
           <button
             onClick={onLightIsGreen}
-            className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
+            className="w-full bg-app-cta text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-cta/80 transition-colors"
           >
             Light is green
           </button>
@@ -83,7 +83,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
               <button
                 onClick={() => setShowTroublePopup(false)}
                 className="w-full py-4 text-lg font-semibold transition-colors hover:bg-app-surface-2"
-                style={{ color: '#5B8BBF' }}
+                style={{ color: 'var(--app-cta)' }}
               >
                 OK
               </button>

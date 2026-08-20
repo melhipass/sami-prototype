@@ -66,14 +66,20 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* App chrome — root background / primary text (was bg-black, bg-gray-900, text-white) */
-  --app-root-bg: #ffffff;
+  --app-root-bg: #EAF2FC; /* page background: soft Baby Blue tint, matching the brand's dashboard reference */
   --app-root-fg: #293283;
 
   /* App chrome — surface tiers (was bg-gray-800 / bg-gray-700 / bg-gray-600 / bg-gray-400) */
-  --app-surface-1: #EEF6FD; /* Baby Blue - cards / elevated panels (was gray-800) */
+  --app-surface-1: #FFFFFF; /* cards / elevated panels: white, sitting on top of the blue-tinted page (was gray-800) */
   --app-surface-2: #E4EDF7; /* secondary surfaces / buttons (was gray-700) */
   --app-surface-3: #D6E2F0; /* hover / tertiary surface (was gray-600) */
   --app-surface-4: #C7D5EA; /* rare neutral surface (was gray-400) */
+
+  /* Primary/CTA buttons and "active/selected" accents — solid Dark Blue with
+     white text, matching the brand dashboard reference (sidebar active item,
+     hero stat card, primary buttons). Dark Mode keeps the existing medium-blue
+     accent (#5B8BBF) unchanged. */
+  --app-cta: #293283;
 
   /* App chrome — text tiers (was text-gray-300 / 400 / 500 / 600) */
   --app-text-2: #48519B; /* secondary text (was gray-300) */
@@ -168,6 +174,8 @@
   --app-surface-2: #374151; /* was bg-gray-700 */
   --app-surface-3: #4b5563; /* was bg-gray-600 */
   --app-surface-4: #9ca3af; /* was bg-gray-400 */
+
+  --app-cta: #5B8BBF; /* unchanged medium-blue accent used today */
 
   /* Onboarding-only overrides (Dark Mode) — identical to what these elements
      already used, so Dark Mode is unaffected by the Light Mode redesign. */
@@ -267,6 +275,7 @@
   --color-app-onboard-bg: var(--app-onboard-bg);
   --color-app-onboard-box: var(--app-onboard-box);
   --color-app-onboard-input: var(--app-onboard-input);
+  --color-app-cta: var(--app-cta);
 }
 
 @layer base {

@@ -86,7 +86,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
             <button
               onClick={handleAdd}
               disabled={!selectedCamera}
-              className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-app-cta text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-cta/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Add Selected Camera
             </button>

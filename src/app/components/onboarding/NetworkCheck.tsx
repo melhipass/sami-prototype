@@ -121,8 +121,8 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
               <button
                 onClick={onSearchAgain}
                 title="Opens the device's Wi-Fi settings (native app only)"
-                className="w-full text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:opacity-90 transition-colors"
-                style={{ backgroundColor: '#5B8BBF' }}
+                className="w-full text-white py-4 rounded-xl text-lg shadow-lg hover:opacity-90 transition-colors"
+                style={{ backgroundColor: 'var(--app-cta)' }}
               >
                 Go to Settings
               </button>

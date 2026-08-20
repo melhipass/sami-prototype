@@ -4,8 +4,8 @@ import { WiFiSelection } from '@/app/components/onboarding/WiFiSelection';
 import { NetworkPassword } from '@/app/components/onboarding/NetworkPassword';
 import { WifiTestingScreen } from '@/app/components/onboarding/WifiTestingScreen';
 
-const SETTINGS_ACCENT_COLOR = '#5A8BBF';
-const SETTINGS_BG_COLOR = '#000000';
+const SETTINGS_ACCENT_COLOR = 'var(--app-cta)';
+const SETTINGS_BG_COLOR = 'var(--app-root-bg)';
 
 export interface SettingsScreenProps {
   // Navigation
@@ -963,7 +963,7 @@ export function SettingsScreen({
                     <div className="h-1 bg-app-surface-2 rounded-full overflow-hidden">
                       <div
                         className="h-full transition-all duration-200"
-                        style={{ width: `${motionThresholdSetting}%`, backgroundColor: '#5A8BBF' }}
+                        style={{ width: `${motionThresholdSetting}%`, backgroundColor: 'var(--app-cta)' }}
                       />
                     </div>
                     <input
@@ -978,7 +978,7 @@ export function SettingsScreen({
                     />
                     <div
                       className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full border-2 pointer-events-none shadow-lg"
-                      style={{ left: `calc(${motionThresholdSetting}% - 10px)`, borderColor: '#5A8BBF' }}
+                      style={{ left: `calc(${motionThresholdSetting}% - 10px)`, borderColor: 'var(--app-cta)' }}
                     />
                   </div>
                   <button
@@ -1005,7 +1005,7 @@ export function SettingsScreen({
                     <div className="h-1 bg-app-surface-2 rounded-full overflow-hidden">
                       <div
                         className="h-full transition-all duration-200"
-                        style={{ width: `${(alarmThresholdSetting / 900) * 100}%`, backgroundColor: '#5A8BBF' }}
+                        style={{ width: `${(alarmThresholdSetting / 900) * 100}%`, backgroundColor: 'var(--app-cta)' }}
                       />
                     </div>
                     <input
@@ -1020,7 +1020,7 @@ export function SettingsScreen({
                     />
                     <div
                       className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full border-2 pointer-events-none shadow-lg"
-                      style={{ left: `calc(${(alarmThresholdSetting / 900) * 100}% - 10px)`, borderColor: '#5A8BBF' }}
+                      style={{ left: `calc(${(alarmThresholdSetting / 900) * 100}% - 10px)`, borderColor: 'var(--app-cta)' }}
                     />
                   </div>
                   <button
@@ -1049,7 +1049,7 @@ export function SettingsScreen({
                     <div className="h-1 bg-app-surface-2 rounded-full overflow-hidden">
                       <div
                         className="h-full transition-all duration-200"
-                        style={{ width: `${sensitivityBoost}%`, backgroundColor: '#5A8BBF' }}
+                        style={{ width: `${sensitivityBoost}%`, backgroundColor: 'var(--app-cta)' }}
                       />
                     </div>
                     <input
@@ -1064,7 +1064,7 @@ export function SettingsScreen({
                     />
                     <div
                       className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full border-2 pointer-events-none shadow-lg"
-                      style={{ left: `calc(${sensitivityBoost}% - 10px)`, borderColor: '#5A8BBF' }}
+                      style={{ left: `calc(${sensitivityBoost}% - 10px)`, borderColor: 'var(--app-cta)' }}
                     />
                   </div>
                   <button

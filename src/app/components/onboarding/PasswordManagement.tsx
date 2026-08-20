@@ -89,7 +89,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
           <button
             onClick={handleSubmit}
             disabled={password.length < 5}
-            className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-app-cta text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-cta/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </button>
@@ -129,7 +129,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
             <div className="space-y-3">
               <button
                 onClick={() => setShowForgotPasswordDialog(false)}
-                className="w-full bg-[#5B8BBF] text-app-root-fg py-3 rounded-xl hover:bg-[#5B8BBF]/80 transition-colors"
+                className="w-full bg-app-cta text-white py-3 rounded-xl hover:bg-app-cta/80 transition-colors"
               >
                 Try Again
               </button>

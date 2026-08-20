@@ -75,7 +75,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                   id={`disclaimer-${index}`}
                   onClick={() => toggleDisclaimer(index)}
                   className={`mt-1 w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                    acceptedDisclaimers[index] ? 'bg-[#5B8BBF]' : 'bg-app-surface-3'
+                    acceptedDisclaimers[index] ? 'bg-app-cta' : 'bg-app-surface-3'
                   }`}
                 >
                   <div
@@ -126,7 +126,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           <button
             onClick={onAccept}
             disabled={!allAccepted}
-            className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-app-cta text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-cta/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Accept All
           </button>

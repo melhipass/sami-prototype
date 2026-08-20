@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Calendar, Bell, History, Trash2, HardDrive, Lock, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, AlertTriangle, Info, RotateCcw, Check, Camera, Activity, Share2 } from 'lucide-react';
 const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
 
-const SETTINGS_ACCENT_COLOR = '#5A8BBF';
+const SETTINGS_ACCENT_COLOR = 'var(--app-cta)';
 
 type Recording = {
   id: number;
@@ -461,7 +461,7 @@ export function RecordingsScreen({
                     className={`px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 ${
                       isDownloadingRecording
                         ? 'bg-app-surface-2 text-app-text-4 cursor-not-allowed'
-                        : 'bg-[#5A8BBF] hover:bg-[#5A8BBF]/90 text-app-root-fg'
+                        : 'bg-app-cta hover:bg-app-cta/90 text-white'
                     }`}
                   >
                     <Share2 className="w-4 h-4" />
@@ -729,7 +729,7 @@ export function RecordingsScreen({
                             >
                               <div className={`w-3 h-3 rounded-full transition-all ${
                                 isSelected
-                                  ? 'bg-[#5B8BBF] ring-4 ring-[#5B8BBF]/30 scale-150'
+                                  ? 'bg-app-cta ring-4 ring-[#5B8BBF]/30 scale-150'
                                   : hasAlarm
                                   ? 'bg-app-status-warning ring-2 ring-app-status-warning/50 hover:scale-125'
                                   : 'bg-gray-300 hover:bg-gray-200 hover:scale-125'
@@ -764,7 +764,7 @@ export function RecordingsScreen({
 
                         {/* Current video indicator line - always at center (50%) */}
                         <div
-                          className="absolute top-3 h-8 w-0.5 bg-[#5B8BBF] z-20 pointer-events-none"
+                          className="absolute top-3 h-8 w-0.5 bg-app-cta z-20 pointer-events-none"
                           style={{ left: '50%', transform: 'translateX(-50%)' }}
                         />
 
@@ -972,7 +972,7 @@ export function RecordingsScreen({
                   onClick={() => setActiveFilters({ ...activeFilters, last24Hours: !activeFilters.last24Hours })}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.last24Hours
-                      ? 'bg-[#5B8BBF] text-app-root-fg'
+                      ? 'bg-app-cta text-white'
                       : 'bg-app-surface-2 text-app-text-2 hover:bg-app-surface-3'
                   }`}
                 >
@@ -1603,11 +1603,11 @@ export function RecordingsScreen({
                                     <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                                       <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
                                         selectedRecordingIds.includes(recording.id)
-                                          ? 'border-[#5B8BBF] bg-[#5B8BBF]'
+                                          ? 'border-[#5B8BBF] bg-app-cta'
                                           : 'border-gray-400'
                                       }`}>
                                         {selectedRecordingIds.includes(recording.id) && (
-                                          <Check className="w-4 h-4 text-app-root-fg" />
+                                          <Check className="w-4 h-4 text-white" />
                                         )}
                                       </div>
                                     </div>
@@ -1672,7 +1672,7 @@ export function RecordingsScreen({
                                       <div className="w-28 h-1.5 bg-app-surface-2 rounded-full overflow-hidden mt-2">
                                         <div
                                           className="h-full rounded-full transition-all"
-                                          style={{ width: `${recording.watchProgress}%`, backgroundColor: '#5B8BBF' }}
+                                          style={{ width: `${recording.watchProgress}%`, backgroundColor: 'var(--app-cta)' }}
                                         />
                                       </div>
                                     )}
@@ -1901,7 +1901,7 @@ export function RecordingsScreen({
               <p className="text-app-text-2 text-base text-center">Preparing video for sharing...</p>
               <div className="w-full bg-app-root-bg rounded-full h-3 overflow-hidden border border-app-line-1">
                 <div
-                  className="bg-[#5A8BBF] h-full rounded-full transition-none"
+                  className="bg-app-cta h-full rounded-full transition-none"
                   style={{ width: `${shareProgress}%` }}
                 />
               </div>

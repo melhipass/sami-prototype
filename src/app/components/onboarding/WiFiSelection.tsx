@@ -96,7 +96,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
           </button>
           <button
             onClick={() => onSelect(selectedSsid, selectedNetwork?.secured ?? true)}
-            className="flex-1 bg-[#5B8BBF] text-app-root-fg py-3 rounded-xl hover:bg-[#5B8BBF]/80 transition-colors font-semibold"
+            className="flex-1 bg-app-cta text-white py-3 rounded-xl hover:bg-app-cta/80 transition-colors font-semibold"
           >
             Select
           </button>

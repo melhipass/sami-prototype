@@ -22,7 +22,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                     isCompleted
                       ? 'bg-[#BFE3D9] text-[#2C3B4A]'
                       : isActive
-                      ? 'bg-[#5B8BBF] text-app-root-fg'
+                      ? 'bg-app-cta text-white'
                       : 'bg-app-surface-2 text-app-text-4'
                   }`}
                 >

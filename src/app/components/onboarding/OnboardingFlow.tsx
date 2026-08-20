@@ -412,7 +412,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
               <button
                 onClick={() => setStep(5)}
                 title="Opens the device's Settings app (native app only)"
-                className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
+                className="w-full bg-app-cta text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-cta/80 transition-colors"
               >
                 Go to Settings
               </button>

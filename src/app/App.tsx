@@ -26,10 +26,10 @@ import { RecordingsScreen } from '@/app/components/RecordingsScreen';
 import { SettingsScreen } from '@/app/components/SettingsScreen';
 import { AnalyticsDashboard } from '@/app/components/AnalyticsDashboard';
 
-// Settings screen accent color
-const SETTINGS_ACCENT_COLOR = '#5A8BBF';
-const SETTINGS_BG_COLOR = '#000000';
-const SETTINGS_SECTION_BG = '#1F2937'; // gray-800
+// Settings screen accent color (theme-aware: Dark Blue in Light Mode, unchanged medium-blue in Dark Mode)
+const SETTINGS_ACCENT_COLOR = 'var(--app-cta)';
+const SETTINGS_BG_COLOR = 'var(--app-root-bg)';
+const SETTINGS_SECTION_BG = 'var(--app-surface-1)'; // gray-800 in Dark Mode, white in Light Mode
 
 function AppContent({
   showAnalyticsDashboard,
