@@ -39,7 +39,7 @@ function AppContent({
   setShowAnalyticsDashboard: (v: boolean) => void;
 }) {
   const [selectedOS, setSelectedOS] = useState<'ios' | 'android' | null>(null);
-  // Prototype-only skin toggle: 'dark' = Night Mode (today's look), 'light' = Normal Mode (brand palette).
+  // Prototype-only skin toggle: 'dark' = Dark Mode (today's look), 'light' = Light Mode (brand palette).
   // Defaults to 'dark' so existing behavior is unchanged unless the user flips the switch.
   const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
   const [showHomeScreen, setShowHomeScreen] = useState(true);
@@ -448,19 +448,13 @@ function AppContent({
     return () => clearInterval(timer);
   }, []);
 
-  // Restore saved skin preference (prototype-only, doesn't affect real app behavior)
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('samiThemeMode');
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      setThemeMode(savedTheme);
-    }
-  }, []);
-
-  // Apply the Normal/Night skin by toggling the `dark` class on <body>.
+  // Apply the Light/Dark Mode skin by toggling the `dark` class on <body>.
   // All theme-aware colors in theme.css key off this class.
+  // Intentionally NOT persisted (e.g. via localStorage): the prototype should
+  // always open in Dark Mode by default, since that's the design devs are
+  // currently working from, regardless of what was toggled in a prior session.
   useEffect(() => {
     document.body.classList.toggle('dark', themeMode === 'dark');
-    localStorage.setItem('samiThemeMode', themeMode);
   }, [themeMode]);
 
   // Show storage popup the first time user enters Recordings view
@@ -2038,12 +2032,12 @@ function AppContent({
 
           {/* Normal / Night skin toggle (prototype-only control) */}
           <div className="mt-6 flex items-center gap-3" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
-            <span className="text-gray-400 text-sm">Normal</span>
+            <span className="text-gray-400 text-sm">Light Mode</span>
             <Switch
               checked={themeMode === 'dark'}
               onCheckedChange={(checked) => setThemeMode(checked ? 'dark' : 'light')}
             />
-            <span className="text-gray-400 text-sm">Night Mode</span>
+            <span className="text-gray-400 text-sm">Dark Mode</span>
           </div>
         </div>
       </div>
@@ -3327,8 +3321,8 @@ IP is Dynamic`}
             {!cameraPaired ? (
               <div className="flex flex-col items-center justify-center text-center px-8 max-w-md">
                 {/* Warning Icon with Circle Background */}
-                <div className="w-20 h-20 bg-app-surface-1 rounded-full flex items-center justify-center mb-6 border-2 border-[#FFC7BD]">
-                  <AlertCircle className="w-10 h-10 text-[#FFC7BD]" />
+                <div className="w-20 h-20 bg-app-surface-1 rounded-full flex items-center justify-center mb-6 border-2 border-app-status-bad">
+                  <AlertCircle className="w-10 h-10 text-app-status-bad" />
                 </div>
 
                 {/* Text Content */}
@@ -3479,7 +3473,7 @@ IP is Dynamic`}
               );
             }
 
-            const motionColor = borderActive && !isInsideBorder ? '#BFE3D9' : '#B85555';
+            const motionColor = borderActive && !isInsideBorder ? 'var(--app-status-good)' : '#B85555';
 
             return (
               <div className="absolute top-0 left-0 bottom-0 right-28 z-10 pointer-events-none">
@@ -3617,7 +3611,7 @@ IP is Dynamic`}
               onClick={handleVolumePickerInteraction}
             >
               {/* Mic icon at left */}
-              <Mic className="w-6 h-6 text-app-root-fg" style={{ color: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' }} />
+              <Mic className="w-6 h-6 text-app-root-fg" style={{ color: micVolume === 0 ? 'var(--app-status-warning)' : 'var(--app-status-good)' }} />
               
               {/* Volume slider */}
               <div className="relative flex flex-row items-center">

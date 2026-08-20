@@ -47,8 +47,8 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-32 h-32 bg-app-surface-1 rounded-3xl flex items-center justify-center mb-6 border-2 border-[#FCEAAD]">
-          <Lock className="w-16 h-16 text-[#FCEAAD]" />
+        <div className="w-32 h-32 bg-app-surface-1 rounded-3xl flex items-center justify-center mb-6 border-2 border-app-status-warning">
+          <Lock className="w-16 h-16 text-app-status-warning" />
         </div>
 
         <h1 className="text-3xl mb-3 text-app-root-fg">Camera Password</h1>
@@ -69,7 +69,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
               value={password}
               onChange={handlePasswordChange}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface-1 text-app-root-fg placeholder-gray-500 ${
-                showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
+                showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-app-status-warning/30 focus:border-app-status-warning'
               }`}
               placeholder="Enter password"
             />
@@ -106,7 +106,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
       {/* Forgot Password Dialog */}
       {showForgotPasswordDialog && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 px-6">
-          <div className="bg-app-surface-1 rounded-2xl p-6 max-w-md w-full border-2 border-[#FCEAAD]/30">
+          <div className="bg-app-surface-1 rounded-2xl p-6 max-w-md w-full border-2 border-app-status-warning/30">
             <h2 className="text-2xl font-semibold text-app-root-fg mb-4 text-center">Forgot Password</h2>
 
             <div className="mb-4">
@@ -116,8 +116,8 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
               </div>
             </div>
 
-            <div className="bg-[#BFE3D9]/10 border border-[#BFE3D9]/30 rounded-lg p-4 mb-6">
-              <p className="text-sm text-[#BFE3D9] text-center">
+            <div className="bg-app-status-good/10 border border-app-status-good/30 rounded-lg p-4 mb-6">
+              <p className="text-sm text-app-status-good text-center">
                 💡 If you're connected to this camera on another device, you can check the Camera Password in Camera Settings on that device.
               </p>
             </div>

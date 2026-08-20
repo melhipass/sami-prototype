@@ -31,20 +31,20 @@ export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestPro
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center mb-8 border-2 border-[#BFE3D9]">
-          <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
+        <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center mb-8 border-2 border-app-status-good">
+          <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
         </div>
 
         <h2 className="text-2xl mb-4 text-app-root-fg">Testing Camera Connection</h2>
 
-        <p className="text-lg text-[#BFE3D9] mb-8">
+        <p className="text-lg text-app-status-good mb-8">
           Step {attempt} of {maxAttempts}
         </p>
 
         {/* Progress Bar */}
-        <div className="w-full max-w-xs bg-app-surface-1 rounded-full h-3 overflow-hidden border border-[#FCEAAD]/30">
+        <div className="w-full max-w-xs bg-app-surface-1 rounded-full h-3 overflow-hidden border border-app-status-warning/30">
           <div
-            className="bg-[#FCEAAD] h-full rounded-full transition-all duration-500"
+            className="bg-app-status-warning h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>

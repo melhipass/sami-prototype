@@ -34,7 +34,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                 </div>
                 <span
                   className={`text-[14px] mt-1 font-medium whitespace-nowrap ${
-                    isActive ? 'text-[#5B8BBF]' : isCompleted ? 'text-[#BFE3D9]' : 'text-app-text-4'
+                    isActive ? 'text-[#5B8BBF]' : isCompleted ? 'text-app-status-good' : 'text-app-text-4'
                   }`}
                 >
                   {label}
@@ -46,7 +46,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
               {i < labels.length - 1 && (
                 <div
                   className={`w-12 h-0.5 mb-3 mx-1 transition-all ${
-                    i < currentIndex ? 'bg-[#BFE3D9]' : 'bg-app-surface-2'
+                    i < currentIndex ? 'bg-app-status-good' : 'bg-app-surface-2'
                   }`}
                 />
               )}

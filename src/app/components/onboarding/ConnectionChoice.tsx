@@ -20,18 +20,18 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
             onClick={() => setSelectedConnection('hub')}
             className={`w-full bg-app-surface-1 rounded-xl p-5 border-2 transition-all text-left ${
               selectedConnection === 'hub'
-                ? 'border-[#FCEAAD]'
+                ? 'border-app-status-warning'
                 : 'border-app-line-1 hover:border-app-line-2'
             }`}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-app-surface-2 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Radio className="w-6 h-6 text-[#BFE3D9]" />
+                  <Radio className="w-6 h-6 text-app-status-good" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-app-root-fg">Sami Hub</h3>
-                  <span className="text-xs text-[#BFE3D9] bg-[#BFE3D9]/20 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-app-status-good bg-app-status-good/20 px-2 py-0.5 rounded-full">
                     Recommended
                   </span>
                 </div>
@@ -52,7 +52,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
             onClick={() => setSelectedConnection('wifi')}
             className={`w-full bg-app-surface-1 rounded-xl p-5 border-2 transition-all text-left ${
               selectedConnection === 'wifi'
-                ? 'border-[#FCEAAD]'
+                ? 'border-app-status-warning'
                 : 'border-app-line-1 hover:border-app-line-2'
             }`}
           >

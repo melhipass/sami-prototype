@@ -46,8 +46,8 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
-        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FCEAAD]">
-          <AlertTriangle className="w-10 h-10 text-[#FCEAAD]" />
+        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
+          <AlertTriangle className="w-10 h-10 text-app-status-warning" />
         </div>
 
         <h1 className="text-3xl mb-3 text-app-root-fg text-center">Important Information</h1>
@@ -57,7 +57,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           {disclaimers.map((disclaimer, index) => (
             <div
               key={index}
-              className="bg-app-surface-1 rounded-xl p-4 border border-[#FCEAAD]/30"
+              className="bg-app-surface-1 rounded-xl p-4 border border-app-status-warning/30"
             >
               <div className="flex items-start gap-3 justify-between">
                 <div className="flex-1 text-left">

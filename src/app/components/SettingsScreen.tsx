@@ -497,9 +497,9 @@ export function SettingsScreen({
       setShowBadPasswordPopup(true);
     }
   };
-  const cameraStatusColor = cameraStatus === 'Online' ? '#BFE3D9'
-    : cameraStatus === 'Bad Password' || cameraStatus === 'Camera needs power cycling' || cameraStatus === 'Offline' ? '#FFC7BD'
-    : '#FCEAAD'; // Updating..., Connecting, Waiting for camera to start
+  const cameraStatusColor = cameraStatus === 'Online' ? 'var(--app-status-good)'
+    : cameraStatus === 'Bad Password' || cameraStatus === 'Camera needs power cycling' || cameraStatus === 'Offline' ? 'var(--app-status-bad)'
+    : 'var(--app-status-warning)'; // Updating..., Connecting, Waiting for camera to start
   // Only Camera Status is shown for every state; Camera Password is also shown for Bad Password/Offline;
   // Camera Wi-Fi and the rest of the settings sections only show when fully Online.
   const showCameraPasswordRow = cameraStatus === 'Online' || cameraStatus === 'Bad Password' || cameraStatus === 'Offline';
@@ -513,10 +513,10 @@ export function SettingsScreen({
     const idx = CAMERA_SIGNAL_CYCLE.indexOf(cameraSignal);
     setCameraSignal(CAMERA_SIGNAL_CYCLE[(idx + 1) % CAMERA_SIGNAL_CYCLE.length]);
   };
-  const cameraSignalColor = cameraSignal === 'Excellent' ? '#BFE3D9'
-    : cameraSignal === 'Ok' ? '#FCEAAD'
-    : cameraSignal === 'Wired' ? '#BFE3D9'
-    : '#FFC7BD'; // Bad, Poor, NONE
+  const cameraSignalColor = cameraSignal === 'Excellent' ? 'var(--app-status-good)'
+    : cameraSignal === 'Ok' ? 'var(--app-status-warning)'
+    : cameraSignal === 'Wired' ? 'var(--app-status-good)'
+    : 'var(--app-status-bad)'; // Bad, Poor, NONE
 
   // Internet Viewing screen
   type IVStatus = '---' | 'Checking...' | 'No Internet Connection' | 'Router uPnP Disabled' | 'Online' | 'Camera Not Reachable';
@@ -742,9 +742,9 @@ export function SettingsScreen({
   };
 
   const overallScheduleSummary = (): { text: string; color: string } => {
-    if (schedules.every(s => !s.enabled)) return { text: 'Disabled', color: '#FFC7BD' };
-    if (schedules.some(s => s.enabled && s.allDay && s.days.every(Boolean))) return { text: 'All day, Everyday', color: '#BFE3D9' };
-    return { text: 'Custom', color: '#FCEAAD' };
+    if (schedules.every(s => !s.enabled)) return { text: 'Disabled', color: 'var(--app-status-bad)' };
+    if (schedules.some(s => s.enabled && s.allDay && s.days.every(Boolean))) return { text: 'All day, Everyday', color: 'var(--app-status-good)' };
+    return { text: 'Custom', color: 'var(--app-status-warning)' };
   };
 
   // Record Mode popup
@@ -2281,7 +2281,7 @@ export function SettingsScreen({
                     <span className="text-app-root-fg text-base">SD Card</span>
                     <div className="flex items-center gap-4">
                       <button onClick={cycleSDStatus} className="hover:opacity-70 transition-opacity" title="Tap to cycle SD states (demo)">
-                        <span className="text-base font-medium" style={{ color: sdStatus === 'Missing!' ? '#FFC7BD' : sdStatus === 'Reading...' ? '#FCEAAD' : sdStatus === 'Blank' ? '#FCEAAD' : '#BFE3D9' }}>{sdStatus}</span>
+                        <span className="text-base font-medium" style={{ color: sdStatus === 'Missing!' ? 'var(--app-status-bad)' : sdStatus === 'Reading...' ? 'var(--app-status-warning)' : sdStatus === 'Blank' ? 'var(--app-status-warning)' : 'var(--app-status-good)' }}>{sdStatus}</span>
                       </button>
                       <button onClick={() => setSdPopup('confirm-format')} className="px-4 py-2 text-app-root-fg rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Format</button>
                     </div>
@@ -2297,7 +2297,7 @@ export function SettingsScreen({
                   <div className="flex items-center justify-between py-4 border-b border-app-line-1">
                     <span className="text-app-root-fg text-base">Internet Viewing</span>
                     <div className="flex items-center gap-4">
-                      <span className="font-medium text-base" style={{ color: internetViewingEnabled ? '#BFE3D9' : '#FFC7BD' }}>{internetViewingEnabled ? 'Enabled' : 'Disabled'}</span>
+                      <span className="font-medium text-base" style={{ color: internetViewingEnabled ? 'var(--app-status-good)' : 'var(--app-status-bad)' }}>{internetViewingEnabled ? 'Enabled' : 'Disabled'}</span>
                       <button
                         onClick={openIVScreen}
                         className="px-4 py-2 text-app-root-fg rounded transition-colors text-sm hover:opacity-90"
@@ -2327,8 +2327,8 @@ export function SettingsScreen({
                         <button onClick={() => { if (!ipSaveError) { setIpEditorMode(ipMode); setIpEditorConfig({ ...ipConfig }); } setIpSaveError(false); setIpErrors({}); setShowIpEditor(true); }} className="px-4 py-2 text-app-root-fg rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
                       </div>
                     </div>
-                    {ipRestartMsg && <p className="text-sm mt-2" style={{ color: '#BFE3D9' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
-                    {ipSaveError && <p className="text-sm mt-2" style={{ color: '#FFC7BD' }}>Couldn't save network settings, camera didn't respond.</p>}
+                    {ipRestartMsg && <p className="text-sm mt-2" style={{ color: 'var(--app-status-good)' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
+                    {ipSaveError && <p className="text-sm mt-2" style={{ color: 'var(--app-status-bad)' }}>Couldn't save network settings, camera didn't respond.</p>}
                   </div>
                 </div>
               </div>
@@ -3137,10 +3137,10 @@ export function SettingsScreen({
                   <span className="text-app-root-fg text-base">Status - touch to check again</span>
                   <div className="flex items-center gap-2">
                     <span className="text-base font-medium" style={{
-                      color: ivStatus === 'Online' ? '#BFE3D9'
-                        : ivStatus === 'Checking...' ? '#FCEAAD'
+                      color: ivStatus === 'Online' ? 'var(--app-status-good)'
+                        : ivStatus === 'Checking...' ? 'var(--app-status-warning)'
                         : ivStatus === '---' ? '#888'
-                        : '#FFC7BD'
+                        : 'var(--app-status-bad)'
                     }}>{ivStatus}</span>
                     <RefreshCw className="w-4 h-4 text-app-text-4" />
                   </div>
@@ -3234,8 +3234,8 @@ export function SettingsScreen({
                   </h2>
                 </div>
                 <div className="px-8 py-6 flex flex-col items-center gap-4">
-                  <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-[#BFE3D9]">
-                    <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
+                  <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-app-status-good">
+                    <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
                   </div>
                   <p className="text-app-text-2 text-base text-center leading-snug">
                     {ivProgress === 'configuring-port' && (ivRouterMode === 'automatic' ? 'Opening a port for the camera through your router to the internet...' : 'Configuring port...')}
@@ -3291,7 +3291,7 @@ export function SettingsScreen({
                 <div className="px-8 py-5"><p className="text-app-text-2 text-base leading-relaxed text-center">You are connected via the Internet now. If you disable this you will be disconnected and will not be able to reconnect until you connect via local Wi-Fi.</p></div>
                 <div className="border-t border-app-line-1 flex">
                   <button onClick={() => setIvPopup(null)} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-r border-app-line-1" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-                  <button onClick={ivConfirmDisable} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: '#FFC7BD' }}>Disable</button>
+                  <button onClick={ivConfirmDisable} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: 'var(--app-status-bad)' }}>Disable</button>
                 </div>
               </div>
             </div>
@@ -3356,9 +3356,9 @@ export function SettingsScreen({
                       setIpEditorConfig(c => ({ ...c, [key]: val }));
                       setIpErrors(er => ({ ...er, [key]: undefined }));
                     }}
-                    className={`w-full px-4 py-3 rounded-lg bg-app-root-bg text-app-root-fg border focus:outline-none text-base ${ipErrors[key] ? 'border-[#FFC7BD]' : 'border-app-line-2 focus:border-[#5A8BBF]'}`}
+                    className={`w-full px-4 py-3 rounded-lg bg-app-root-bg text-app-root-fg border focus:outline-none text-base ${ipErrors[key] ? 'border-app-status-bad' : 'border-app-line-2 focus:border-[#5A8BBF]'}`}
                   />
-                  {ipErrors[key] && <p className="text-sm mt-1" style={{ color: '#FFC7BD' }}>{ipErrors[key]}</p>}
+                  {ipErrors[key] && <p className="text-sm mt-1" style={{ color: 'var(--app-status-bad)' }}>{ipErrors[key]}</p>}
                 </div>
               );
               return (
@@ -3409,7 +3409,7 @@ export function SettingsScreen({
             </div>
             <div className="border-t border-app-line-1 flex">
               <button onClick={() => setShowIpWarning(false)} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-r border-app-line-1" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-              <button onClick={commitIpSave} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: '#FFC7BD' }}>Make Change</button>
+              <button onClick={commitIpSave} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: 'var(--app-status-bad)' }}>Make Change</button>
             </div>
           </div>
         </div>
@@ -3425,7 +3425,7 @@ export function SettingsScreen({
             </div>
             <div className="border-t border-app-line-1 flex">
               <button onClick={() => setFactoryResetPopup(null)} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-r border-app-line-1" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-              <button onClick={startFactoryReset} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: '#FFC7BD' }}>Factory Reset</button>
+              <button onClick={startFactoryReset} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: 'var(--app-status-bad)' }}>Factory Reset</button>
             </div>
           </div>
         </div>
@@ -3440,8 +3440,8 @@ export function SettingsScreen({
               </h2>
             </div>
             <div className="px-8 py-6 flex justify-center">
-              <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-[#BFE3D9]">
-                <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
+              <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-app-status-good">
+                <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
               </div>
             </div>
           </div>
@@ -3473,7 +3473,7 @@ export function SettingsScreen({
             </div>
             <div className="border-t border-app-line-1 flex">
               <button onClick={() => setRebootPopup(null)} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-r border-app-line-1" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-              <button onClick={startReboot} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: '#FFC7BD' }}>Reboot</button>
+              <button onClick={startReboot} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: 'var(--app-status-bad)' }}>Reboot</button>
             </div>
           </div>
         </div>
@@ -3486,8 +3486,8 @@ export function SettingsScreen({
               <h2 className="text-app-root-fg text-xl font-semibold text-center">Rebooting...</h2>
             </div>
             <div className="px-8 py-6 flex flex-col items-center">
-              <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-[#BFE3D9]">
-                <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
+              <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-app-status-good">
+                <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
               </div>
             </div>
           </div>
@@ -3524,7 +3524,7 @@ export function SettingsScreen({
             </div>
             <div className="border-t border-app-line-1 flex">
               <button onClick={() => setSdPopup(null)} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-r border-app-line-1" style={{ color: SETTINGS_ACCENT_COLOR }}>Cancel</button>
-              <button onClick={startFormat} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: '#FFC7BD' }}>Format SD</button>
+              <button onClick={startFormat} className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold" style={{ color: 'var(--app-status-bad)' }}>Format SD</button>
             </div>
           </div>
         </div>
@@ -3538,8 +3538,8 @@ export function SettingsScreen({
               <h2 className="text-app-root-fg text-xl font-semibold text-center">Formatting...</h2>
             </div>
             <div className="px-8 py-6 flex flex-col items-center gap-4">
-              <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-[#BFE3D9]">
-                <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
+              <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-app-status-good">
+                <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
               </div>
             </div>
           </div>
@@ -3710,7 +3710,7 @@ export function SettingsScreen({
                 <div>
                   <h2 className="text-2xl text-app-root-fg">Select Camera Wi-Fi</h2>
                   <p className="text-sm text-app-text-3 mt-1">Choose the network for your camera</p>
-                  <p className="text-base text-[#FCEAAD] mt-2">For better use, select a Sami-5G network</p>
+                  <p className="text-base text-app-status-warning mt-2">For better use, select a Sami-5G network</p>
                 </div>
                 <button
                   onClick={() => { setCwPickerIsRefreshing(true); setTimeout(() => setCwPickerIsRefreshing(false), 1500); }}
@@ -3871,8 +3871,8 @@ export function SettingsScreen({
                 <h2 className="text-app-root-fg text-xl font-semibold text-center">Connecting Camera to Wi-Fi</h2>
               </div>
               <div className="px-8 py-8 flex flex-col items-center gap-4">
-                <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-[#BFE3D9]">
-                  <Loader2 className="w-12 h-12 text-[#BFE3D9] animate-spin" />
+                <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center border-2 border-app-status-good">
+                  <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
                 </div>
                 <p className="text-sm text-app-text-3">This may take a few seconds</p>
               </div>
@@ -3943,8 +3943,8 @@ export function SettingsScreen({
             <div className="bg-app-surface-1 rounded-lg w-[520px] overflow-hidden border border-app-line-1">
               {/* Icon + title */}
               <div className="flex flex-col items-center pt-8 pb-2 px-8">
-                <div className="w-16 h-16 bg-app-root-bg rounded-2xl flex items-center justify-center mb-4 border-2 border-[#FCEAAD]">
-                  <Lock className="w-8 h-8 text-[#FCEAAD]" />
+                <div className="w-16 h-16 bg-app-root-bg rounded-2xl flex items-center justify-center mb-4 border-2 border-app-status-warning">
+                  <Lock className="w-8 h-8 text-app-status-warning" />
                 </div>
                 <h2 className="text-app-root-fg text-xl font-semibold text-center mb-2">Edit Camera Password</h2>
                 <p className="text-app-text-3 text-sm text-center">Password must contain a capital letter, at least 4 letters and 2 numbers</p>
@@ -3954,7 +3954,7 @@ export function SettingsScreen({
               <div className="px-8 py-5 space-y-4">
                 <div>
                   <label className="block text-sm mb-2 text-app-text-3 text-left">
-                    Password: <span className="text-xs text-[#FFC7BD]">(required)</span>
+                    Password: <span className="text-xs text-app-status-bad">(required)</span>
                   </label>
                   <div className="space-y-3">
                     <input
@@ -3962,14 +3962,14 @@ export function SettingsScreen({
                       value={editedPassword}
                       onChange={handleNewPasswordChange}
                       autoFocus
-                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-root-bg text-app-root-fg placeholder-gray-500 ${editPasswordError ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'}`}
+                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-root-bg text-app-root-fg placeholder-gray-500 ${editPasswordError ? 'border-app-status-bad focus:border-app-status-bad' : 'border-app-status-warning/30 focus:border-app-status-warning'}`}
                       placeholder="New password"
                     />
                     <input
                       type="text"
                       value={editedConfirmPassword}
                       onChange={handleConfirmPasswordChange}
-                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-root-bg text-app-root-fg placeholder-gray-500 ${editPasswordError ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'}`}
+                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-root-bg text-app-root-fg placeholder-gray-500 ${editPasswordError ? 'border-app-status-bad focus:border-app-status-bad' : 'border-app-status-warning/30 focus:border-app-status-warning'}`}
                       placeholder="Confirm new password"
                     />
                   </div>
@@ -3983,13 +3983,13 @@ export function SettingsScreen({
                     value={editedPasswordHint}
                     onChange={(e) => setEditedPasswordHint(e.target.value.slice(0, 30))}
                     maxLength={30}
-                    className="w-full px-4 py-3 border border-[#FCEAAD]/30 rounded-xl focus:outline-none focus:border-[#FCEAAD] bg-app-root-bg text-app-root-fg placeholder-gray-500"
+                    className="w-full px-4 py-3 border border-app-status-warning/30 rounded-xl focus:outline-none focus:border-app-status-warning bg-app-root-bg text-app-root-fg placeholder-gray-500"
                     placeholder="Password hint (e.g., my first pet's name)"
                   />
                   <p className="text-xs text-app-text-3 mt-1 text-left">This will help you remember your password ({editedPasswordHint.length}/30)</p>
                 </div>
                 {editPasswordError && (
-                  <p className="text-sm text-[#FFC7BD]">{editPasswordError}</p>
+                  <p className="text-sm text-app-status-bad">{editPasswordError}</p>
                 )}
               </div>
 

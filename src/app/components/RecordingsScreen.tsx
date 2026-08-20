@@ -326,7 +326,7 @@ export function RecordingsScreen({
 
                           <h3 className="text-xl text-app-text-3">Downloading from Camera</h3>
 
-                          <p className="text-lg text-[#BFE3D9]">
+                          <p className="text-lg text-app-status-good">
                             {downloadProgress}%
                           </p>
 
@@ -731,7 +731,7 @@ export function RecordingsScreen({
                                 isSelected
                                   ? 'bg-[#5B8BBF] ring-4 ring-[#5B8BBF]/30 scale-150'
                                   : hasAlarm
-                                  ? 'bg-[#FCEAAD] ring-2 ring-[#FCEAAD]/50 hover:scale-125'
+                                  ? 'bg-app-status-warning ring-2 ring-app-status-warning/50 hover:scale-125'
                                   : 'bg-gray-300 hover:bg-gray-200 hover:scale-125'
                               }`} />
                             </button>
@@ -1051,8 +1051,8 @@ export function RecordingsScreen({
             {/* Archived section info banner */}
             {showArchivedSection && (
               <div className="-mx-5 -mt-3 mb-4 bg-app-root-bg py-3 px-6 flex items-center justify-center gap-2 border-b border-app-line-3">
-                <Info className="w-5 h-5 text-[#FCEAAD] flex-shrink-0" />
-                <span className="text-[#FCEAAD] text-base font-medium">
+                <Info className="w-5 h-5 text-app-status-warning flex-shrink-0" />
+                <span className="text-app-status-warning text-base font-medium">
                   These videos will be deleted once your Mobile Device gets out of storage or you can delete them permanently manually
                 </span>
               </div>

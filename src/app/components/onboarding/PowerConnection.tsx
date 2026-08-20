@@ -14,15 +14,15 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FCEAAD]">
-          <Power className="w-10 h-10 text-[#FCEAAD]" />
+        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
+          <Power className="w-10 h-10 text-app-status-warning" />
         </div>
 
         <h1 className="text-3xl mb-3 text-app-root-fg">Verify Camera is Ready</h1>
         <p className="text-base text-app-text-2 mx-[0px] mt-[0px] mb-[15px]">Confirm the Camera Power Light is green and that you&apos;re on the same Wi-Fi network.</p>
 
         {/* LED Status Flow */}
-        <div className="w-full bg-app-surface-1 rounded-xl border border-[#FCEAAD]/30 px-4 py-3 mb-4">
+        <div className="w-full bg-app-surface-1 rounded-xl border border-app-status-warning/30 px-4 py-3 mb-4">
           <div className="flex items-center justify-center gap-4">
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-app-surface-3 border-2 border-gray-500 mb-1"></div>
@@ -35,13 +35,13 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
             </div>
             <ArrowRight className="w-5 h-5 text-app-text-4" />
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-[#BFE3D9] border-2 border-[#BFE3D9] mb-1 shadow-lg shadow-[#BFE3D9]/50"></div>
+              <div className="w-8 h-8 rounded-full bg-app-status-good border-2 border-app-status-good mb-1 shadow-lg shadow-app-status-good/50"></div>
               <span className="text-xs text-app-text-3">Green</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-app-surface-1 border border-[#BFE3D9]/30 rounded-xl p-6 w-full mx-[0px] mt-[0px] mb-[20px]">
+        <div className="bg-app-surface-1 border border-app-status-good/30 rounded-xl p-6 w-full mx-[0px] mt-[0px] mb-[20px]">
           <p className="text-base text-app-text-2 leading-relaxed">
             Pro tip: For better speed and a more reliable connection, leave the camera connected to the Sami Hub or your home Wi-Fi router with an Ethernet cable (LAN port).
           </p>

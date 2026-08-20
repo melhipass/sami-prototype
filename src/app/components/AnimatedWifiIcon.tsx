@@ -91,11 +91,11 @@ export function AnimatedWifiIcon() {
       case 1: // Top 3 light gray, bottom 1 red
         return ['#CCCCCC', '#CCCCCC', '#CCCCCC', '#B95555'];
       case 2: // Top 2 light gray, bottom 2 yellow
-        return ['#CCCCCC', '#CCCCCC', '#FCEAAD', '#FCEAAD'];
+        return ['#CCCCCC', '#CCCCCC', 'var(--app-status-warning)', 'var(--app-status-warning)'];
       case 3: // Top 1 light gray, bottom 3 green
-        return ['#CCCCCC', '#BFE3D9', '#BFE3D9', '#BFE3D9'];
+        return ['#CCCCCC', 'var(--app-status-good)', 'var(--app-status-good)', 'var(--app-status-good)'];
       case 4: // All 4 green
-        return ['#BFE3D9', '#BFE3D9', '#BFE3D9', '#BFE3D9'];
+        return ['var(--app-status-good)', 'var(--app-status-good)', 'var(--app-status-good)', 'var(--app-status-good)'];
       default:
         return ['#CCCCCC', '#CCCCCC', '#CCCCCC', '#CCCCCC'];
     }

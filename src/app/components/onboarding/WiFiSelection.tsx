@@ -59,7 +59,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
           <div>
             <h2 className="text-2xl text-app-root-fg">{title}</h2>
             <p className="text-sm text-app-text-3 mt-1">Choose the network for your camera</p>
-            <p className="text-base text-[#FCEAAD] mt-2">For better use, select a Sami-5G network</p>
+            <p className="text-base text-app-status-warning mt-2">For better use, select a Sami-5G network</p>
           </div>
           <button
             onClick={handleRefresh}

@@ -3,16 +3,29 @@
 :root {
   --font-size: 16px;
   /* ============================================================
-     NORMAL MODE (light) — brand-based palette.
+     LIGHT MODE — brand-based palette.
      Sourced from Sami Brand Book v1.0:
        Dark Blue   #293283  (primary text on light backgrounds)
        Baby Blue   #EEF6FD  (primary light surface)
-       Soft Pink   #FFC7BD  (accent, unused in app chrome for now)
-       Gentle Green #BFE3D9 (accent, alarm "on" family)
-       Mellow Yellow #FCEAAD (accent, unused in app chrome for now)
+       Soft Pink   #FFC7BD  (accent, also used raw as a "bad/error" status color)
+       Gentle Green #BFE3D9 (accent, also used raw as a "good/enabled" status color)
+       Mellow Yellow #FCEAAD (accent, also used raw as a "warning/pending" status color
+                              and as the default onboarding icon-badge accent)
      Neutral tiers (surfaces/borders/text ranks not covered by the
      5 brand colors) are derived tints of Dark Blue so everything
      stays within the same hue family instead of introducing plain grays.
+
+     IMPORTANT: the app also uses these 3 secondary colors RAW (as literal
+     hex, e.g. text-[#FFC7BD]) in many places as text/icon/border colors,
+     not just as backgrounds. The brand book only shows these colors used
+     as BACKGROUNDS with Dark Blue text on top — it never shows them used
+     as text/icon/border color directly on a light surface, and at their
+     raw (very pale/pastel) values they don't have enough contrast to be
+     read that way on a light background. The --app-status-* tokens below
+     give each of these 3 colors a deepened, readable "on light surface"
+     counterpart for exactly that text/icon/border usage, while keeping
+     the Dark Mode value identical to the raw brand hex (which reads
+     fine on the app's existing dark backgrounds).
      ============================================================ */
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
@@ -89,6 +102,12 @@
   --app-gray-inactive: #A9B8D6;
   --app-gray-border: #C9D6EA;
   --app-night-vision-overlay: rgba(4, 192, 127, 0.08);
+
+  /* "On light surface" status colors — deepened counterparts of the raw
+     brand secondary colors, for text/icon/border use (see note above). */
+  --app-status-bad: #BD4A3E;      /* Soft Pink family, deepened for contrast */
+  --app-status-warning: #8A6D1A;  /* Mellow Yellow family, deepened for contrast */
+  --app-status-good: #2F7A61;     /* Gentle Green family, deepened for contrast */
 }
 
 .dark {
@@ -128,7 +147,7 @@
   --sidebar-ring: oklch(0.439 0 0);
 
   /* ============================================================
-     NIGHT MODE (dark) — unchanged from today's hardcoded look.
+     DARK MODE — unchanged from today's hardcoded look.
      These values reproduce the literal Tailwind classes the
      prototype used everywhere before this refactor, so the
      rendered result stays pixel-identical to before.
@@ -166,6 +185,12 @@
   --app-gray-inactive: #94a3b8; /* Modern slate gray */
   --app-gray-border: #475569; /* Slate border */
   --app-night-vision-overlay: rgba(4, 192, 127, 0.08); /* Subtle teal green overlay */
+
+  /* "On light surface" status colors — identical to the raw brand hex in
+     Dark Mode, since those already read fine on the app's dark backgrounds. */
+  --app-status-bad: #FFC7BD;
+  --app-status-warning: #FCEAAD;
+  --app-status-good: #BFE3D9;
 }
 
 @theme inline {
@@ -221,6 +246,9 @@
   --color-app-line-1: var(--app-line-1);
   --color-app-line-2: var(--app-line-2);
   --color-app-line-3: var(--app-line-3);
+  --color-app-status-bad: var(--app-status-bad);
+  --color-app-status-warning: var(--app-status-warning);
+  --color-app-status-good: var(--app-status-good);
 }
 
 @layer base {
