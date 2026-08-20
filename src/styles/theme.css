@@ -102,10 +102,10 @@
   --app-slate: #8288AD;      /* do not use for text: fails contrast */
   --app-mist: #D9DEEB;       /* hairlines on light */
   --app-muted: #C3C9DE;      /* the "not analysed" dot / rare neutral surface */
-  --app-green: #BFE3D9;      /* caregiver chip ground / onboarding info-box ground */
-  --app-green-ink: #1F5C48;  /* ink on green */
-  --app-yellow: #FCEAAD;     /* viewer chip ground */
-  --app-yellow-ink: #6B5A12; /* ink on yellow */
+  --app-mint: #BFE3D9;      /* caregiver chip ground / onboarding info-box ground. Named "mint" (not "green") to avoid colliding with the pre-existing .bg-app-green/.text-app-green classes in colors.css, which belong to the unrelated alarm accent-color system. */
+  --app-mint-ink: #1F5C48;  /* ink on mint */
+  --app-cream: #FCEAAD;     /* viewer chip ground. Named "cream" (not "yellow") to avoid colliding with .bg-app-yellow in colors.css (alarm accent system). */
+  --app-cream-ink: #6B5A12; /* ink on cream */
   --app-pink: #FFC7BD;       /* clinician chip ground */
   --app-pink-ink: #8A3A2C;   /* ink on pink */
   --app-motion: #FF4A3A;     /* camera overlay only. Never brand. */
@@ -203,8 +203,8 @@
      be fixed in both themes per COLOR_SYSTEM.md, but the onboarding boxes'
      Dark Mode color never changed before this migration (they used the
      general dark surface, not brand green) — restore that here. */
-  --app-green: #1f2937;      /* was --app-onboard-box (dark) — same as the card/surface-1 gray */
-  --app-green-ink: #ffffff;  /* was plain --app-root-fg (white) text on top of the box */
+  --app-mint: #1f2937;      /* was --app-onboard-box (dark) — same as the card/surface-1 gray */
+  --app-mint-ink: #ffffff;  /* was plain --app-root-fg (white) text on top of the box */
 
   /* Same exception again: "muted" is fixed per spec, but Dark Mode's
      toggle-off-track / rare-neutral-surface color never changed before
@@ -302,10 +302,10 @@
   --color-app-slate: var(--app-slate);
   --color-app-mist: var(--app-mist);
   --color-app-muted: var(--app-muted);
-  --color-app-green: var(--app-green);
-  --color-app-green-ink: var(--app-green-ink);
-  --color-app-yellow: var(--app-yellow);
-  --color-app-yellow-ink: var(--app-yellow-ink);
+  --color-app-mint: var(--app-mint);
+  --color-app-mint-ink: var(--app-mint-ink);
+  --color-app-cream: var(--app-cream);
+  --color-app-cream-ink: var(--app-cream-ink);
   --color-app-pink: var(--app-pink);
   --color-app-pink-ink: var(--app-pink-ink);
   --color-app-motion: var(--app-motion);

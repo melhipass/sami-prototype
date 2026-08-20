@@ -28,14 +28,14 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
         {cameras.length > 0 ? (
-          <div className="w-20 h-20 bg-app-green rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
+          <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
             <Camera className="w-10 h-10 text-app-amber" />
             <div className="absolute -top-2 -right-2 bg-[#BFE3D9] rounded-full p-1 border-2 border-black">
               <CheckCircle className="w-6 h-6 text-[#2C3B4A]" />
             </div>
           </div>
         ) : (
-          <div className="w-20 h-20 bg-app-green rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
+          <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
             <AlertCircle className="w-10 h-10 text-app-alert" />
           </div>
         )}
@@ -70,7 +70,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
               ))}
             </div>
           ) : (
-            <div className="w-full bg-app-green rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
+            <div className="w-full bg-app-mint rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
               <p className="text-sm text-app-alert text-left">
                 Confirm the Camera Power Light is green and that you're on the same Wi-Fi network.

@@ -46,7 +46,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
-        <div className="w-20 h-20 bg-app-green rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
+        <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
           <AlertTriangle className="w-10 h-10 text-app-amber" />
         </div>
 
@@ -57,13 +57,13 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           {disclaimers.map((disclaimer, index) => (
             <div
               key={index}
-              className="bg-app-green rounded-xl p-4 border border-app-amber/30"
+              className="bg-app-mint rounded-xl p-4 border border-app-amber/30"
             >
               <div className="flex items-start gap-3 justify-between">
                 <div className="flex-1 text-left">
                   <label
                     htmlFor={`disclaimer-${index}`}
-                    className="text-base font-semibold text-app-green-ink mb-1 block cursor-pointer"
+                    className="text-base font-semibold text-app-mint-ink mb-1 block cursor-pointer"
                   >
                     {disclaimer.title}
                   </label>

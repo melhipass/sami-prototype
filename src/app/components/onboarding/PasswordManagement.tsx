@@ -47,7 +47,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-32 h-32 bg-app-green rounded-3xl flex items-center justify-center mb-6 border-2 border-app-amber">
+        <div className="w-32 h-32 bg-app-mint rounded-3xl flex items-center justify-center mb-6 border-2 border-app-amber">
           <Lock className="w-16 h-16 text-app-amber" />
         </div>
 
@@ -106,8 +106,8 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
       {/* Forgot Password Dialog */}
       {showForgotPasswordDialog && (
         <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 px-6">
-          <div className="bg-app-green rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
-            <h2 className="text-2xl font-semibold text-app-green-ink mb-4 text-center">Forgot Password</h2>
+          <div className="bg-app-mint rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
+            <h2 className="text-2xl font-semibold text-app-mint-ink mb-4 text-center">Forgot Password</h2>
 
             <div className="mb-4">
               <label className="block text-sm mb-2 text-app-content-faint text-left">Password Hint:</label>

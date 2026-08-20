@@ -20,13 +20,13 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
         <span className="text-lg">Skip</span>
       </button>
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-32 h-32 bg-app-green rounded-3xl flex items-center justify-center mb-8 border-2 border-app-amber">
+        <div className="w-32 h-32 bg-app-mint rounded-3xl flex items-center justify-center mb-8 border-2 border-app-amber">
           <Camera className="w-16 h-16 text-app-amber" />
         </div>
 
         <h1 className="text-4xl mb-4 text-app-content">Welcome to Sami</h1>
 
-        <div className="bg-app-green border border-app-quiet/30 rounded-xl p-6 mb-8">
+        <div className="bg-app-mint border border-app-quiet/30 rounded-xl p-6 mb-8">
           <div className="flex items-start gap-3 mb-4">
             <Info className="w-6 h-6 text-app-alert flex-shrink-0 mt-1" />
             {isAndroid ? (

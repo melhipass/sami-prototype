@@ -23,7 +23,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-app-green rounded-2xl flex items-center justify-center border-2 border-app-amber mt-16 mb-4">
+        <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center border-2 border-app-amber mt-16 mb-4">
           <BookOpen className="w-10 h-10 text-app-amber" />
         </div>
 

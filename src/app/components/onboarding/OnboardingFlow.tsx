@@ -398,7 +398,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 12 && (
         <div className="flex items-center justify-center min-h-screen bg-app-surface px-6 py-8">
           <div className="flex flex-col items-center max-w-md w-full text-center">
-            <div className="w-32 h-32 bg-app-green rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
+            <div className="w-32 h-32 bg-app-mint rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
               <AlertCircle className="w-16 h-16 text-app-alert" />
             </div>
 
