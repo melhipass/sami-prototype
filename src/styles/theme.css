@@ -2,6 +2,18 @@
 
 :root {
   --font-size: 16px;
+  /* ============================================================
+     NORMAL MODE (light) — brand-based palette.
+     Sourced from Sami Brand Book v1.0:
+       Dark Blue   #293283  (primary text on light backgrounds)
+       Baby Blue   #EEF6FD  (primary light surface)
+       Soft Pink   #FFC7BD  (accent, unused in app chrome for now)
+       Gentle Green #BFE3D9 (accent, alarm "on" family)
+       Mellow Yellow #FCEAAD (accent, unused in app chrome for now)
+     Neutral tiers (surfaces/borders/text ranks not covered by the
+     5 brand colors) are derived tints of Dark Blue so everything
+     stays within the same hue family instead of introducing plain grays.
+     ============================================================ */
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
   --card: #ffffff;
@@ -39,24 +51,44 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
-  /* Baby Monitor App Color Palette */
-  --app-accent-green: #BFE3D9; /* Darker green for alarm "on" state - improved contrast */
-  --app-accent-green-dark: #5a9d7d; /* Even darker green */
-  --app-accent-green-hover: #4f8a6b; /* Green hover */
-  --app-accent-yellow: #5A8BBF; /* Darker blue for alarm "paused" state - improved contrast */
-  --app-accent-red: #B85555; /* Darker coral red for alarm "off" state - improved contrast */
-  --app-accent-red-dark: #d87f80; /* Darker coral red */
-  --app-accent-blue: #C4D9F1; /* Light Blue for left motion bar - from recordings palette */
-  --app-accent-blue-hover: #a8c4e5; /* Darker light blue for hover */
-  --app-accent-cyan: #5A8BBF; /* Darker blue for active states - improved contrast */
-  --app-accent-teal: #BFE3D9; /* Darker green for alarm "on" state - improved contrast */
-  --app-accent-dark-red: #E59999; /* Coral red for hidden recordings */
-  --app-background-gradient-start: #1e293b; /* Modern slate gradient */
-  --app-background-gradient-end: #0f172a; /* Darker slate */
-  --app-gray-inactive: #94a3b8; /* Modern slate gray */
-  --app-gray-border: #475569; /* Slate border */
-  --app-night-vision-overlay: rgba(4, 192, 127, 0.08); /* Subtle teal green overlay */
+
+  /* App chrome — root background / primary text (was bg-black, bg-gray-900, text-white) */
+  --app-root-bg: #ffffff;
+  --app-root-fg: #293283;
+
+  /* App chrome — surface tiers (was bg-gray-800 / bg-gray-700 / bg-gray-600 / bg-gray-400) */
+  --app-surface-1: #EEF6FD; /* Baby Blue - cards / elevated panels (was gray-800) */
+  --app-surface-2: #E4EDF7; /* secondary surfaces / buttons (was gray-700) */
+  --app-surface-3: #D6E2F0; /* hover / tertiary surface (was gray-600) */
+  --app-surface-4: #C7D5EA; /* rare neutral surface (was gray-400) */
+
+  /* App chrome — text tiers (was text-gray-300 / 400 / 500 / 600) */
+  --app-text-2: #48519B; /* secondary text (was gray-300) */
+  --app-text-3: #6B72A8; /* muted text (was gray-400) */
+  --app-text-4: #8890BE; /* most-muted text (was gray-500 / gray-600) */
+
+  /* App chrome — border tiers (was border-gray-700 / 600 / 800) */
+  --app-line-1: #D7E1F0; /* default border (was border-gray-700) */
+  --app-line-2: #C3D0E8; /* stronger border (was border-gray-600) */
+  --app-line-3: #E7EEF8; /* faint divider (was border-gray-800) */
+
+  /* Baby Monitor App Color Palette (Normal mode values) */
+  --app-accent-green: #4E9C82; /* Gentle Green family, deepened for text/icon contrast on light bg */
+  --app-accent-green-dark: #3D7C66;
+  --app-accent-green-hover: #356B58;
+  --app-accent-yellow: #3E6EA0; /* (name is legacy; this is actually the "paused" blue) */
+  --app-accent-red: #A6453F;
+  --app-accent-red-dark: #BD6058;
+  --app-accent-blue: #5C87BE;
+  --app-accent-blue-hover: #4A72A8;
+  --app-accent-cyan: #3E6EA0;
+  --app-accent-teal: #4E9C82;
+  --app-accent-dark-red: #C67373;
+  --app-background-gradient-start: #EEF6FD;
+  --app-background-gradient-end: #FFFFFF;
+  --app-gray-inactive: #A9B8D6;
+  --app-gray-border: #C9D6EA;
+  --app-night-vision-overlay: rgba(4, 192, 127, 0.08);
 }
 
 .dark {
@@ -94,6 +126,46 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* ============================================================
+     NIGHT MODE (dark) — unchanged from today's hardcoded look.
+     These values reproduce the literal Tailwind classes the
+     prototype used everywhere before this refactor, so the
+     rendered result stays pixel-identical to before.
+     ============================================================ */
+  --app-root-bg: #000000; /* was bg-black / bg-gray-900 */
+  --app-root-fg: #ffffff; /* was text-white */
+
+  --app-surface-1: #1f2937; /* was bg-gray-800 */
+  --app-surface-2: #374151; /* was bg-gray-700 */
+  --app-surface-3: #4b5563; /* was bg-gray-600 */
+  --app-surface-4: #9ca3af; /* was bg-gray-400 */
+
+  --app-text-2: #d1d5db; /* was text-gray-300 */
+  --app-text-3: #9ca3af; /* was text-gray-400 */
+  --app-text-4: #6b7280; /* was text-gray-500 / gray-600 */
+
+  --app-line-1: #374151; /* was border-gray-700 */
+  --app-line-2: #4b5563; /* was border-gray-600 */
+  --app-line-3: #1f2937; /* was border-gray-800 */
+
+  /* Baby Monitor App Color Palette (Night mode values — unchanged) */
+  --app-accent-green: #BFE3D9; /* Darker green for alarm "on" state - improved contrast */
+  --app-accent-green-dark: #5a9d7d; /* Even darker green */
+  --app-accent-green-hover: #4f8a6b; /* Green hover */
+  --app-accent-yellow: #5A8BBF; /* Darker blue for alarm "paused" state - improved contrast */
+  --app-accent-red: #B85555; /* Darker coral red for alarm "off" state - improved contrast */
+  --app-accent-red-dark: #d87f80; /* Darker coral red */
+  --app-accent-blue: #C4D9F1; /* Light Blue for left motion bar - from recordings palette */
+  --app-accent-blue-hover: #a8c4e5; /* Darker light blue for hover */
+  --app-accent-cyan: #5A8BBF; /* Darker blue for active states - improved contrast */
+  --app-accent-teal: #BFE3D9; /* Darker green for alarm "on" state - improved contrast */
+  --app-accent-dark-red: #E59999; /* Coral red for hidden recordings */
+  --app-background-gradient-start: #1e293b; /* Modern slate gradient */
+  --app-background-gradient-end: #0f172a; /* Darker slate */
+  --app-gray-inactive: #94a3b8; /* Modern slate gray */
+  --app-gray-border: #475569; /* Slate border */
+  --app-night-vision-overlay: rgba(4, 192, 127, 0.08); /* Subtle teal green overlay */
 }
 
 @theme inline {
@@ -135,6 +207,20 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* App chrome tokens (Normal/Night skin system) */
+  --color-app-root-bg: var(--app-root-bg);
+  --color-app-root-fg: var(--app-root-fg);
+  --color-app-surface-1: var(--app-surface-1);
+  --color-app-surface-2: var(--app-surface-2);
+  --color-app-surface-3: var(--app-surface-3);
+  --color-app-surface-4: var(--app-surface-4);
+  --color-app-text-2: var(--app-text-2);
+  --color-app-text-3: var(--app-text-3);
+  --color-app-text-4: var(--app-text-4);
+  --color-app-line-1: var(--app-line-1);
+  --color-app-line-2: var(--app-line-2);
+  --color-app-line-3: var(--app-line-3);
 }
 
 @layer base {

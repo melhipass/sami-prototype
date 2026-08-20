@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from '@/app/components/ui/alert-dialog';
 import { Toaster } from '@/app/components/ui/sonner';
+import { Switch } from '@/app/components/ui/switch';
 import { OnboardingFlow } from '@/app/components/onboarding/OnboardingFlow';
 import { RecordingsScreen } from '@/app/components/RecordingsScreen';
 import { SettingsScreen } from '@/app/components/SettingsScreen';
@@ -38,6 +39,9 @@ function AppContent({
   setShowAnalyticsDashboard: (v: boolean) => void;
 }) {
   const [selectedOS, setSelectedOS] = useState<'ios' | 'android' | null>(null);
+  // Prototype-only skin toggle: 'dark' = Night Mode (today's look), 'light' = Normal Mode (brand palette).
+  // Defaults to 'dark' so existing behavior is unchanged unless the user flips the switch.
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
   const [showHomeScreen, setShowHomeScreen] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -443,6 +447,21 @@ function AppContent({
 
     return () => clearInterval(timer);
   }, []);
+
+  // Restore saved skin preference (prototype-only, doesn't affect real app behavior)
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('samiThemeMode');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      setThemeMode(savedTheme);
+    }
+  }, []);
+
+  // Apply the Normal/Night skin by toggling the `dark` class on <body>.
+  // All theme-aware colors in theme.css key off this class.
+  useEffect(() => {
+    document.body.classList.toggle('dark', themeMode === 'dark');
+    localStorage.setItem('samiThemeMode', themeMode);
+  }, [themeMode]);
 
   // Show storage popup the first time user enters Recordings view
   useEffect(() => {
@@ -2016,6 +2035,16 @@ function AppContent({
           >
             View Analytics Dashboard →
           </button>
+
+          {/* Normal / Night skin toggle (prototype-only control) */}
+          <div className="mt-6 flex items-center gap-3" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
+            <span className="text-gray-400 text-sm">Normal</span>
+            <Switch
+              checked={themeMode === 'dark'}
+              onCheckedChange={(checked) => setThemeMode(checked ? 'dark' : 'light')}
+            />
+            <span className="text-gray-400 text-sm">Night Mode</span>
+          </div>
         </div>
       </div>
     );
@@ -2023,7 +2052,7 @@ function AppContent({
 
   if (showHomeScreen) {
     return (
-      <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-screen bg-app-root-bg flex items-center justify-center overflow-hidden">
         <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3]">
           {/* iOS Wallpaper Background */}
           <img 
@@ -2033,7 +2062,7 @@ function AppContent({
           />
           
           {/* Status Bar */}
-          <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 text-white text-sm z-10">
+          <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 text-app-root-fg text-sm z-10">
             <div className="font-semibold">9:41 AM</div>
             <div className="flex items-center gap-2">
               <Wifi className="w-4 h-4" />
@@ -2068,7 +2097,7 @@ function AppContent({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="text-white text-xs text-center font-medium drop-shadow-md">Sami</span>
+                <span className="text-app-root-fg text-xs text-center font-medium drop-shadow-md">Sami</span>
               </div>
             </div>
           </div>
@@ -2101,7 +2130,7 @@ function AppContent({
   if (showSplash) {
     return (
       <motion.div
-        className="relative w-full h-screen bg-black flex items-center justify-center cursor-pointer"
+        className="relative w-full h-screen bg-app-root-bg flex items-center justify-center cursor-pointer"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -2181,7 +2210,7 @@ function AppContent({
 
   // Main Baby Monitor Screen
   return (
-    <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-screen bg-app-root-bg flex items-center justify-center overflow-hidden">
       <div 
         className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] bg-gradient-to-b from-[#1a3d4d] via-[#0f2532] to-[#0a1520] overflow-hidden flex flex-col"
         onClick={handleWakeUp}
@@ -2195,7 +2224,7 @@ function AppContent({
         {/* Clock Screen Overlay */}
         {showClock && (
           <div
-            className="absolute inset-0 bg-black z-30 flex items-center justify-center cursor-pointer"
+            className="absolute inset-0 bg-app-root-bg z-30 flex items-center justify-center cursor-pointer"
             onClick={() => setShowClock(false)}
           >
             {/* Wifi icon - top right */}
@@ -2224,35 +2253,35 @@ function AppContent({
 
         {/* Help Screen Overlay */}
         {showHelp && (
-          <div className="absolute inset-0 bg-black z-30 flex flex-col">
+          <div className="absolute inset-0 bg-app-root-bg z-30 flex flex-col">
             {/* Top black panel */}
-            <div className="bg-black py-4 flex items-center justify-between">
+            <div className="bg-app-root-bg py-4 flex items-center justify-between">
               <button 
                 onClick={() => setShowHelp(false)}
-                className="ml-6 flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-surface-2 hover:bg-app-surface-3 rounded-lg text-app-root-fg transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
               </button>
               
-              <span className="text-white text-lg font-medium">
+              <span className="text-app-root-fg text-lg font-medium">
                 Help [Version 1.0 build 1]
               </span>
               
               <button 
                 onClick={() => setShowSendLogDialog(true)}
-                className="mr-6 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+                className="mr-6 px-4 py-2 bg-app-surface-2 hover:bg-app-surface-3 rounded-lg text-app-root-fg transition-colors"
               >
                 Send log
               </button>
             </div>
             
             {/* Content area */}
-            <div className="flex-1 bg-black overflow-y-auto flex items-center justify-center p-12">
+            <div className="flex-1 bg-app-root-bg overflow-y-auto flex items-center justify-center p-12">
               <div className="max-w-2xl text-left p-12 rounded-lg" style={{ backgroundColor: '#1E2938' }}>
-                <h1 className="text-white text-5xl font-bold mb-8">Looking for help?</h1>
+                <h1 className="text-app-root-fg text-5xl font-bold mb-8">Looking for help?</h1>
                 
-                <div className="text-white text-2xl space-y-6">
+                <div className="text-app-root-fg text-2xl space-y-6">
                   <p>
                     Visit <a href="https://support.samialert.com/hc/en-us" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#5A8BBF] hover:underline cursor-pointer text-2xl">support.samialert.com</a> where you can:
                   </p>
@@ -2274,7 +2303,7 @@ function AppContent({
                   
                   <p
                     onClick={() => setShowOfflineHelp(true)}
-                    className="mt-8 text-gray-400 text-lg cursor-pointer hover:text-gray-300 transition-colors"
+                    className="mt-8 text-app-text-3 text-lg cursor-pointer hover:text-app-text-2 transition-colors"
                   >
                     [see offline version&gt;]
                   </p>
@@ -2285,12 +2314,12 @@ function AppContent({
             {/* Send Log Dialog */}
             {showSendLogDialog && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-40">
-                <div className="bg-black rounded-lg p-8 max-w-md w-full mx-4">
-                  <h2 className="text-white text-2xl font-bold mb-4">Send Log</h2>
+                <div className="bg-app-root-bg rounded-lg p-8 max-w-md w-full mx-4">
+                  <h2 className="text-app-root-fg text-2xl font-bold mb-4">Send Log</h2>
                   {emailError ? (
-                    <p className="text-white mb-6">{emailError} is not a valid email address. Please re-enter</p>
+                    <p className="text-app-root-fg mb-6">{emailError} is not a valid email address. Please re-enter</p>
                   ) : (
-                    <p className="text-white mb-6">Enter an email address for us to contact you:</p>
+                    <p className="text-app-root-fg mb-6">Enter an email address for us to contact you:</p>
                   )}
                   
                   <input
@@ -2311,7 +2340,7 @@ function AppContent({
                         setLogEmail('');
                         setEmailError('');
                       }}
-                      className="px-6 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-white transition-colors"
+                      className="px-6 py-2 rounded-lg bg-app-surface-3 hover:bg-app-surface-4 text-app-root-fg transition-colors"
                     >
                       Cancel
                     </button>
@@ -2330,7 +2359,7 @@ function AppContent({
                           setShowEmailComposer(true);
                         }
                       }}
-                      className="px-6 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+                      className="px-6 py-2 rounded-lg bg-app-surface-2 hover:bg-app-surface-3 text-app-root-fg transition-colors"
                     >
                       OK
                     </button>
@@ -2343,35 +2372,35 @@ function AppContent({
 
         {/* Offline Help Screen */}
         {showOfflineHelp && (
-          <div className="absolute inset-0 bg-black z-40 flex flex-col">
+          <div className="absolute inset-0 bg-app-root-bg z-40 flex flex-col">
             {/* Top black panel */}
-            <div className="bg-black py-4 flex items-center justify-between">
+            <div className="bg-app-root-bg py-4 flex items-center justify-between">
               <button
                 onClick={() => setShowOfflineHelp(false)}
-                className="ml-6 flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-surface-2 hover:bg-app-surface-3 rounded-lg text-app-root-fg transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
               </button>
 
-              <span className="text-white text-lg font-medium">
+              <span className="text-app-root-fg text-lg font-medium">
                 Help [Version 1.0 build 1]
               </span>
 
               <button
                 onClick={() => setShowSendLogDialog(true)}
-                className="mr-6 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors"
+                className="mr-6 px-4 py-2 bg-app-surface-2 hover:bg-app-surface-3 rounded-lg text-app-root-fg transition-colors"
               >
                 Send log
               </button>
             </div>
 
             {/* Content area */}
-            <div className="flex-1 bg-black overflow-y-auto flex items-center justify-center p-12">
+            <div className="flex-1 bg-app-root-bg overflow-y-auto flex items-center justify-center p-12">
               <div className="max-w-2xl text-center p-12 rounded-lg" style={{ backgroundColor: '#1E2938' }}>
-                <h1 className="text-white text-5xl font-bold mb-8">Looking for help?</h1>
+                <h1 className="text-app-root-fg text-5xl font-bold mb-8">Looking for help?</h1>
 
-                <div className="text-white text-2xl">
+                <div className="text-app-root-fg text-2xl">
                   <p>
                     Your Device is Currently Offline.
                     <br /><br />
@@ -2386,12 +2415,12 @@ function AppContent({
             {/* Send Log Dialog */}
             {showSendLogDialog && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div className="bg-black rounded-lg p-8 max-w-md w-full mx-4">
-                  <h2 className="text-white text-2xl font-bold mb-4">Send Log</h2>
+                <div className="bg-app-root-bg rounded-lg p-8 max-w-md w-full mx-4">
+                  <h2 className="text-app-root-fg text-2xl font-bold mb-4">Send Log</h2>
                   {emailError ? (
-                    <p className="text-white mb-6">{emailError} is not a valid email address. Please re-enter</p>
+                    <p className="text-app-root-fg mb-6">{emailError} is not a valid email address. Please re-enter</p>
                   ) : (
-                    <p className="text-white mb-6">Enter an email address for us to contact you:</p>
+                    <p className="text-app-root-fg mb-6">Enter an email address for us to contact you:</p>
                   )}
 
                   <input
@@ -2412,7 +2441,7 @@ function AppContent({
                         setLogEmail('');
                         setEmailError('');
                       }}
-                      className="px-6 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-white transition-colors"
+                      className="px-6 py-2 rounded-lg bg-app-surface-3 hover:bg-app-surface-4 text-app-root-fg transition-colors"
                     >
                       Cancel
                     </button>
@@ -2431,7 +2460,7 @@ function AppContent({
                           setShowEmailComposer(true);
                         }
                       }}
-                      className="px-6 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition-colors"
+                      className="px-6 py-2 rounded-lg bg-app-surface-2 hover:bg-app-surface-3 text-app-root-fg transition-colors"
                     >
                       OK
                     </button>
@@ -2444,9 +2473,9 @@ function AppContent({
 
         {/* Email Composer */}
         {showEmailComposer && (
-          <div className="absolute inset-0 bg-black z-50 flex flex-col">
+          <div className="absolute inset-0 bg-app-root-bg z-50 flex flex-col">
             {/* Top bar */}
-            <div className="bg-black py-4 px-6 flex items-center justify-between border-b border-gray-700">
+            <div className="bg-app-root-bg py-4 px-6 flex items-center justify-between border-b border-app-line-1">
               <button 
                 onClick={() => {
                   setShowEmailComposer(false);
@@ -2457,7 +2486,7 @@ function AppContent({
                 Cancel
               </button>
               
-              <span className="text-white text-lg font-medium">
+              <span className="text-app-root-fg text-lg font-medium">
                 New Message
               </span>
               
@@ -2477,19 +2506,19 @@ function AppContent({
             <div className="flex-1 bg-white overflow-y-auto">
               {/* To field */}
               <div className="flex items-center border-b border-gray-300 px-4 py-3">
-                <span className="text-gray-500 mr-3 w-16">To:</span>
+                <span className="text-app-text-4 mr-3 w-16">To:</span>
                 <span className="text-black flex-1">Sami3_support@hipassdesign.com</span>
               </div>
               
               {/* From field */}
               <div className="flex items-center border-b border-gray-300 px-4 py-3">
-                 <span className="text-gray-500 mr-3 w-16">From:</span>
+                 <span className="text-app-text-4 mr-3 w-16">From:</span>
                 <span className="text-black flex-1">{logEmail}</span>
               </div>
               
               {/* Subject field */}
               <div className="flex items-center border-b border-gray-300 px-4 py-3">
-                <span className="text-gray-500 mr-3 w-16">Subject:</span>
+                <span className="text-app-text-4 mr-3 w-16">Subject:</span>
                 <span className="text-black flex-1">!!! Support request for Sami-3c [7812FFA010C1]</span>
               </div>
               
@@ -2842,7 +2871,7 @@ IP is Dynamic`}
         
         {/* Push Notification */}
         {showPushNotification && (
-          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[400px] bg-gray-800 rounded-xl shadow-2xl overflow-hidden animate-slideDown">
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[400px] bg-app-surface-1 rounded-xl shadow-2xl overflow-hidden animate-slideDown">
             <div className="flex items-center gap-4 p-4">
               {/* Logo */}
               <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
@@ -2855,10 +2884,10 @@ IP is Dynamic`}
               
               {/* Content */}
               <div className="flex-1">
-                <div className="text-white font-semibold text-base mb-1">
+                <div className="text-app-root-fg font-semibold text-base mb-1">
                   Sami 3
                 </div>
-                <div className="text-gray-300 text-sm">
+                <div className="text-app-text-2 text-sm">
                   Sami is no longer Active.
                 </div>
               </div>
@@ -2870,21 +2899,21 @@ IP is Dynamic`}
         {/* Proactive Sami Network Detection Popup - Main Live View (demo trigger: no camera paired) */}
         {isMainView && !cameraPaired && showSamiNetworkBanner && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[500px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[500px] overflow-hidden">
               {/* Title */}
-              <div className="text-white text-xl font-semibold text-center py-4 border-b border-gray-700">
+              <div className="text-app-root-fg text-xl font-semibold text-center py-4 border-b border-app-line-1">
                 Initial Setup
               </div>
 
               {/* Description */}
               <div className="px-6 py-6">
-                <p className="text-white text-center text-lg">
+                <p className="text-app-root-fg text-center text-lg">
                   Confirm your Sami camera is plugged in and press continue after the power light is green.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-gray-700 flex flex-col">
+              <div className="border-t border-app-line-1 flex flex-col">
                 <button
                   onClick={() => {
                     setShowSamiNetworkBanner(false);
@@ -2892,14 +2921,14 @@ IP is Dynamic`}
                     setOnboardingSkipPermissions(true);
                     setShowOnboarding(true);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-b border-app-line-1"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Continue
                 </button>
                 <button
                   onClick={() => setShowSamiNetworkBanner(false)}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold text-gray-400"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold text-app-text-3"
                 >
                   Cancel
                 </button>
@@ -2911,8 +2940,8 @@ IP is Dynamic`}
         {/* Pairing Camera Popup - Main Screen */}
         {showPairingPopup && !showSettings && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg px-12 py-8 text-center">
-              <div className="text-white text-2xl font-medium">Pairing Camera</div>
+            <div className="bg-app-surface-1 rounded-lg px-12 py-8 text-center">
+              <div className="text-app-root-fg text-2xl font-medium">Pairing Camera</div>
               <div className="mt-4">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
               </div>
@@ -2923,28 +2952,28 @@ IP is Dynamic`}
         {/* Volume Warning Popup for Camera Fault Beep - Main Screen */}
         {showVolumeWarningPopup && !showSettings && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[500px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[500px] overflow-hidden">
               {/* Title */}
-              <div className="text-white text-xl font-semibold text-center py-4 border-b border-gray-700">
+              <div className="text-app-root-fg text-xl font-semibold text-center py-4 border-b border-app-line-1">
                 Alarm Volume Off
               </div>
 
               {/* Description */}
               <div className="px-6 py-6">
-                <p className="text-white text-center text-lg">
+                <p className="text-app-root-fg text-center text-lg">
                   You have enabled "Beep on camera fault" but your alarm volume is set to off.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-gray-700 flex flex-col">
+              <div className="border-t border-app-line-1 flex flex-col">
                 <button
                   onClick={() => {
                     setShowVolumeWarningPopup(false);
                     setBeepOnCameraFault(false);
                     toast('Beep on camera fault is disabled');
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700 text-red-500"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-b border-app-line-1 text-red-500"
                 >
                   Disable Beep
                 </button>
@@ -2953,7 +2982,7 @@ IP is Dynamic`}
                     setShowVolumeWarningPopup(false);
                     setIgnoreCameraFaultWarning(true);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-b border-app-line-1"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Ignore
@@ -2965,7 +2994,7 @@ IP is Dynamic`}
                     setBeepOnCameraFault(true);
                     toast('Alarm Volume set to 50%');
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Set Volume to 50%
@@ -2978,17 +3007,17 @@ IP is Dynamic`}
         {/* Archive Confirmation Popup */}
         {showArchiveConfirmPopup && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               {/* Title */}
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">
                   Trash {archiveWarningType === 'locked' ? 'Locked' : archiveWarningType === 'alarmed' ? 'Alarmed' : 'Locked/Alarmed'} Video
                 </h2>
               </div>
 
               {/* Description */}
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">
                   {archiveIsSingleLocked
                     ? 'Are you sure you want to move this Locked video to the Trash?'
                     : 'One or more of your selected recordings is Locked'}
@@ -2997,39 +3026,39 @@ IP is Dynamic`}
 
               {/* Buttons */}
               {archiveIsSingleLocked ? (
-                <div className="border-t border-gray-700 flex flex-row">
+                <div className="border-t border-app-line-1 flex flex-row">
                   <button
                     onClick={handleArchiveConfirmCancel}
-                    className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-r border-gray-700"
+                    className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-r border-app-line-1"
                     style={{ color: SETTINGS_ACCENT_COLOR }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleArchiveConfirmOk}
-                    className="flex-1 text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold text-[#B85555]"
+                    className="flex-1 text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold text-[#B85555]"
                   >
                     OK
                   </button>
                 </div>
               ) : (
-                <div className="border-t border-gray-700 flex flex-col">
+                <div className="border-t border-app-line-1 flex flex-col">
                   <button
                     onClick={handleArchiveUnlockedOnly}
-                    className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700"
+                    className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-b border-app-line-1"
                     style={{ color: SETTINGS_ACCENT_COLOR }}
                   >
                     Trash unlocked only
                   </button>
                   <button
                     onClick={handleArchiveConfirmOk}
-                    className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold border-b border-gray-700 text-[#B85555]"
+                    className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold border-b border-app-line-1 text-[#B85555]"
                   >
                     Trash ALL
                   </button>
                   <button
                     onClick={handleArchiveConfirmCancel}
-                    className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold"
+                    className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold"
                     style={{ color: SETTINGS_ACCENT_COLOR }}
                   >
                     Cancel
@@ -3043,28 +3072,28 @@ IP is Dynamic`}
         {/* Storage Warning Popup */}
         {showStoragePopup && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               {/* Title */}
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Out of Storage!</h2>
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">Out of Storage!</h2>
               </div>
 
               {/* Description */}
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">
                   Your Mobile Device is out of storage space, so recording transfers are disabled. You need to increase the storage limit in settings, activate Auto-Deletion or manually trash some recordings or delete other content from your Mobile Device.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-gray-700 flex flex-col">
+              <div className="border-t border-app-line-1 flex flex-col">
                 <button
                   onClick={() => {
                     setShowStoragePopup(false);
                     setShowSettings(true);
                     setShowRecordings(false);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full border-b border-gray-700"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-full border-b border-app-line-1"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Go to Settings
@@ -3074,13 +3103,13 @@ IP is Dynamic`}
                     setShowStoragePopup(false);
                     setShowAutoDeletePopup(true);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full border-b border-gray-700 text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-full border-b border-app-line-1 text-[#B85555]"
                 >
                   Turn on Automatic-Deletion
                 </button>
                 <button
                   onClick={() => setShowStoragePopup(false)}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-full"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Manually manage storage
@@ -3093,32 +3122,32 @@ IP is Dynamic`}
         {/* Auto-Delete Videos Popup */}
         {showAutoDeletePopup && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               {/* Title */}
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Automatically-Delete Older Videos</h2>
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">Automatically-Delete Older Videos</h2>
               </div>
 
               {/* Description */}
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">Older-Unlocked Videos will be permanently deleted automatically from the main view when you are out of storage on your Mobile Device. If you don't want to lose a Video, make sure you Lock it. You can turn this functionality off from the Settings View.</p>
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">Older-Unlocked Videos will be permanently deleted automatically from the main view when you are out of storage on your Mobile Device. If you don't want to lose a Video, make sure you Lock it. You can turn this functionality off from the Settings View.</p>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-gray-700 flex">
+              <div className="border-t border-app-line-1 flex">
                 <button
                   onClick={() => {
                     setAutoDeleteOlderVideos(true);
                     setShowAutoDeletePopup(false);
                     setShowStorageNotification(false);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full border-r border-gray-700 text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-full border-r border-app-line-1 text-[#B85555]"
                 >
                   OK
                 </button>
                 <button
                   onClick={() => setShowAutoDeletePopup(false)}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-full"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Cancel
@@ -3131,27 +3160,27 @@ IP is Dynamic`}
         {/* WiFi Network Info Popup */}
         {showWifiPopup && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               {/* Title */}
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Device Network Status</h2>
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">Device Network Status</h2>
               </div>
 
               {/* Description */}
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">
                   You last connected to your Sami Device on the "{lastConnectedNetwork}" network. Your Device is currently connected to "{currentNetwork}" network. Use the Device Wi-Fi settings to change back to the "{lastConnectedNetwork}" network.
                 </p>
               </div>
 
               {/* Button */}
-              <div className="border-t border-gray-700">
+              <div className="border-t border-app-line-1">
                 <button
                   onClick={() => {
                     setShowWifiPopup(false);
                     setShowWifiSearchHint(true);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-full"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-full"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   OK
@@ -3164,21 +3193,21 @@ IP is Dynamic`}
         {/* Delete Confirmation Popup */}
         {showDeleteConfirmation && selectedRecordingIndex !== null && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               {/* Title */}
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Delete Recording</h2>
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">Delete Recording</h2>
               </div>
 
               {/* Description */}
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">
                   Are you sure you want to delete this recording? This action cannot be undone.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-gray-700 flex">
+              <div className="border-t border-app-line-1 flex">
                 <button
                   onClick={() => {
                     const selectedRecording = allRecordings.find(r => r.id === selectedRecordingIndex);
@@ -3191,13 +3220,13 @@ IP is Dynamic`}
                     }
                     setShowDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-1/2 border-r border-gray-700 text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-1/2 border-r border-app-line-1 text-[#B85555]"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirmation(false)}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-1/2"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-1/2"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Cancel
@@ -3210,21 +3239,21 @@ IP is Dynamic`}
         {/* Bulk Delete Confirmation Popup */}
         {showBulkDeleteConfirmation && selectedRecordingIds.length > 0 && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               {/* Title */}
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Delete Recordings</h2>
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">Delete Recordings</h2>
               </div>
 
               {/* Description */}
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">
                   Are you sure you want to permanently delete {selectedRecordingIds.length} recording{selectedRecordingIds.length !== 1 ? 's' : ''}? This action cannot be undone.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-gray-700 flex">
+              <div className="border-t border-app-line-1 flex">
                 <button
                   onClick={() => {
                     setAllRecordings(prev => prev.filter(r => !selectedRecordingIds.includes(r.id)));
@@ -3233,13 +3262,13 @@ IP is Dynamic`}
                     setTimeout(() => setShowDeletedMessage(false), 3000);
                     setShowBulkDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-1/2 border-r border-gray-700 text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-1/2 border-r border-app-line-1 text-[#B85555]"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => setShowBulkDeleteConfirmation(false)}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-1/2"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-1/2"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Cancel
@@ -3252,16 +3281,16 @@ IP is Dynamic`}
         {/* Single-item Permanent Delete Confirmation Popup */}
         {showSingleDeleteConfirmation && (
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-lg w-[600px] overflow-hidden">
+            <div className="bg-app-surface-1 rounded-lg w-[600px] overflow-hidden">
               <div className="px-8 pt-6">
-                <h2 className="text-white text-2xl font-semibold text-center">Delete Recording</h2>
+                <h2 className="text-app-root-fg text-2xl font-semibold text-center">Delete Recording</h2>
               </div>
               <div className="px-8 py-6">
-                <p className="text-white text-lg leading-relaxed text-center">
+                <p className="text-app-root-fg text-lg leading-relaxed text-center">
                   Are you sure you want to permanently delete this recording? This action cannot be undone.
                 </p>
               </div>
-              <div className="border-t border-gray-700 flex">
+              <div className="border-t border-app-line-1 flex">
                 <button
                   onClick={() => {
                     if (singleDeleteRecordingId !== null) {
@@ -3272,13 +3301,13 @@ IP is Dynamic`}
                     }
                     setShowSingleDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-1/2 border-r border-gray-700 text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-1/2 border-r border-app-line-1 text-[#B85555]"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => setShowSingleDeleteConfirmation(false)}
-                  className="text-lg py-4 hover:bg-gray-700 transition-colors text-center font-semibold w-1/2"
+                  className="text-lg py-4 hover:bg-app-surface-2 transition-colors text-center font-semibold w-1/2"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Cancel
@@ -3289,24 +3318,24 @@ IP is Dynamic`}
         )}
 
         {/* Video Feed Area */}
-        <div className="relative flex-1 overflow-hidden bg-black">
+        <div className="relative flex-1 overflow-hidden bg-app-root-bg">
           {/* Baby monitor video feed */}
           <div
             onClick={handleScreenClick}
-            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-black flex items-center justify-center cursor-pointer"
+            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-app-root-bg flex items-center justify-center cursor-pointer"
           >
             {!cameraPaired ? (
               <div className="flex flex-col items-center justify-center text-center px-8 max-w-md">
                 {/* Warning Icon with Circle Background */}
-                <div className="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mb-6 border-2 border-[#FFC7BD]">
+                <div className="w-20 h-20 bg-app-surface-1 rounded-full flex items-center justify-center mb-6 border-2 border-[#FFC7BD]">
                   <AlertCircle className="w-10 h-10 text-[#FFC7BD]" />
                 </div>
 
                 {/* Text Content */}
-                <h2 className="text-2xl text-white mb-3 font-semibold">
+                <h2 className="text-2xl text-app-root-fg mb-3 font-semibold">
                   No camera paired
                 </h2>
-                <p className="text-base text-gray-400 leading-relaxed">
+                <p className="text-base text-app-text-3 leading-relaxed">
                   Please go to Device section on settings and configure one.
                 </p>
               </div>
@@ -3335,7 +3364,7 @@ IP is Dynamic`}
                 />
                 
                 {/* Timestamp */}
-                <div className="text-white text-lg font-mono opacity-40 select-none" draggable="false">
+                <div className="text-app-root-fg text-lg font-mono opacity-40 select-none" draggable="false">
                   {(() => {
                     const year = currentTimestamp.getFullYear();
                     const month = String(currentTimestamp.getMonth() + 1).padStart(2, '0');
@@ -3542,12 +3571,12 @@ IP is Dynamic`}
                   onMouseDown={handleSliderStart}
                   onTouchStart={handleSliderStart}
                 >
-                  <ArrowBigRight className="w-14 h-14 text-white fill-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
+                  <ArrowBigRight className="w-14 h-14 text-app-root-fg fill-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
                 </div>
                 
                 {/* Text */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-white text-xl font-medium tracking-wide" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                  <span className="text-app-root-fg text-xl font-medium tracking-wide" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                     Slide to unlock
                   </span>
                 </div>
@@ -3588,7 +3617,7 @@ IP is Dynamic`}
               onClick={handleVolumePickerInteraction}
             >
               {/* Mic icon at left */}
-              <Mic className="w-6 h-6 text-white" style={{ color: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' }} />
+              <Mic className="w-6 h-6 text-app-root-fg" style={{ color: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' }} />
               
               {/* Volume slider */}
               <div className="relative flex flex-row items-center">
@@ -3638,7 +3667,7 @@ IP is Dynamic`}
               </div>
               
               {/* Volume percentage label */}
-              <span className="text-white text-sm font-medium w-12 text-right">{Math.round(micVolume)}%</span>
+              <span className="text-app-root-fg text-sm font-medium w-12 text-right">{Math.round(micVolume)}%</span>
             </div>
           )}
 
@@ -3655,7 +3684,7 @@ IP is Dynamic`}
                   animation: 'muteButtonPulse 1s ease-in-out infinite'
                 }}
               >
-                <span className="text-white text-3xl font-bold tracking-wide">Mute Alarm</span>
+                <span className="text-app-root-fg text-3xl font-bold tracking-wide">Mute Alarm</span>
               </button>
             )}
 
@@ -3669,12 +3698,12 @@ IP is Dynamic`}
               onTouchEnd={enableAlarm && cameraPaired ? handleAlarmPressEnd : undefined}
               className={`w-full px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center h-20 ${
                 !cameraPaired || !enableAlarm
-                  ? 'bg-gray-600 text-white cursor-not-allowed'
+                  ? 'bg-app-surface-3 text-app-root-fg cursor-not-allowed'
                   : isPaused
-                    ? 'bg-[#FCEAAD] text-white'
+                    ? 'bg-[#FCEAAD] text-app-root-fg'
                     : cameraOn
-                      ? 'bg-app-teal text-white'
-                      : 'bg-app-coral text-white'
+                      ? 'bg-app-teal text-app-root-fg'
+                      : 'bg-app-coral text-app-root-fg'
               }`}
             >
               {!cameraPaired || !enableAlarm ? (
@@ -3723,7 +3752,7 @@ IP is Dynamic`}
                   }}
                 >
                   <div className="relative">
-                    <svg width="10" height="12" viewBox="0 0 10 12" className="text-white">
+                    <svg width="10" height="12" viewBox="0 0 10 12" className="text-app-root-fg">
                       <polygon points="0,6 10,0 10,12" fill="currentColor" />
                     </svg>
                   </div>
@@ -3731,7 +3760,7 @@ IP is Dynamic`}
                 
                 {/* Motion icon at bottom */}
                 <div className="mt-2">
-                  <MotionDetectionIcon className="w-5 h-5 text-white" />
+                  <MotionDetectionIcon className="w-5 h-5 text-app-root-fg" />
                 </div>
               </div>
 
@@ -3754,7 +3783,7 @@ IP is Dynamic`}
                   }}
                 >
                   <div className="relative">
-                    <svg width="10" height="12" viewBox="0 0 10 12" className="text-white">
+                    <svg width="10" height="12" viewBox="0 0 10 12" className="text-app-root-fg">
                       <polygon points="0,6 10,0 10,12" fill="currentColor" />
                     </svg>
                   </div>
@@ -3762,7 +3791,7 @@ IP is Dynamic`}
                 
                 {/* Bell/Alarm icon at bottom */}
                 <div className="mt-2">
-                  <Bell className="w-5 h-5 text-white" />
+                  <Bell className="w-5 h-5 text-app-root-fg" />
                 </div>
               </div>
             </div>
@@ -3795,8 +3824,8 @@ IP is Dynamic`}
               disabled={!cameraPaired}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
-                  ? 'bg-gray-600 cursor-not-allowed opacity-50 text-white'
-                  : micOn ? 'text-white' : 'bg-[#5B6C7E] text-white'
+                  ? 'bg-app-surface-3 cursor-not-allowed opacity-50 text-app-root-fg'
+                  : micOn ? 'text-app-root-fg' : 'bg-[#5B6C7E] text-app-root-fg'
               }`}
               style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
             >
@@ -3813,7 +3842,7 @@ IP is Dynamic`}
             {/* Settings button - triggers bottom panel */}
             <button 
               onClick={handleUserActivity}
-              className="w-full h-16 transition-all flex items-center justify-center text-white"
+              className="w-full h-16 transition-all flex items-center justify-center text-app-root-fg"
             >
               <Settings className="w-8 h-8" />
             </button>
@@ -3835,7 +3864,7 @@ IP is Dynamic`}
                     onClick={() => setShowClock(!showClock)}
                     className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Clock className="w-10 h-10 text-white" />
+                    <Clock className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Clock</span>
                   </button>
 
@@ -3861,13 +3890,13 @@ IP is Dynamic`}
                     disabled={!cameraPaired}
                     className={`w-36 h-[90px] rounded-xl flex flex-col items-center justify-center gap-2 transition-colors ${
                       !cameraPaired
-                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                        ? 'bg-app-surface-3 cursor-not-allowed opacity-50'
                         : borderActive
                           ? 'bg-app-cyan'
                           : 'bg-[#5B6C7E]'
                     }`}
                   >
-                    <ScanFace className="w-10 h-10 text-white" />
+                    <ScanFace className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Border</span>
                   </button>
 
@@ -3879,13 +3908,13 @@ IP is Dynamic`}
                     disabled={!cameraPaired}
                     className={`w-36 h-[90px] rounded-xl flex flex-col items-center justify-center gap-2 transition-colors ${
                       !cameraPaired
-                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                        ? 'bg-app-surface-3 cursor-not-allowed opacity-50'
                         : motionActive
                           ? 'bg-app-cyan'
                           : 'bg-[#5B6C7E]'
                     }`}
                   >
-                    <MotionDetectionIcon className="w-10 h-10 text-white" />
+                    <MotionDetectionIcon className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Motion</span>
                   </button>
 
@@ -3893,7 +3922,7 @@ IP is Dynamic`}
                     onClick={handleLockToggle}
                     className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Lock className="w-10 h-10 text-white" />
+                    <Lock className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Lock</span>
                   </button>
 
@@ -3901,7 +3930,7 @@ IP is Dynamic`}
                     onClick={() => setShowRecordings(!showRecordings)}
                     className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Video className="w-10 h-10 text-white" />
+                    <Video className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Recordings</span>
                   </button>
 
@@ -3909,7 +3938,7 @@ IP is Dynamic`}
                     onClick={() => setShowHelp(!showHelp)}
                     className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <CircleHelp className="w-10 h-10 text-white" />
+                    <CircleHelp className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Help</span>
                   </button>
 
@@ -3919,7 +3948,7 @@ IP is Dynamic`}
                     }}
                     className="w-36 h-[90px] rounded-xl bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Settings className="w-10 h-10 text-white" />
+                    <Settings className="w-10 h-10 text-app-root-fg" />
                     <span className="text-sm text-white/80">Settings</span>
                   </button>
                 </div>
@@ -3969,7 +3998,7 @@ function PrototypeLogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className="fixed top-6 left-6 z-[9999] text-gray-500 hover:text-white transition-colors text-lg disabled:opacity-60"
+      className="fixed top-6 left-6 z-[9999] text-app-text-4 hover:text-app-root-fg transition-colors text-lg disabled:opacity-60"
     >
       {isLoggingOut ? 'Saliendo...' : 'Logout'}
     </button>
@@ -3997,9 +4026,9 @@ function AppIcon({ name, color, Icon }: { name: string; color: string; Icon: Rea
         className="w-20 h-20 rounded-2xl shadow-lg flex items-center justify-center"
         style={{ backgroundColor: color }}
       >
-        <Icon className="w-12 h-12 text-white" />
+        <Icon className="w-12 h-12 text-app-root-fg" />
       </div>
-      <span className="text-white text-xs text-center font-medium drop-shadow-md">{name}</span>
+      <span className="text-app-root-fg text-xs text-center font-medium drop-shadow-md">{name}</span>
     </div>
   );
 }
@@ -4012,7 +4041,7 @@ function DockAppIcon({ name, color, Icon }: { name: string; color: string; Icon:
         className="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center"
         style={{ backgroundColor: color }}
       >
-        <Icon className="w-10 h-10 text-white" />
+        <Icon className="w-10 h-10 text-app-root-fg" />
       </div>
     </div>
   );

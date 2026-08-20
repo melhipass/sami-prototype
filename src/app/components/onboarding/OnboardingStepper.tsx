@@ -22,8 +22,8 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                     isCompleted
                       ? 'bg-[#BFE3D9] text-[#2C3B4A]'
                       : isActive
-                      ? 'bg-[#5B8BBF] text-white'
-                      : 'bg-gray-700 text-gray-500'
+                      ? 'bg-[#5B8BBF] text-app-root-fg'
+                      : 'bg-app-surface-2 text-app-text-4'
                   }`}
                 >
                   {isCompleted ? (
@@ -34,7 +34,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                 </div>
                 <span
                   className={`text-[14px] mt-1 font-medium whitespace-nowrap ${
-                    isActive ? 'text-[#5B8BBF]' : isCompleted ? 'text-[#BFE3D9]' : 'text-gray-600'
+                    isActive ? 'text-[#5B8BBF]' : isCompleted ? 'text-[#BFE3D9]' : 'text-app-text-4'
                   }`}
                 >
                   {label}
@@ -46,7 +46,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
               {i < labels.length - 1 && (
                 <div
                   className={`w-12 h-0.5 mb-3 mx-1 transition-all ${
-                    i < currentIndex ? 'bg-[#BFE3D9]' : 'bg-gray-700'
+                    i < currentIndex ? 'bg-[#BFE3D9]' : 'bg-app-surface-2'
                   }`}
                 />
               )}

@@ -256,25 +256,25 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         <LocationExplainer onContinue={() => setStep(5)} onCancel={() => setStep(3)} />
       )}
       {step === 5 && (
-        <div className="flex items-center justify-center min-h-screen bg-black px-6">
-          <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#FCEAAD]/30">
-            <h2 className="text-xl mb-4 text-center text-white">Allow Location Sharing</h2>
+        <div className="flex items-center justify-center min-h-screen bg-app-root-bg px-6">
+          <div className="bg-app-surface-1 rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#FCEAAD]/30">
+            <h2 className="text-xl mb-4 text-center text-app-root-fg">Allow Location Sharing</h2>
             <div className="space-y-3">
               <button
                 onClick={handleLocationPermission}
-                className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition-colors"
+                className="w-full bg-app-surface-2 text-app-root-fg py-3 rounded-xl hover:bg-app-surface-3 transition-colors"
               >
                 Allow Once
               </button>
               <button
                 onClick={handleLocationPermission}
-                className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition-colors"
+                className="w-full bg-app-surface-2 text-app-root-fg py-3 rounded-xl hover:bg-app-surface-3 transition-colors"
               >
                 Allow While Using App
               </button>
               <button
                 onClick={() => setStep(12)}
-                className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition-colors"
+                className="w-full bg-app-surface-2 text-app-root-fg py-3 rounded-xl hover:bg-app-surface-3 transition-colors"
               >
                 Do Not Allow
               </button>
@@ -283,19 +283,19 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         </div>
       )}
       {step === 6 && (
-        <div className="flex items-center justify-center min-h-screen bg-black px-6">
-          <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#BFE3D9]/30">
-            <h2 className="text-xl mb-4 text-center text-white">Allow Sami to look for local network devices.</h2>
+        <div className="flex items-center justify-center min-h-screen bg-app-root-bg px-6">
+          <div className="bg-app-surface-1 rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#BFE3D9]/30">
+            <h2 className="text-xl mb-4 text-center text-app-root-fg">Allow Sami to look for local network devices.</h2>
             <div className="space-y-3">
               <button
                 onClick={handleLocalNetworkPermission}
-                className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition-colors"
+                className="w-full bg-app-surface-2 text-app-root-fg py-3 rounded-xl hover:bg-app-surface-3 transition-colors"
               >
                 Allow
               </button>
               <button
                 onClick={() => setStep(12)}
-                className="w-full bg-gray-700 text-white py-3 rounded-xl hover:bg-gray-600 transition-colors"
+                className="w-full bg-app-surface-2 text-app-root-fg py-3 rounded-xl hover:bg-app-surface-3 transition-colors"
               >
                 Do Not Allow
               </button>
@@ -396,14 +396,14 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         />
       )}
       {step === 12 && (
-        <div className="flex items-center justify-center min-h-screen bg-black px-6 py-8">
+        <div className="flex items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
           <div className="flex flex-col items-center max-w-md w-full text-center">
-            <div className="w-32 h-32 bg-gray-800 rounded-3xl flex items-center justify-center mb-6 border-2 border-[#FFC7BD]">
+            <div className="w-32 h-32 bg-app-surface-1 rounded-3xl flex items-center justify-center mb-6 border-2 border-[#FFC7BD]">
               <AlertCircle className="w-16 h-16 text-[#FFC7BD]" />
             </div>
 
-            <h1 className="text-3xl mb-4 text-white">Permissions Required</h1>
-            <p className="text-base text-gray-300 mb-8 leading-relaxed">
+            <h1 className="text-3xl mb-4 text-app-root-fg">Permissions Required</h1>
+            <p className="text-base text-app-text-2 mb-8 leading-relaxed">
               Sami needs Location and Network permissions to discover and connect to your Sami camera.
               Please go to your device's Settings &gt; Sami &gt; Permissions and enable Location and Local Network access, then close and reopen the app.
             </p>
@@ -412,21 +412,21 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
               <button
                 onClick={() => setStep(5)}
                 title="Opens the device's Settings app (native app only)"
-                className="w-full bg-[#5B8BBF] text-white py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
+                className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors"
               >
                 Go to Settings
               </button>
 
               <button
                 onClick={() => setStep(5)}
-                className="w-full bg-gray-700 text-white py-4 rounded-xl text-lg hover:bg-gray-600 transition-colors"
+                className="w-full bg-app-surface-2 text-app-root-fg py-4 rounded-xl text-lg hover:bg-app-surface-3 transition-colors"
               >
                 Try Again
               </button>
 
               <button
                 onClick={() => setStep(0)}
-                className="w-full text-gray-400 py-3 text-base hover:text-white transition-colors"
+                className="w-full text-app-text-3 py-3 text-base hover:text-app-root-fg transition-colors"
               >
                 Exit Setup
               </button>

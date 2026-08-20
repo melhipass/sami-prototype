@@ -83,20 +83,20 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
   const canSubmit = validation.isValid && passwordsMatch;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FCEAAD]">
+        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FCEAAD]">
           <Lock className="w-10 h-10 text-[#FCEAAD]" />
         </div>
 
-        <h1 className="text-3xl mb-3 text-white">Create Password</h1>
-        <p className="text-base text-gray-300 mb-8">
+        <h1 className="text-3xl mb-3 text-app-root-fg">Create Password</h1>
+        <p className="text-base text-app-text-2 mb-8">
           Password must contain a capital letter, at least 4 letters and 2 numbers
         </p>
 
         <div className="mb-6 w-full space-y-4">
           <div>
-            <label className="block text-sm mb-2 text-gray-400 text-left">
+            <label className="block text-sm mb-2 text-app-text-3 text-left">
               Password: <span className="text-xs text-[#FFC7BD]">(required)</span>
             </label>
             <div className="space-y-3">
@@ -105,7 +105,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
                   type="text"
                   value={password}
                   onChange={handlePasswordChange}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface-1 text-app-root-fg placeholder-gray-500 ${
                     error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
                   }`}
                   placeholder="Enter password"
@@ -117,7 +117,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
                   type="text"
                   value={confirmPassword}
                   onChange={handleConfirmPasswordChange}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-gray-800 text-white placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface-1 text-app-root-fg placeholder-gray-500 ${
                     error ? 'border-[#FFC7BD] focus:border-[#FFC7BD]' : 'border-[#FCEAAD]/30 focus:border-[#FCEAAD]'
                   }`}
                   placeholder="Confirm password"
@@ -127,18 +127,18 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           </div>
 
           <div>
-            <label className="block text-sm mb-2 text-gray-400 text-left">
-              Password Hint: <span className="text-xs text-gray-500">(optional)</span>
+            <label className="block text-sm mb-2 text-app-text-3 text-left">
+              Password Hint: <span className="text-xs text-app-text-4">(optional)</span>
             </label>
             <input
               type="text"
               value={passwordHint}
               onChange={(e) => setPasswordHint(e.target.value.slice(0, 30))}
               maxLength={30}
-              className="w-full px-4 py-3 border border-[#FCEAAD]/30 rounded-xl focus:outline-none focus:border-[#FCEAAD] bg-gray-800 text-white placeholder-gray-500"
+              className="w-full px-4 py-3 border border-[#FCEAAD]/30 rounded-xl focus:outline-none focus:border-[#FCEAAD] bg-app-surface-1 text-app-root-fg placeholder-gray-500"
               placeholder="Password hint (e.g., my first pet's name)"
             />
-            <p className="text-xs text-gray-400 mt-1 text-left">This will help you remember your password ({passwordHint.length}/30)</p>
+            <p className="text-xs text-app-text-3 mt-1 text-left">This will help you remember your password ({passwordHint.length}/30)</p>
           </div>
 
           {error && (
@@ -150,14 +150,14 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="w-full bg-[#5B8BBF] text-white py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Confirm
           </button>
 
           <button
             onClick={onCancel}
-            className="w-full text-gray-400 py-3 text-base hover:text-white transition-colors"
+            className="w-full text-app-text-3 py-3 text-base hover:text-app-root-fg transition-colors"
           >
             Go Back
           </button>

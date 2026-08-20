@@ -44,30 +44,30 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
   const allAccepted = acceptedDisclaimers.every((accepted) => accepted) && agreedToTerms;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black px-6 py-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
-        <div className="w-20 h-20 bg-gray-800 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FCEAAD]">
+        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-[#FCEAAD]">
           <AlertTriangle className="w-10 h-10 text-[#FCEAAD]" />
         </div>
 
-        <h1 className="text-3xl mb-3 text-white text-center">Important Information</h1>
-        <p className="text-xl text-gray-300 mb-6 text-center">Please review the following disclaimers</p>
+        <h1 className="text-3xl mb-3 text-app-root-fg text-center">Important Information</h1>
+        <p className="text-xl text-app-text-2 mb-6 text-center">Please review the following disclaimers</p>
 
         <div className="w-full mb-6 max-h-[200px] overflow-y-auto space-y-4 pr-2">
           {disclaimers.map((disclaimer, index) => (
             <div
               key={index}
-              className="bg-gray-800 rounded-xl p-4 border border-[#FCEAAD]/30"
+              className="bg-app-surface-1 rounded-xl p-4 border border-[#FCEAAD]/30"
             >
               <div className="flex items-start gap-3 justify-between">
                 <div className="flex-1 text-left">
                   <label
                     htmlFor={`disclaimer-${index}`}
-                    className="text-base font-semibold text-white mb-1 block cursor-pointer"
+                    className="text-base font-semibold text-app-root-fg mb-1 block cursor-pointer"
                   >
                     {disclaimer.title}
                   </label>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-app-text-3">
                     {disclaimer.description}
                   </p>
                 </div>
@@ -75,7 +75,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                   id={`disclaimer-${index}`}
                   onClick={() => toggleDisclaimer(index)}
                   className={`mt-1 w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                    acceptedDisclaimers[index] ? 'bg-[#5B8BBF]' : 'bg-gray-600'
+                    acceptedDisclaimers[index] ? 'bg-[#5B8BBF]' : 'bg-app-surface-3'
                   }`}
                 >
                   <div
@@ -96,10 +96,10 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
               id="terms-agreement"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-2 border-gray-600 bg-gray-800 checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
+              className="mt-1 w-5 h-5 rounded border-2 border-app-line-2 bg-app-surface-1 checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
               style={{ accentColor: '#293283' }}
             />
-            <label htmlFor="terms-agreement" className="text-sm text-gray-300 text-left cursor-pointer">
+            <label htmlFor="terms-agreement" className="text-sm text-app-text-2 text-left cursor-pointer">
               I have read and agree to Sami's{' '}
               <a
                 href="https://www.samialert.com/policies/terms-of-service"
@@ -126,14 +126,14 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           <button
             onClick={onAccept}
             disabled={!allAccepted}
-            className="w-full bg-[#5B8BBF] text-white py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#5B8BBF] text-app-root-fg py-4 rounded-xl text-lg shadow-lg hover:bg-[#5B8BBF]/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Accept All
           </button>
 
           <button
             onClick={onCancel}
-            className="w-full text-gray-400 py-3 text-base hover:text-white transition-colors"
+            className="w-full text-app-text-3 py-3 text-base hover:text-app-root-fg transition-colors"
           >
             Cancel
           </button>
