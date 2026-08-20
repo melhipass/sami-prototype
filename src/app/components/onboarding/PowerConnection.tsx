@@ -12,9 +12,9 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
   const [showTroublePopup, setShowTroublePopup] = useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
+        <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
           <Power className="w-10 h-10 text-app-status-warning" />
         </div>
 
@@ -22,7 +22,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
         <p className="text-base text-app-text-2 mx-[0px] mt-[0px] mb-[15px]">Confirm the Camera Power Light is green and that you&apos;re on the same Wi-Fi network.</p>
 
         {/* LED Status Flow */}
-        <div className="w-full bg-app-surface-1 rounded-xl border border-app-status-warning/30 px-4 py-3 mb-4">
+        <div className="w-full bg-app-onboard-box rounded-xl border border-app-status-warning/30 px-4 py-3 mb-4">
           <div className="flex items-center justify-center gap-4">
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-app-surface-3 border-2 border-gray-500 mb-1"></div>
@@ -41,7 +41,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
           </div>
         </div>
 
-        <div className="bg-app-surface-1 border border-app-status-good/30 rounded-xl p-6 w-full mx-[0px] mt-[0px] mb-[20px]">
+        <div className="bg-app-onboard-box border border-app-status-good/30 rounded-xl p-6 w-full mx-[0px] mt-[0px] mb-[20px]">
           <p className="text-base text-app-text-2 leading-relaxed">
             Pro tip: For better speed and a more reliable connection, leave the camera connected to the Sami Hub or your home Wi-Fi router with an Ethernet cable (LAN port).
           </p>
@@ -67,7 +67,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
       {/* Trouble popup — Android only */}
       {showTroublePopup && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-6">
-          <div className="bg-app-surface-1 rounded-2xl w-full max-w-md overflow-hidden border border-app-line-1">
+          <div className="bg-app-onboard-box rounded-2xl w-full max-w-md overflow-hidden border border-app-line-1">
             <div className="flex items-center justify-between px-6 pt-6 pb-4">
               <h2 className="text-app-root-fg text-xl font-semibold">Having Trouble?</h2>
               <button onClick={() => setShowTroublePopup(false)} className="p-1 hover:bg-app-surface-2 rounded-lg transition-colors">

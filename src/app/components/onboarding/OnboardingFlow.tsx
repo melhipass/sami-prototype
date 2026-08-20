@@ -256,8 +256,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         <LocationExplainer onContinue={() => setStep(5)} onCancel={() => setStep(3)} />
       )}
       {step === 5 && (
-        <div className="flex items-center justify-center min-h-screen bg-app-root-bg px-6">
-          <div className="bg-app-surface-1 rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-app-status-warning/30">
+        <div className="flex items-center justify-center min-h-screen bg-app-onboard-bg px-6">
+          <div className="bg-app-onboard-input rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-app-status-warning/30">
             <h2 className="text-xl mb-4 text-center text-app-root-fg">Allow Location Sharing</h2>
             <div className="space-y-3">
               <button
@@ -283,8 +283,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         </div>
       )}
       {step === 6 && (
-        <div className="flex items-center justify-center min-h-screen bg-app-root-bg px-6">
-          <div className="bg-app-surface-1 rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-app-status-good/30">
+        <div className="flex items-center justify-center min-h-screen bg-app-onboard-bg px-6">
+          <div className="bg-app-onboard-input rounded-2xl p-6 max-w-sm w-full shadow-2xl border-2 border-app-status-good/30">
             <h2 className="text-xl mb-4 text-center text-app-root-fg">Allow Sami to look for local network devices.</h2>
             <div className="space-y-3">
               <button
@@ -396,9 +396,9 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         />
       )}
       {step === 12 && (
-        <div className="flex items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+        <div className="flex items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
           <div className="flex flex-col items-center max-w-md w-full text-center">
-            <div className="w-32 h-32 bg-app-surface-1 rounded-3xl flex items-center justify-center mb-6 border-2 border-app-status-bad">
+            <div className="w-32 h-32 bg-app-onboard-box rounded-3xl flex items-center justify-center mb-6 border-2 border-app-status-bad">
               <AlertCircle className="w-16 h-16 text-app-status-bad" />
             </div>
 

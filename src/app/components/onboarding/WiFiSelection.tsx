@@ -52,8 +52,8 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
-      <div className="bg-app-surface-1 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-app-line-1">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
+      <div className="bg-app-onboard-input rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-app-line-1">
         {/* Header */}
         <div className="p-6 border-b border-app-line-1 flex items-start justify-between">
           <div>

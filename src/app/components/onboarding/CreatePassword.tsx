@@ -83,9 +83,9 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
   const canSubmit = validation.isValid && passwordsMatch;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
+        <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
           <Lock className="w-10 h-10 text-app-status-warning" />
         </div>
 
@@ -105,7 +105,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
                   type="text"
                   value={password}
                   onChange={handlePasswordChange}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface-1 text-app-root-fg placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-onboard-input text-app-root-fg placeholder-gray-500 ${
                     error ? 'border-app-status-bad focus:border-app-status-bad' : 'border-app-status-warning/30 focus:border-app-status-warning'
                   }`}
                   placeholder="Enter password"
@@ -117,7 +117,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
                   type="text"
                   value={confirmPassword}
                   onChange={handleConfirmPasswordChange}
-                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface-1 text-app-root-fg placeholder-gray-500 ${
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-onboard-input text-app-root-fg placeholder-gray-500 ${
                     error ? 'border-app-status-bad focus:border-app-status-bad' : 'border-app-status-warning/30 focus:border-app-status-warning'
                   }`}
                   placeholder="Confirm password"
@@ -135,7 +135,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
               value={passwordHint}
               onChange={(e) => setPasswordHint(e.target.value.slice(0, 30))}
               maxLength={30}
-              className="w-full px-4 py-3 border border-app-status-warning/30 rounded-xl focus:outline-none focus:border-app-status-warning bg-app-surface-1 text-app-root-fg placeholder-gray-500"
+              className="w-full px-4 py-3 border border-app-status-warning/30 rounded-xl focus:outline-none focus:border-app-status-warning bg-app-onboard-input text-app-root-fg placeholder-gray-500"
               placeholder="Password hint (e.g., my first pet's name)"
             />
             <p className="text-xs text-app-text-3 mt-1 text-left">This will help you remember your password ({passwordHint.length}/30)</p>

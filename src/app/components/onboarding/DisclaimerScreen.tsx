@@ -44,9 +44,9 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
   const allAccepted = acceptedDisclaimers.every((accepted) => accepted) && agreedToTerms;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
-        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
+        <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-warning">
           <AlertTriangle className="w-10 h-10 text-app-status-warning" />
         </div>
 
@@ -57,7 +57,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           {disclaimers.map((disclaimer, index) => (
             <div
               key={index}
-              className="bg-app-surface-1 rounded-xl p-4 border border-app-status-warning/30"
+              className="bg-app-onboard-box rounded-xl p-4 border border-app-status-warning/30"
             >
               <div className="flex items-start gap-3 justify-between">
                 <div className="flex-1 text-left">
@@ -96,7 +96,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
               id="terms-agreement"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-2 border-app-line-2 bg-app-surface-1 checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
+              className="mt-1 w-5 h-5 rounded border-2 border-app-line-2 bg-app-onboard-input checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
               style={{ accentColor: '#293283' }}
             />
             <label htmlFor="terms-agreement" className="text-sm text-app-text-2 text-left cursor-pointer">

@@ -25,17 +25,17 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
         {cameras.length > 0 ? (
-          <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-status-warning">
+          <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-status-warning">
             <Camera className="w-10 h-10 text-app-status-warning" />
             <div className="absolute -top-2 -right-2 bg-[#BFE3D9] rounded-full p-1 border-2 border-black">
               <CheckCircle className="w-6 h-6 text-[#2C3B4A]" />
             </div>
           </div>
         ) : (
-          <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-bad">
+          <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-bad">
             <AlertCircle className="w-10 h-10 text-app-status-bad" />
           </div>
         )}
@@ -52,7 +52,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
               <button
                 key={camera.id}
                 onClick={() => setSelectedCamera(camera.id)}
-                className={`w-full bg-app-surface-1 rounded-xl p-4 border-2 transition-all flex items-center justify-between ${
+                className={`w-full bg-app-onboard-input rounded-xl p-4 border-2 transition-all flex items-center justify-between ${
                   selectedCamera === camera.id
                     ? 'border-app-status-warning'
                     : 'border-app-line-1 hover:border-app-line-2'
@@ -70,7 +70,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
               ))}
             </div>
           ) : (
-            <div className="w-full bg-app-surface-1 rounded-xl p-6 border border-app-status-bad/30 flex items-start gap-3">
+            <div className="w-full bg-app-onboard-box rounded-xl p-6 border border-app-status-bad/30 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-app-status-bad flex-shrink-0 mt-0.5" />
               <p className="text-sm text-app-status-bad text-left">
                 Confirm the Camera Power Light is green and that you're on the same Wi-Fi network.

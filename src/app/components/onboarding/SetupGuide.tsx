@@ -21,9 +21,9 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center border-2 border-app-status-warning mt-16 mb-4">
+        <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center border-2 border-app-status-warning mt-16 mb-4">
           <BookOpen className="w-10 h-10 text-app-status-warning" />
         </div>
 
@@ -35,7 +35,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
         <div className="w-full mb-8 space-y-3">
           <button
             onClick={() => handleOpenGuide('complete')}
-            className="w-full bg-app-surface-1 rounded-xl p-4 border border-app-status-bad/30 hover:border-app-status-bad/60 transition-all flex items-center gap-4 text-left"
+            className="w-full bg-app-onboard-input rounded-xl p-4 border border-app-status-bad/30 hover:border-app-status-bad/60 transition-all flex items-center gap-4 text-left"
           >
             <div className="w-12 h-12 bg-app-status-bad/20 rounded-lg flex items-center justify-center flex-shrink-0">
               <Package className="w-6 h-6 text-app-status-bad" />
@@ -49,7 +49,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
 
           <button
             onClick={() => handleOpenGuide('hub')}
-            className="w-full bg-app-surface-1 rounded-xl p-4 border border-app-status-warning/30 hover:border-app-status-warning/60 transition-all flex items-center gap-4 text-left"
+            className="w-full bg-app-onboard-input rounded-xl p-4 border border-app-status-warning/30 hover:border-app-status-warning/60 transition-all flex items-center gap-4 text-left"
           >
             <div className="w-12 h-12 bg-app-status-warning/20 rounded-lg flex items-center justify-center flex-shrink-0">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +68,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
 
           <button
             onClick={() => handleOpenGuide('wifi')}
-            className="w-full bg-app-surface-1 rounded-xl p-4 border border-app-status-good/30 hover:border-app-status-good/60 transition-all flex items-center gap-4 text-left"
+            className="w-full bg-app-onboard-input rounded-xl p-4 border border-app-status-good/30 hover:border-app-status-good/60 transition-all flex items-center gap-4 text-left"
           >
             <div className="w-12 h-12 bg-app-status-good/20 rounded-lg flex items-center justify-center flex-shrink-0">
               <Wifi className="w-6 h-6 text-app-status-good" />

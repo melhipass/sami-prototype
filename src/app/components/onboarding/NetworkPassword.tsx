@@ -22,8 +22,8 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
-      <div className="bg-app-surface-1 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-app-line-1">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6">
+      <div className="bg-app-onboard-input rounded-2xl p-8 max-w-md w-full shadow-2xl border border-app-line-1">
         <div className="flex items-center justify-center gap-3 mb-6">
           <Wifi className="w-6 h-6 text-app-root-fg" />
           <h2 className="text-xl text-center text-app-root-fg">{ssid}</h2>
@@ -52,7 +52,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
                 setShowError(false);
               }}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-root-bg text-app-root-fg placeholder-gray-600 ${showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-app-line-2 focus:border-[#5B8BBF]'}`}
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-onboard-input text-app-root-fg placeholder-gray-600 ${showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-app-line-2 focus:border-[#5B8BBF]'}`}
               placeholder="Enter password"
               autoFocus
             />

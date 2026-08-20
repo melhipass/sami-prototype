@@ -10,7 +10,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
   const [selectedConnection, setSelectedConnection] = useState<'hub' | 'wifi'>('hub');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
         <h1 className="text-3xl mb-8 text-app-root-fg text-center">Select connection method</h1>
 
@@ -18,7 +18,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
           {/* Sami Hub Option */}
           <button
             onClick={() => setSelectedConnection('hub')}
-            className={`w-full bg-app-surface-1 rounded-xl p-5 border-2 transition-all text-left ${
+            className={`w-full bg-app-onboard-input rounded-xl p-5 border-2 transition-all text-left ${
               selectedConnection === 'hub'
                 ? 'border-app-status-warning'
                 : 'border-app-line-1 hover:border-app-line-2'
@@ -50,7 +50,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
           {/* Home Wi-Fi Option */}
           <button
             onClick={() => setSelectedConnection('wifi')}
-            className={`w-full bg-app-surface-1 rounded-xl p-5 border-2 transition-all text-left ${
+            className={`w-full bg-app-onboard-input rounded-xl p-5 border-2 transition-all text-left ${
               selectedConnection === 'wifi'
                 ? 'border-app-status-warning'
                 : 'border-app-line-1 hover:border-app-line-2'

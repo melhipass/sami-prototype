@@ -16,9 +16,9 @@ export function WifiTestingScreen({ onComplete, heading = 'Testing Wi-Fi Connect
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center mb-8 border-2 border-app-status-good">
+        <div className="w-24 h-24 bg-app-onboard-box rounded-full flex items-center justify-center mb-8 border-2 border-app-status-good">
           <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
         </div>
         <h2 className="text-2xl mb-4 text-app-root-fg">{heading}</h2>

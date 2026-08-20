@@ -63,16 +63,16 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
 
   if (errorType === 'vpn') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
         <div className="flex flex-col items-center max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-bad">
+          <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-bad">
             <AlertCircle className="w-10 h-10 text-app-status-bad" />
           </div>
 
           <h1 className="text-3xl mb-3 text-app-root-fg">VPN Detected</h1>
           <p className="text-base text-app-text-3 mb-6">Your VPN may be blocking the camera search</p>
 
-          <div className="w-full mb-8 bg-app-surface-1 rounded-xl p-6 border border-app-status-bad/30 flex items-start gap-3">
+          <div className="w-full mb-8 bg-app-onboard-box rounded-xl p-6 border border-app-status-bad/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-status-bad flex-shrink-0 mt-0.5" />
             <p className="text-sm text-app-status-bad text-left">
               It looks like you are using a VPN. This can prevent the Sami app from having the necessary access to your local network. Please disable your VPN, then press Search Again.
@@ -100,16 +100,16 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
 
   if (errorType === 'no-wifi') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6 py-8">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6 py-8">
         <div className="flex flex-col items-center max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-app-surface-1 rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-bad">
+          <div className="w-20 h-20 bg-app-onboard-box rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-status-bad">
             <AlertCircle className="w-10 h-10 text-app-status-bad" />
           </div>
 
           <h1 className="text-3xl mb-3 text-app-root-fg">No Wi-Fi Connection Found</h1>
           <p className="text-base text-app-text-3 mb-6">Your device isn't connected to a Wi-Fi network</p>
 
-          <div className="w-full mb-8 bg-app-surface-1 rounded-xl p-6 border border-app-status-bad/30 flex items-start gap-3">
+          <div className="w-full mb-8 bg-app-onboard-box rounded-xl p-6 border border-app-status-bad/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-status-bad flex-shrink-0 mt-0.5" />
             <p className="text-sm text-app-status-bad text-left">
               No Wi-Fi connection found. Connect to your Wi-Fi network and try again
@@ -146,9 +146,9 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-root-bg px-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-app-onboard-bg px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-surface-1 rounded-full flex items-center justify-center mb-8 border-2 border-app-status-good">
+        <div className="w-24 h-24 bg-app-onboard-box rounded-full flex items-center justify-center mb-8 border-2 border-app-status-good">
           <Loader2 className="w-12 h-12 text-app-status-good animate-spin" />
         </div>
 
