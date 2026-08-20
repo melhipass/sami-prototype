@@ -3307,11 +3307,11 @@ IP is Dynamic`}
         )}
 
         {/* Video Feed Area */}
-        <div className="relative flex-1 overflow-hidden bg-app-card">
+        <div className="relative flex-1 overflow-hidden bg-app-card dark:bg-black">
           {/* Baby monitor video feed */}
           <div
             onClick={handleScreenClick}
-            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-app-card flex items-center justify-center cursor-pointer"
+            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-app-card dark:bg-black flex items-center justify-center cursor-pointer"
           >
             {!cameraPaired ? (
               <div className="flex flex-col items-center justify-center text-center px-8 max-w-md">
@@ -3661,7 +3661,7 @@ IP is Dynamic`}
           )}
 
           {/* Right side control panel */}
-          <div className={`absolute top-0 right-0 h-full flex flex-col items-center justify-between py-3 px-3 z-10 w-28 transition-opacity bg-app-surface border-l border-app-line/15 select-none ${
+          <div className={`absolute top-0 right-0 h-full flex flex-col items-center justify-between py-3 px-3 z-10 w-28 transition-opacity bg-app-surface dark:bg-[#2C3B4A] border-l border-app-line/15 dark:border-l-0 select-none ${
             isLocked ? 'pointer-events-none opacity-50' : ''
           }`}>
             {/* Mute Alarm Button - shown after 5 seconds of alarm simulation */}
@@ -3814,7 +3814,7 @@ IP is Dynamic`}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
                   ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50 text-app-content'
-                  : micOn ? 'text-app-content' : 'bg-app-navy text-app-baby'
+                  : micOn ? 'text-app-content' : 'bg-app-navy dark:bg-[#5B6C7E] text-app-baby'
               }`}
               style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
             >
@@ -3845,16 +3845,16 @@ IP is Dynamic`}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="absolute bottom-0 left-0 right-0 bg-app-surface border-t border-app-line/15 z-20"
+                className="absolute bottom-0 left-0 right-0 bg-app-surface dark:bg-[#2C3B4A] border-t border-app-line/15 dark:border-t-0 z-20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-around gap-3 py-3 px-3">
                   <button 
                     onClick={() => setShowClock(!showClock)}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Clock className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Clock</span>
+                    <Clock className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Clock</span>
                   </button>
 
                   <button
@@ -3882,11 +3882,11 @@ IP is Dynamic`}
                         ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50'
                         : borderActive
                           ? 'bg-app-cyan'
-                          : 'bg-app-navy'
+                          : 'bg-app-navy dark:bg-[#5B6C7E]'
                     }`}
                   >
-                    <ScanFace className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Border</span>
+                    <ScanFace className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Border</span>
                   </button>
 
                   <button
@@ -3900,45 +3900,45 @@ IP is Dynamic`}
                         ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50'
                         : motionActive
                           ? 'bg-app-cyan'
-                          : 'bg-app-navy'
+                          : 'bg-app-navy dark:bg-[#5B6C7E]'
                     }`}
                   >
-                    <MotionDetectionIcon className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Motion</span>
+                    <MotionDetectionIcon className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Motion</span>
                   </button>
 
                   <button 
                     onClick={handleLockToggle}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Lock className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Lock</span>
+                    <Lock className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Lock</span>
                   </button>
 
                   <button 
                     onClick={() => setShowRecordings(!showRecordings)}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Video className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Recordings</span>
+                    <Video className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Recordings</span>
                   </button>
 
                   <button 
                     onClick={() => setShowHelp(!showHelp)}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <CircleHelp className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Help</span>
+                    <CircleHelp className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Help</span>
                   </button>
 
                   <button 
                     onClick={() => {
                       setShowSettings(!showSettings);
                     }}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
                   >
-                    <Settings className="w-10 h-10 text-app-baby" />
-                    <span className="text-sm text-app-baby/70">Settings</span>
+                    <Settings className="w-10 h-10 text-app-baby dark:text-white" />
+                    <span className="text-sm text-app-baby/70 dark:text-white/80">Settings</span>
                   </button>
                 </div>
               </motion.div>
