@@ -15,17 +15,11 @@
      5 brand colors) are derived tints of Dark Blue so everything
      stays within the same hue family instead of introducing plain grays.
 
-     IMPORTANT: the app also uses these 3 secondary colors RAW (as literal
-     hex, e.g. text-[#FFC7BD]) in many places as text/icon/border colors,
-     not just as backgrounds. The brand book only shows these colors used
-     as BACKGROUNDS with Dark Blue text on top — it never shows them used
-     as text/icon/border color directly on a light surface, and at their
-     raw (very pale/pastel) values they don't have enough contrast to be
-     read that way on a light background. The --app-status-* tokens below
-     give each of these 3 colors a deepened, readable "on light surface"
-     counterpart for exactly that text/icon/border usage, while keeping
-     the Dark Mode value identical to the raw brand hex (which reads
-     fine on the app's existing dark backgrounds).
+     Text/icon/border usage of the 3 secondary brand colors uses the
+     deepened --app-quiet/--app-amber/--app-alert (Light) tokens below,
+     never the raw pastel hex — the brand book only shows those pastel
+     colors used as BACKGROUNDS with dark text on top, not as text/icon/
+     border color directly on a light surface.
      ============================================================ */
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
@@ -65,40 +59,56 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* App chrome — root background / primary text (was bg-black, bg-gray-900, text-white) */
-  --app-root-bg: #EAF2FC; /* page background: soft Baby Blue tint, matching the brand's dashboard reference */
-  --app-root-fg: #293283;
+  /* ============================================================
+     Sami color system — ported from COLOR_SYSTEM.md (the sami-portal
+     web app's own design spec, provided by the client). Two layers:
+     a fixed PALETTE (one value in both Light and Dark) and SEMANTIC
+     tokens (flip between Light/Dark). Build screens from semantic
+     tokens; reach for the fixed palette only where the color IS the
+     point (primary button, brand chips, camera overlay).
+     ============================================================ */
 
-  /* App chrome — surface tiers (was bg-gray-800 / bg-gray-700 / bg-gray-600 / bg-gray-400) */
-  --app-surface-1: #FFFFFF; /* cards / elevated panels: white, sitting on top of the blue-tinted page (was gray-800) */
-  --app-surface-2: #E4EDF7; /* secondary surfaces / buttons (was gray-700) */
-  --app-surface-3: #D6E2F0; /* hover / tertiary surface (was gray-600) */
-  --app-surface-4: #C7D5EA; /* rare neutral surface (was gray-400) */
+  /* Semantic — Light */
+  --app-surface: #EEF6FD;       /* page ground */
+  --app-card: #FFFFFF;          /* raised card on the ground */
+  --app-sunken: #F6F7FB;        /* wells, tracks, inset rows */
+  --app-content: #293283;       /* primary text and icons */
+  --app-content-soft: #4A4F75;  /* secondary text */
+  --app-content-faint: #5E65A2; /* labels, metadata, placeholders */
+  --app-line: #293283;          /* borders — opaque; apply opacity at point of use, e.g. border-app-line/15 */
+  --app-link: #3D47A0;          /* text links only, never a fill */
+  --app-quiet: #2E8266;         /* low intensity, "all was quiet" */
+  --app-amber: #C99B16;         /* medium intensity */
+  --app-alert: #E26D5C;         /* high intensity */
+  --app-notice: #FCEAAD;        /* highlight ground (audio, consent) */
+  --app-notice-ink: #756619;    /* text on notice */
+  --app-tint-quiet: #F1F8F4;    /* quiet-night ground */
+  --app-tint-low: #E4F3EC;      /* low-intensity chip ground */
+  --app-tint-event: #FFF6F4;    /* event row ground */
+  --app-tint-high: #FDE7E2;     /* high-intensity chip ground */
+  --app-focus-ring: rgba(41, 50, 131, 0.25);
 
-  /* Primary/CTA buttons and "active/selected" accents — solid Dark Blue with
-     white text, matching the brand dashboard reference (sidebar active item,
-     hero stat card, primary buttons). Dark Mode keeps the existing medium-blue
-     accent (#5B8BBF) unchanged. */
-  --app-cta: #293283;
-
-  /* App chrome — text tiers (was text-gray-300 / 400 / 500 / 600) */
-  --app-text-2: #48519B; /* secondary text (was gray-300) */
-  --app-text-3: #6B72A8; /* muted text (was gray-400) */
-  --app-text-4: #8890BE; /* most-muted text (was gray-500 / gray-600) */
-
-  /* Onboarding-only overrides (Light Mode). Onboarding screens use Baby Blue
-     for the page background itself, instead of white — so their info boxes
-     and icon badges (which otherwise use --app-surface-1, also Baby Blue)
-     need a distinct fill, and their inputs/checkboxes/choice-cards need a
-     neutral one so they don't get mistaken for informational content. */
-  --app-onboard-bg: #EEF6FD;    /* screen background: Baby Blue */
-  --app-onboard-box: #BFE3D9;   /* info boxes / icon badges: Gentle Green, Dark Blue text on top per brand book */
-  --app-onboard-input: #FFFFFF; /* inputs / checkboxes / choice-cards: neutral white */
-
-  /* App chrome — border tiers (was border-gray-700 / 600 / 800) */
-  --app-line-1: #D7E1F0; /* default border (was border-gray-700) */
-  --app-line-2: #C3D0E8; /* stronger border (was border-gray-600) */
-  --app-line-3: #E7EEF8; /* faint divider (was border-gray-800) */
+  /* Fixed palette — one value in both themes */
+  --app-navy: #293283;
+  --app-navy-700: #1B2266;   /* pressed / hover */
+  --app-navy-500: #3D47A0;   /* == link */
+  --app-navy-400: #5C66C0;   /* decorative step */
+  --app-navy-200: #A5AADD;   /* secondary text inside a navy panel */
+  --app-navy-100: #D8DAEF;   /* faint step on navy */
+  --app-baby: #EEF6FD;       /* ink on navy. Not white. */
+  --app-ink: #14173F;        /* shadow color, deepest step */
+  --app-night: #0B1033;      /* the dark ground */
+  --app-graphite: #4A4F75;
+  --app-slate: #8288AD;      /* do not use for text: fails contrast */
+  --app-mist: #D9DEEB;       /* hairlines on light */
+  --app-muted: #C3C9DE;      /* the "not analysed" dot / rare neutral surface */
+  --app-green: #BFE3D9;      /* caregiver chip ground / onboarding info-box ground */
+  --app-green-ink: #1F5C48;  /* ink on green */
+  --app-yellow: #FCEAAD;     /* viewer chip ground */
+  --app-yellow-ink: #6B5A12; /* ink on yellow */
+  --app-pink: #FFC7BD;       /* clinician chip ground */
+  --app-pink-ink: #8A3A2C;   /* ink on pink */
+  --app-motion: #FF4A3A;     /* camera overlay only. Never brand. */
 
   /* Baby Monitor App Color Palette (Normal mode values) */
   --app-accent-green: #4E9C82; /* Gentle Green family, deepened for text/icon contrast on light bg */
@@ -118,11 +128,6 @@
   --app-gray-border: #C9D6EA;
   --app-night-vision-overlay: rgba(4, 192, 127, 0.08);
 
-  /* "On light surface" status colors — deepened counterparts of the raw
-     brand secondary colors, for text/icon/border use (see note above). */
-  --app-status-bad: #BD4A3E;      /* Soft Pink family, deepened for contrast */
-  --app-status-warning: #8A6D1A;  /* Mellow Yellow family, deepened for contrast */
-  --app-status-good: #2F7A61;     /* Gentle Green family, deepened for contrast */
 }
 
 .dark {
@@ -162,34 +167,49 @@
   --sidebar-ring: oklch(0.439 0 0);
 
   /* ============================================================
-     DARK MODE — unchanged from today's hardcoded look.
-     These values reproduce the literal Tailwind classes the
-     prototype used everywhere before this refactor, so the
-     rendered result stays pixel-identical to before.
+     DARK MODE — restored to reproduce the exact original hardcoded
+     look (the values these tokens replaced, before the COLOR_SYSTEM.md
+     migration). Do not change these to match the spec's own dark
+     palette — Dark Mode must stay pixel-identical to the pre-existing
+     design; only Light Mode adopts the new brand-based system.
      ============================================================ */
-  --app-root-bg: #000000; /* was bg-black / bg-gray-900 */
-  --app-root-fg: #ffffff; /* was text-white */
+  --app-surface: #000000;        /* was --app-root-bg (bg-black / bg-gray-900) */
+  --app-card: #1f2937;           /* was --app-surface-1 (bg-gray-800) */
+  --app-sunken: #374151;         /* was --app-surface-2 (bg-gray-700) */
+  --app-content: #ffffff;        /* was --app-root-fg (text-white) */
+  --app-content-soft: #d1d5db;   /* was --app-text-2 (text-gray-300) */
+  --app-content-faint: #9ca3af;  /* was --app-text-3/--app-text-4 (text-gray-400/500) — these 2 old tiers are now 1; flagged separately */
+  --app-line: #ffffff;           /* was --app-line-1/2/3 (border-gray-700/600/800); opacity applied at point of use now approximates the old 3 solid tiers */
+  --app-link: #8F9AE8;           /* not previously used in dark mode; new, unused token */
+  --app-quiet: #BFE3D9;          /* was --app-status-good (raw Gentle Green, used as-is on dark bg) */
+  --app-amber: #FCEAAD;          /* was --app-status-warning (raw Mellow Yellow, used as-is on dark bg) */
+  --app-alert: #FFC7BD;          /* was --app-status-bad (raw Soft Pink, used as-is on dark bg) */
+  --app-notice: #3B3216;         /* not previously used in dark mode; new, unused token */
+  --app-notice-ink: #E2CD8B;     /* not previously used in dark mode; new, unused token */
+  --app-tint-quiet: #14312A;     /* not previously used in dark mode; new, unused token */
+  --app-tint-low: #16332C;       /* not previously used in dark mode; new, unused token */
+  --app-tint-event: #3A2020;     /* not previously used in dark mode; new, unused token */
+  --app-tint-high: #4D2320;      /* not previously used in dark mode; new, unused token */
+  --app-focus-ring: rgba(255, 255, 255, 0.35);
 
-  --app-surface-1: #1f2937; /* was bg-gray-800 */
-  --app-surface-2: #374151; /* was bg-gray-700 */
-  --app-surface-3: #4b5563; /* was bg-gray-600 */
-  --app-surface-4: #9ca3af; /* was bg-gray-400 */
+  /* Fixed-palette exception: "navy" is meant to be one value in both
+     themes per COLOR_SYSTEM.md, but Dark Mode's primary/CTA button
+     never changed before this migration — restore its original color
+     here instead of inheriting the spec's single navy value. */
+  --app-navy: #5B8BBF;            /* was --app-cta (dark) — unchanged medium-blue accent */
+  --app-navy-700: rgba(91, 139, 191, 0.8); /* reproduces the old hover:bg-app-cta/80 */
 
-  --app-cta: #5B8BBF; /* unchanged medium-blue accent used today */
+  /* Same exception for the onboarding info-box color: "green" is meant to
+     be fixed in both themes per COLOR_SYSTEM.md, but the onboarding boxes'
+     Dark Mode color never changed before this migration (they used the
+     general dark surface, not brand green) — restore that here. */
+  --app-green: #1f2937;      /* was --app-onboard-box (dark) — same as the card/surface-1 gray */
+  --app-green-ink: #ffffff;  /* was plain --app-root-fg (white) text on top of the box */
 
-  /* Onboarding-only overrides (Dark Mode) — identical to what these elements
-     already used, so Dark Mode is unaffected by the Light Mode redesign. */
-  --app-onboard-bg: #000000;    /* was bg-app-root-bg / bg-black */
-  --app-onboard-box: #1f2937;   /* was bg-app-surface-1 / bg-gray-800 */
-  --app-onboard-input: #1f2937; /* was bg-app-surface-1 / bg-gray-800 */
-
-  --app-text-2: #d1d5db; /* was text-gray-300 */
-  --app-text-3: #9ca3af; /* was text-gray-400 */
-  --app-text-4: #6b7280; /* was text-gray-500 / gray-600 */
-
-  --app-line-1: #374151; /* was border-gray-700 */
-  --app-line-2: #4b5563; /* was border-gray-600 */
-  --app-line-3: #1f2937; /* was border-gray-800 */
+  /* Same exception again: "muted" is fixed per spec, but Dark Mode's
+     toggle-off-track / rare-neutral-surface color never changed before
+     this migration — restore its original gray here. */
+  --app-muted: #9ca3af;      /* was --app-surface-4 (dark) */
 
   /* Baby Monitor App Color Palette (Night mode values — unchanged) */
   --app-accent-green: #BFE3D9; /* Darker green for alarm "on" state - improved contrast */
@@ -209,11 +229,6 @@
   --app-gray-border: #475569; /* Slate border */
   --app-night-vision-overlay: rgba(4, 192, 127, 0.08); /* Subtle teal green overlay */
 
-  /* "On light surface" status colors — identical to the raw brand hex in
-     Dark Mode, since those already read fine on the app's dark backgrounds. */
-  --app-status-bad: #FFC7BD;
-  --app-status-warning: #FCEAAD;
-  --app-status-good: #BFE3D9;
 }
 
 @theme inline {
@@ -256,26 +271,44 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* App chrome tokens (Normal/Night skin system) */
-  --color-app-root-bg: var(--app-root-bg);
-  --color-app-root-fg: var(--app-root-fg);
-  --color-app-surface-1: var(--app-surface-1);
-  --color-app-surface-2: var(--app-surface-2);
-  --color-app-surface-3: var(--app-surface-3);
-  --color-app-surface-4: var(--app-surface-4);
-  --color-app-text-2: var(--app-text-2);
-  --color-app-text-3: var(--app-text-3);
-  --color-app-text-4: var(--app-text-4);
-  --color-app-line-1: var(--app-line-1);
-  --color-app-line-2: var(--app-line-2);
-  --color-app-line-3: var(--app-line-3);
-  --color-app-status-bad: var(--app-status-bad);
-  --color-app-status-warning: var(--app-status-warning);
-  --color-app-status-good: var(--app-status-good);
-  --color-app-onboard-bg: var(--app-onboard-bg);
-  --color-app-onboard-box: var(--app-onboard-box);
-  --color-app-onboard-input: var(--app-onboard-input);
-  --color-app-cta: var(--app-cta);
+  /* Sami color system (from COLOR_SYSTEM.md) */
+  --color-app-surface: var(--app-surface);
+  --color-app-card: var(--app-card);
+  --color-app-sunken: var(--app-sunken);
+  --color-app-content: var(--app-content);
+  --color-app-content-soft: var(--app-content-soft);
+  --color-app-content-faint: var(--app-content-faint);
+  --color-app-line: var(--app-line);
+  --color-app-link: var(--app-link);
+  --color-app-quiet: var(--app-quiet);
+  --color-app-amber: var(--app-amber);
+  --color-app-alert: var(--app-alert);
+  --color-app-notice: var(--app-notice);
+  --color-app-notice-ink: var(--app-notice-ink);
+  --color-app-tint-quiet: var(--app-tint-quiet);
+  --color-app-tint-low: var(--app-tint-low);
+  --color-app-tint-event: var(--app-tint-event);
+  --color-app-tint-high: var(--app-tint-high);
+  --color-app-navy: var(--app-navy);
+  --color-app-navy-700: var(--app-navy-700);
+  --color-app-navy-500: var(--app-navy-500);
+  --color-app-navy-400: var(--app-navy-400);
+  --color-app-navy-200: var(--app-navy-200);
+  --color-app-navy-100: var(--app-navy-100);
+  --color-app-baby: var(--app-baby);
+  --color-app-ink: var(--app-ink);
+  --color-app-night: var(--app-night);
+  --color-app-graphite: var(--app-graphite);
+  --color-app-slate: var(--app-slate);
+  --color-app-mist: var(--app-mist);
+  --color-app-muted: var(--app-muted);
+  --color-app-green: var(--app-green);
+  --color-app-green-ink: var(--app-green-ink);
+  --color-app-yellow: var(--app-yellow);
+  --color-app-yellow-ink: var(--app-yellow-ink);
+  --color-app-pink: var(--app-pink);
+  --color-app-pink-ink: var(--app-pink-ink);
+  --color-app-motion: var(--app-motion);
 }
 
 @layer base {

@@ -1,0 +1,1815 @@
+'use client';
+
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import {
+  ArrowLeft, Activity, Bell, RefreshCw, BookOpen, FileText,
+  Settings as SettingsIcon, Smartphone, ChevronDown, Search, Info, AlertTriangle,
+} from 'lucide-react';
+import {
+  LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
+
+// ---------------------------------------------------------------------------
+// Dummy data. None of this is real telemetry — it exists purely to mock up
+// what an Amplitude dashboard answering Matt's questions could look like,
+// using the events already defined (or proposed) in the Analytics Event
+// Catalog & Metadata Confluence doc.
+// ---------------------------------------------------------------------------
+
+const COLORS = {
+  primary: '#2F6FEB',
+  primaryLight: '#A9C6FB',
+  purple: '#7C5CFC',
+  amber: '#F5A623',
+  coral: '#E5534B',
+  teal: '#3FB68E',
+  grid: '#EEF1F6',
+  axis: '#8A94A6',
+};
+
+const PIE_COLORS = [COLORS.primary, COLORS.purple, COLORS.amber, COLORS.teal, COLORS.coral];
+
+function dayLabels(n: number) {
+  return Array.from({ length: n }, (_, i) => `Day ${i}`);
+}
+
+// Long daily history (used by the Overview time-range picker) so ranges up to
+// "1 Year" / "Ever" have real day-by-day dummy data to slice, instead of
+// faking a longer range out of a 30-day array.
+const LONG_RANGE_DAYS = 400;
+function pastDates(n: number, endDate: string = '2026-07-30') {
+  const end = new Date(`${endDate}T00:00:00`);
+  return Array.from({ length: n }, (_, i) => {
+    const d = new Date(end);
+    d.setDate(d.getDate() - (n - 1 - i));
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+}
+function lastNDays<T>(arr: T[], n: number): T[] {
+  return arr.slice(-Math.min(n, arr.length));
+}
+const longDates = pastDates(LONG_RANGE_DAYS);
+
+// --- Usage & Retention -------------------------------------------------
+
+// % of a setup cohort still reporting camera_status !== Offline, day by day
+// since onboarding_camera_added. camera_status is a shared property that
+// rides on every event a camera-connected session sends (see Conventions &
+// Metadata > Shared Event Properties) — it belongs to the camera, not to
+// whichever phone last checked it, so this is intentionally NOT split by
+// the Platform filter.
+const retentionData = dayLabels(31).map((day, i) => {
+  const noise = Math.sin(i / 3) * 2;
+  const overall = i === 0 ? 100 : Math.max(24, Math.round((58 - i * 0.9 + noise) * (i < 3 ? 1.4 : 1) * 10) / 10);
+  return { day, overall: i === 0 ? 100 : Math.max(24, Math.round(overall)) };
+});
+
+// 400 days of history, ending "today" — supports the Overview time-range
+// picker (7d/30d/60d/90d/1y/ever). Includes a slow growth trend so longer
+// ranges look like plausible history rather than a flat repeat.
+const nightlyActiveCameras = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 300 + progress * 380;
+  const weekly = Math.sin(i / 3.5) * 30;
+  const weekend = i % 7 === 5 || i % 7 === 6 ? 25 : 0;
+  const noise = Math.round(Math.random() * 20 - 10);
+  return { date, cameras: Math.max(50, Math.round(trend + weekly + weekend + noise)) };
+});
+
+const usageConsistency = [
+  { segment: 'Daily (6–7 days/wk)', count: 412 },
+  { segment: 'Frequent (3–5 days/wk)', count: 268 },
+  { segment: 'Occasional (1–2 days/wk)', count: 137 },
+  { segment: 'No internet connection (7d)', count: 165 },
+];
+
+const reconnectionGaps = [
+  { bucket: '1 day', count: 386 },
+  { bucket: '2–3 days', count: 214 },
+  { bucket: '4–7 days', count: 97 },
+  { bucket: '8–30 days', count: 41 },
+  { bucket: '31–60 days', count: 22 },
+  { bucket: '61–90 days', count: 14 },
+  { bucket: '90+ days / never', count: 27 },
+];
+
+const retentionTable = [
+  { segment: 'All Cameras', cameras: 982, day0: '100%', day1: '54%', day7: '39%', day30: '27%' },
+];
+
+// Onboarding funnel — each step corresponds to a real screen-viewed event
+// from the Event Catalog (Welcome → Disclaimers → Setup Guide → Verify
+// Camera → Permissions → Connect), ending in onboarding_camera_added.
+// Long daily history of onboarding starts, driving the shared time-range
+// picker (App Connectivity) — averages ~33/day so the trailing 30-day sum
+// lands close to the original 1,000-start baseline this funnel was built
+// from. The per-step conversion rates below are reapplied to whatever total
+// the selected range sums to.
+const onboardingStartsLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 24 + progress * 20;
+  const weekly = Math.sin(i / 3.5) * 4;
+  const noise = Math.round(Math.random() * 6 - 3);
+  return { date, starts: Math.max(5, Math.round(trend + weekly + noise)) };
+});
+const ONBOARDING_STEP_RATES = [
+  { step: 'Welcome', rate: 1 },
+  { step: 'Disclaimers', rate: 0.927 },
+  { step: 'Setup Guide', rate: 0.861 },
+  { step: 'Verify Camera', rate: 0.803 },
+  { step: 'Permissions', rate: 0.758 },
+  { step: 'Connect', rate: 0.706 },
+  { step: 'Completed', rate: 0.642 },
+];
+
+// --- Alarms --------------------------------------------------------------
+
+// Long daily history — combined with Recordings Created into a single
+// 2-line trend chart, driven by the shared time-range picker. Scaled to
+// roughly 1 alarm per ~20 recordings, so the gap between the two lines is
+// visible rather than the two trends looking similar in size.
+const alarmsOverTimeLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 90 + progress * 100;
+  const weekly = Math.sin(i / 3) * 15;
+  const noise = Math.round(Math.random() * 10 - 5);
+  return { date, alarms: Math.max(20, Math.round(trend + weekly + noise)) };
+});
+
+const alarmsPerCameraDistribution = [
+  { bin: '0', count: 165 },
+  { bin: '1–3', count: 401 },
+  { bin: '4–6', count: 258 },
+  { bin: '7–10', count: 104 },
+  { bin: '10+', count: 54 },
+];
+
+// --- Recordings ------------------------------------------------------------
+
+// Long daily "created" history so the combined Recordings chart can be
+// totaled over whatever range the time-range picker selects. Watched/
+// Shared/Locked/Alarmed are all derived from Created using fixed conversion
+// rates (matching the original 30d baseline: 18,420 watched / 2,210 shared /
+// 10,900 locked / 9,800 alarmed out of 104,820 created — Locked is a bit
+// higher than Alarmed since an alarmed recording auto-locks, plus some
+// recordings get locked manually even without an alarm).
+const recordingsCreatedLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 1800 + progress * 2000;
+  const weekly = Math.sin(i / 4) * 400;
+  const noise = Math.round(Math.random() * 250 - 125);
+  return { date, created: Math.max(200, Math.round(trend + weekly + noise)) };
+});
+const RECORDINGS_WATCHED_RATE = 18420 / 104820;
+const RECORDINGS_DOWNLOADED_RATE = RECORDINGS_WATCHED_RATE * 2;
+const RECORDINGS_SHARED_RATE = 2210 / 104820;
+const RECORDINGS_LOCKED_RATE = 10900 / 104820;
+const RECORDINGS_ALARMED_RATE = 9800 / 104820;
+
+// Recordings created + Alarms triggered, on the same daily axis, so both can
+// share a single trend chart (2 lines) instead of 2 near-identical charts.
+const recordingsAndAlarmsLong = longDates.map((date, i) => ({
+  date,
+  created: recordingsCreatedLong[i].created,
+  alarms: alarmsOverTimeLong[i].alarms,
+}));
+
+// App-wide navigation — every real screen-shown event in the catalog
+// (Settings, Camera Settings, Recordings, Trash, Live View, Help), plus
+// Recording Player Navigated (prev/next within the player), Clock Mode
+// Entered, Lock Mode Entered, and View Border. The last 3 are also on
+// Feature Usage — kept in both on purpose, since they're both a feature
+// toggle AND a navigation-like "entered this mode" moment. Excludes
+// app-lifecycle events (app_opened, app_foregrounded) and confirmation
+// dialogs (settings_reset_viewed) — those aren't screens. Onboarding screens
+// are excluded too — that's covered by the Onboarding Funnel chart.
+// Original flat 30-day snapshot this chart was built from (total 22,800) —
+// kept only to derive each event's share of the whole below.
+const navigationEventsBaseline = [
+  { event: 'Live View Opened', count: 9200 },
+  { event: 'Recordings Viewed', count: 5200 },
+  { event: 'Settings Viewed', count: 2100 },
+  { event: 'Camera Settings Viewed', count: 980 },
+  { event: 'Clock Mode Entered', count: 1490 },
+  { event: 'View Border', count: 1240 },
+  { event: 'Lock Mode Entered', count: 1120 },
+  { event: 'Trash Viewed', count: 640 },
+  { event: 'Recording Player Navigated', count: 520 },
+  { event: 'Help Viewed', count: 310 },
+];
+const NAVIGATION_TOTAL_BASELINE = navigationEventsBaseline.reduce((sum, d) => sum + d.count, 0);
+const NAVIGATION_EVENT_SHARES = navigationEventsBaseline.map((d) => ({
+  event: d.event,
+  share: d.count / NAVIGATION_TOTAL_BASELINE,
+}));
+
+// Long daily history of total navigation events, driving the shared
+// time-range picker (App Connectivity) — averages ~760/day so the trailing
+// 30-day sum lands close to the 22,800 baseline above. Each event's share of
+// the whole (from the baseline) is reapplied to whatever total the selected
+// range sums to.
+const navigationEventsTotalLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 620 + progress * 260;
+  const weekly = Math.sin(i / 3.5) * 60;
+  const weekend = i % 7 === 5 || i % 7 === 6 ? 80 : 0;
+  const noise = Math.round(Math.random() * 40 - 20);
+  return { date, events: Math.max(100, Math.round(trend + weekly + weekend + noise)) };
+});
+
+// Raw event-name frequency within the Recordings section of the catalog —
+// how often each actual analytics event fires, not a feature/UI label.
+// recording_action is broken out by its `action` enum value (trash, restore,
+// delete_forever, lock, unlock, mark_alarmed, unmark_alarmed, share) instead
+// of one combined row.
+const recordingsActionEvents = [
+  { event: 'Recording Played', count: 3100 },
+  { event: 'Recording Download Requested', count: 1450 },
+  { event: 'Recording Trashed', count: 980 },
+  // recordings_filter_changed sends the full active_filters set on every
+  // change (an array, since multiple filters can be on at once — see
+  // Conventions & Metadata). Broken out per filter here, per Luis's
+  // feedback: how often each individual filter gets turned on, not one
+  // combined "a filter changed" total. Not mutually exclusive — a single
+  // change can toggle more than one of these together (e.g. Alarmed +
+  // Last 24 Hours), so these don't need to sum to a single "total" figure.
+  { event: 'Filter: Alarmed', count: 430 },
+  { event: 'Filter: Last 24 Hours', count: 340 },
+  { event: 'Filter: Locked', count: 140 },
+  { event: 'Filter: Duration 20s+', count: 70 },
+  { event: 'Recording Locked', count: 640 },
+  { event: 'Recording Unlocked', count: 310 },
+  { event: 'Recordings Edit Mode Toggled', count: 310 },
+  { event: 'Recording Marked Alarmed', count: 280 },
+  { event: 'Recording Unmarked Alarmed', count: 150 },
+  { event: 'Recording Shared', count: 140 },
+  { event: 'Recording Restored', count: 70 },
+  { event: 'Recording Deleted Forever', count: 30 },
+].sort((a, b) => b.count - a.count);
+
+// --- Feature Adoption --------------------------------------------------
+
+// Excludes anything already covered by Most-Changed App Settings / Most-Changed
+// Camera Settings (alarm threshold, record schedule, night vision mode, IR
+// illuminator mode) so the same setting change isn't counted on 2 charts.
+const featureUsage = [
+  { feature: 'Alarm button (arm/disarm)', count: 3380 },
+  { feature: 'Mic toggled (manual)', count: 2150 },
+  { feature: 'View Border', count: 1240 },
+  { feature: 'Border Zone Adjusted', count: 740 },
+  { feature: 'Motion overlay toggled', count: 1710 },
+  { feature: 'Clock mode used', count: 1490 },
+  { feature: 'Screen locked (manual)', count: 1120 },
+].sort((a, b) => b.count - a.count);
+
+// Which "setting" values on setting_changed / camera_setting_changed get
+// changed most. Recording transfers enabled and Auto-delete older videos are
+// "not wired" (no backend effect yet — see Open Items) but the toggle itself
+// still fires setting_changed when tapped, so they're non-zero here.
+const appSettingsUsage = [
+  { setting: 'Alarm threshold', count: 3120 },
+  { setting: 'Motion threshold', count: 2840 },
+  { setting: 'Alarm volume', count: 2210 },
+  { setting: 'Alarm disable time', count: 1860 },
+  { setting: 'Screen timeout to clock', count: 1540 },
+  { setting: 'Storage limit (GB)', count: 1290 },
+  { setting: 'Alarm sound', count: 980 },
+  { setting: 'Vibrate on alarm', count: 740 },
+  { setting: 'Sensitivity boost', count: 610 },
+  { setting: 'Selected device', count: 420 },
+  { setting: 'Recording transfers enabled', count: 260 },
+  { setting: 'Auto-delete older videos', count: 190 },
+  { setting: 'Reset: User Settings', count: 40 },
+  { setting: 'Reset: App Settings', count: 25 },
+  { setting: 'Reset: Erase All Content', count: 10 },
+].sort((a, b) => b.count - a.count);
+
+const cameraSettingsUsage = [
+  { setting: 'Night vision mode', count: 2680 },
+  { setting: 'Record mode', count: 2340 },
+  { setting: 'Record threshold', count: 1920 },
+  { setting: 'Camera Wi‑Fi', count: 1450 },
+  { setting: 'Record schedule', count: 1180 },
+  { setting: 'IR illuminator mode', count: 890 },
+  { setting: 'Internet viewing', count: 560 },
+  { setting: 'IP address', count: 310 },
+  { setting: 'Power light flash on viewer', count: 240 },
+  { setting: 'Camera password', count: 150 },
+].sort((a, b) => b.count - a.count);
+
+// --- Devices & Connectivity ---------------------------------------------
+
+// Reconstructed from camera_wifi — the `setting` value on camera_setting_
+// changed that fires when a camera's network changes ("Network changed
+// e.g. wired / Wi-Fi SSID"). It's a change event, not a live property, so
+// this takes the last known value per camera from that event's history
+// rather than a real-time read. new_value is literally "wired" or a Wi-Fi
+// SSID string, so this is an explicit field, not an inference.
+const connectivityTable = [
+  { type: 'Wireless (Wi‑Fi)', cameras: 812, pct: '82.7%' },
+  { type: 'Wired (Ethernet)', cameras: 170, pct: '17.3%' },
+];
+
+const deviceFamily = [
+  { name: 'iPad', value: 401 },
+  { name: 'iPhone', value: 200 },
+  { name: 'Android Tablet', value: 231 },
+  { name: 'Android Phone', value: 150 },
+];
+
+const osVersionTable = [
+  { os: 'iOS 18', devices: 388, pct: '64.6%' },
+  { os: 'iOS 17', devices: 176, pct: '29.3%' },
+  { os: 'iOS 16 or earlier', devices: 37, pct: '6.1%' },
+  { os: 'Android 15', devices: 210, pct: '55.1%' },
+  { os: 'Android 14', devices: 129, pct: '33.9%' },
+  { os: 'Android 13 or earlier', devices: 42, pct: '11.0%' },
+];
+
+// Raw device_model, as Amplitude actually reports it — no name resolution
+// applied. On iOS this is Apple's internal hardware identifier (e.g.
+// "iPhone15,3"), not a marketing name; turning that into "iPhone 14 Pro Max"
+// would need a separate identifier→name lookup table we don't have yet. On
+// Android, device_model is whatever the manufacturer put in Build.MODEL —
+// sometimes a model number (Samsung), sometimes already human-readable
+// (Google Pixel). `family` mirrors the Device Family bucket each row rolls
+// up into, so this can be filtered the same way by the Platform dropdown.
+const deviceModelTable = [
+  { model: 'iPhone15,3', family: 'iPhone', devices: 58, pct: '5.9%' },
+  { model: 'iPhone14,7', family: 'iPhone', devices: 47, pct: '4.8%' },
+  { model: 'iPhone14,2', family: 'iPhone', devices: 39, pct: '4.0%' },
+  { model: 'iPhone13,2', family: 'iPhone', devices: 31, pct: '3.2%' },
+  { model: 'iPhone12,1', family: 'iPhone', devices: 25, pct: '2.5%' },
+  { model: 'iPad13,18', family: 'iPad', devices: 210, pct: '21.4%' },
+  { model: 'iPad13,1', family: 'iPad', devices: 120, pct: '12.2%' },
+  { model: 'iPad11,6', family: 'iPad', devices: 71, pct: '7.2%' },
+  { model: 'SM-G991B', family: 'Android Phone', devices: 62, pct: '6.3%' },
+  { model: 'SM-A536B', family: 'Android Phone', devices: 55, pct: '5.6%' },
+  { model: 'Pixel 7', family: 'Android Phone', devices: 33, pct: '3.4%' },
+  { model: 'SM-X200', family: 'Android Tablet', devices: 140, pct: '14.3%' },
+  { model: 'SM-T500', family: 'Android Tablet', devices: 91, pct: '9.3%' },
+];
+
+// camera_firmware_version — Camera / Device Identity property, set once via
+// Identify when the camera connects. Marked "requires parsing" in the
+// catalog (see Open Items), so treat this as illustrative until that's
+// confirmed.
+const firmwareVersionTable = [
+  { version: '3.2.1', cameras: 512, pct: '52.1%' },
+  { version: '3.1.0', cameras: 298, pct: '30.3%' },
+  { version: '3.0.4', cameras: 110, pct: '11.2%' },
+  { version: '2.x or earlier', cameras: 62, pct: '6.3%' },
+];
+
+// ---------------------------------------------------------------------------
+// Small shared UI pieces
+// ---------------------------------------------------------------------------
+
+function Answers({ children }: { children: ReactNode }) {
+  return (
+    <div className="mb-3 flex items-start gap-2">
+      <span className="shrink-0 inline-block text-[11px] font-semibold tracking-wide text-[#2F6FEB] bg-[#EAF1FE] rounded px-2 py-1 uppercase">
+        Answers:
+      </span>
+      <p className="text-sm text-gray-600 leading-snug">{children}</p>
+    </div>
+  );
+}
+
+function NewEventBadge({ eventName }: { eventName: string }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-[11px] font-medium text-[#8A5A00] bg-[#FFF3D6] border border-[#F5D98B] rounded px-2 py-0.5 ml-2 align-middle"
+      title="Not in the current Confluence catalog yet — proposed addition"
+    >
+      ⚠ Proposed event: <code className="font-mono">{eventName}</code>
+    </span>
+  );
+}
+
+function ChartCard({
+  title,
+  answers,
+  badge,
+  children,
+  footer,
+  className,
+  chartId,
+  onViewEvents,
+}: {
+  title: string;
+  answers?: ReactNode;
+  badge?: ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
+  className?: string;
+  chartId?: string;
+  onViewEvents?: () => void;
+}) {
+  return (
+    <div className={`bg-white border border-[#E5E9F2] rounded-xl shadow-sm p-5${className ? ` ${className}` : ''}`}>
+      <div className="flex items-start justify-between mb-1">
+        <h3 className="text-[15px] font-semibold text-[#111827]">{title}</h3>
+        {badge}
+      </div>
+      {answers && <Answers>{answers}</Answers>}
+      {children}
+      {footer && <div className="mt-4 pt-4 border-t border-[#EEF1F6]">{footer}</div>}
+      {chartId && (
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-[10px] text-gray-500 font-mono tracking-wide">{chartId}</span>
+          {onViewEvents && (
+            <button onClick={onViewEvents} className="text-[11px] text-[#2F6FEB] hover:underline">
+              View events used →
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function KpiCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="bg-white border border-[#E5E9F2] rounded-xl shadow-sm p-5">
+      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">{label}</div>
+      <div className="text-3xl font-semibold text-[#111827]">{value}</div>
+      {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
+    </div>
+  );
+}
+
+function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | number)[][] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-[#E5E9F2]">
+            {columns.map((c) => (
+              <th key={c} className="text-left font-medium text-gray-500 py-2 pr-4 whitespace-nowrap">{c}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={i} className="border-b border-[#F3F5F9] last:border-0">
+              {row.map((cell, j) => (
+                <td key={j} className="py-2 pr-4 text-[#1F2937] whitespace-nowrap">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// Who actually sends this data: the camera never talks to Amplitude — the
+// mobile app does, based on what it observes from / does with the camera
+// over the local network or the camera's cloud relay. Illustrates the
+// "no user accounts, no camera-side SDK" assumptions above.
+function DataFlowDiagram() {
+  return (
+    <svg viewBox="0 0 640 140" className="w-full max-w-2xl" role="img" aria-label="The camera talks to the mobile app; the mobile app sends analytics events to Amplitude. The camera never sends analytics directly.">
+      <defs>
+        <marker id="flowArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill={COLORS.axis} />
+        </marker>
+      </defs>
+
+      {/* Camera */}
+      <rect x="10" y="40" width="150" height="60" rx="10" fill="#fff" stroke={COLORS.grid} strokeWidth="1.5" />
+      <text x="85" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Camera</text>
+      <text x="85" y="82" textAnchor="middle" fontSize="10" fill={COLORS.axis}>No Amplitude SDK</text>
+
+      {/* Camera -> App */}
+      <line x1="160" y1="70" x2="235" y2="70" stroke={COLORS.axis} strokeWidth="1.5" markerEnd="url(#flowArrow)" />
+      <line x1="235" y1="82" x2="160" y2="82" stroke={COLORS.axis} strokeWidth="1.5" markerEnd="url(#flowArrow)" />
+      <text x="197" y="55" textAnchor="middle" fontSize="9" fill={COLORS.axis}>local Wi-Fi /</text>
+      <text x="197" y="102" textAnchor="middle" fontSize="9" fill={COLORS.axis}>cloud relay</text>
+
+      {/* Mobile App */}
+      <rect x="245" y="30" width="150" height="80" rx="10" fill={COLORS.primaryLight} stroke={COLORS.primary} strokeWidth="1.5" />
+      <text x="320" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Mobile App</text>
+      <text x="320" y="82" textAnchor="middle" fontSize="10" fill="#1F2937">Logs every event</text>
+      <text x="320" y="95" textAnchor="middle" fontSize="10" fill="#1F2937">(camera_status, taps, etc.)</text>
+
+      {/* App -> Amplitude */}
+      <line x1="400" y1="70" x2="475" y2="70" stroke={COLORS.primary} strokeWidth="2" markerEnd="url(#flowArrow)" />
+      <text x="437" y="55" textAnchor="middle" fontSize="9" fill={COLORS.axis}>internet</text>
+
+      {/* Amplitude */}
+      <rect x="480" y="40" width="150" height="60" rx="10" fill="#fff" stroke={COLORS.grid} strokeWidth="1.5" />
+      <text x="555" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Amplitude</text>
+      <text x="555" y="82" textAnchor="middle" fontSize="10" fill={COLORS.axis}>Analytics backend</text>
+    </svg>
+  );
+}
+
+// Hover tooltip rendered via a portal to document.body, positioned from the
+// icon's own bounding rect. Needed because the catalog table sits inside an
+// `overflow-x-auto` wrapper — per the CSS spec, once one axis is non-visible
+// the other is forced to `auto` too, so a plain absolutely-positioned
+// tooltip gets clipped (worst when there are few rows, like a 1-row
+// "View events used" filter result). Rendering to document.body sidesteps
+// that clipping entirely.
+function InfoTooltip({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const iconRef = useRef<HTMLSpanElement>(null);
+
+  const show = () => {
+    const rect = iconRef.current?.getBoundingClientRect();
+    if (rect) {
+      setCoords({ top: rect.bottom + 6, left: Math.max(8, Math.min(rect.left, window.innerWidth - 300)) });
+    }
+    setOpen(true);
+  };
+
+  return (
+    <span ref={iconRef} className="relative inline-flex" onMouseEnter={show} onMouseLeave={() => setOpen(false)}>
+      <Info className="w-3.5 h-3.5 text-gray-400 cursor-help shrink-0" />
+      {open &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed z-50 w-72 bg-[#111827] text-gray-100 text-xs font-sans normal-case whitespace-pre-line rounded-lg shadow-lg p-3 leading-snug pointer-events-none"
+            style={{ top: coords.top, left: coords.left }}
+          >
+            {text}
+          </div>,
+          document.body
+        )}
+    </span>
+  );
+}
+
+// Same idea as SimpleTable, but columns wrap (event descriptions run long)
+// and the event-name column is monospaced. A handful of events
+// (setting_changed, camera_setting_changed) have a documented `setting`
+// enum reference — shown as a hover tooltip on an info icon next to the
+// event name, rather than its own mostly-empty column.
+function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string; isProposed?: boolean }[] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="border-b border-[#E5E9F2]">
+            <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[160px]">Category</th>
+            <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[220px]">Event</th>
+            <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[240px]">When it fires</th>
+            <th className="text-left font-semibold text-[#111827] py-2 align-top">Event-specific data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i} className="border-b border-[#F3F5F9] last:border-0 align-top">
+              <td className="py-2.5 pr-4 text-gray-500 whitespace-nowrap">{r.category}</td>
+              <td className="py-2.5 pr-4 font-mono text-xs text-[#2F6FEB]">
+                <span className="inline-flex items-center gap-1.5">
+                  {r.isProposed && (
+                    <span className="font-sans text-[9px] font-semibold text-[#8A5A00] bg-[#FFF3D6] border border-[#F5D98B] rounded px-1 py-0.5 tracking-wide">
+                      CLAUDE
+                    </span>
+                  )}
+                  {r.event}
+                  {r.reference && <InfoTooltip text={r.reference} />}
+                </span>
+              </td>
+              <td className="py-2.5 pr-4 text-[#1F2937]">{r.when}</td>
+              <td className="py-2.5 text-gray-600">{r.data}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Dropdown({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="flex items-center gap-2 text-sm text-gray-600">
+      <span className="text-gray-400">{label}</span>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="appearance-none bg-white border border-[#E5E9F2] rounded-lg pl-3 pr-7 py-1.5 text-sm text-[#111827] focus:outline-none focus:border-[#2F6FEB] cursor-pointer"
+        >
+          {options.map((o) => (
+            <option key={o} value={o}>{o}</option>
+          ))}
+        </select>
+        <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+      </div>
+    </label>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Event Catalog — transcribed from the "Analytics — Event Catalog &
+// Metadata" Confluence doc (space: Engineering, page 352157699), last
+// fetched live on the date this section was built. Unlike the rest of the
+// dashboard, this is real documented content, not dummy data.
+// ---------------------------------------------------------------------------
+
+// Assumptions & limitations that shape how every chart in this dashboard
+// should be read — separate from Conventions (which is about how events are
+// structured) and Shared/Identity Properties (what's on the wire). This is
+// about what the data can and can't tell us.
+const CATALOG_ASSUMPTIONS = [
+  'No user accounts: the app has no login, so there’s no reliable way to count distinct people. Cameras are the closest proxy we have to “families” or “households,” on the assumption that most households set up just 1 camera. This likely undercounts households with 2+ cameras, and can’t distinguish multiple people sharing one household’s app.',
+  'A few sections measure app usage, not camera usage, and shouldn’t be read as “per camera” or “per family”: App Navigation (Navigation Events, Onboarding Funnel), Feature Adoption (Feature Usage, Most-Changed App Settings, Most-Changed Camera Settings), Recordings — Actions, and Devices Info (Device Family, OS Version Breakdown). Keep in mind one camera can be viewed from multiple mobile devices at the same time (e.g. two family members’ phones) — so these app-side counts can overstate how many distinct households are represented.',
+  'Sami cameras can run fully offline over the local network indefinitely. Any camera that stays offline the whole time never reports analytics at all — so there’s a real, unknown population of active cameras that’s invisible to every chart in this dashboard.',
+  '“Online” only means the camera currently has an internet connection (camera_status ≠ Offline). It does not imply remote viewing is enabled, that the camera is actively streaming, or that any other internet-dependent feature is turned on.',
+];
+
+const CATALOG_CONVENTIONS = [
+  'Event & property naming: snake_case (e.g. recording_deleted, camera_signal_strength).',
+  'Analytics identity: the app has no user account/login (the camera is local), so the device is the analytics identity. There is no user_id.',
+  'Value typing (Snowflake BI): mixed-type property values are avoided so each property maps to a single, castable column in the Amplitude → Snowflake export. new_value / previous_value on setting_changed and camera_setting_changed are sent as strings; cast per setting in SQL.',
+];
+
+const CATALOG_SHARED_PROPERTIES = {
+  columns: ['Property', 'Type', 'Example', 'Source / Notes'],
+  rows: [
+    ['camera_status', 'enum', 'Online', 'CameraStatus: Offline / Connecting / BadPassword / NeedsReboot / Online'],
+    ['camera_signal_strength', 'integer', '3', 'Signal level 1–4 from StreamHealth.Healthy.level (0 when degraded/disconnected)'],
+    ['wifi_quality', 'enum', 'OK', 'WifiQualityLevel: UNKNOWN / POOR / OK / EXCELLENT (camera-reported SNR bucket)'],
+    ['app_build', 'integer', '1420', 'Build number (versionCode / CFBundleVersion) — Amplitude only auto-captures the marketing version, so we send the build explicitly'],
+    ['device_timezone', 'string', 'America/Los_Angeles', 'IANA tz ID from the device (not captured by default)'],
+  ],
+};
+
+const CATALOG_IDENTITY_PROPERTIES = {
+  columns: ['Property', 'Type', 'Example', 'Source / Notes'],
+  rows: [
+    ['camera_mac_address', 'string', 'B8:27:EB:1A:2B:3C', 'Camera HWADDR, uppercased — primary device key'],
+    ['camera_model', 'string', 'SAMi3', 'Camera.model'],
+    ['camera_firmware_version', 'string | null', '3.2.1', 'From the camera system-info raw fields (requires parsing — see open items)'],
+  ],
+};
+
+const CATALOG_AUTO_CAPTURED = {
+  columns: ['Field', 'Amplitude property', 'Example', 'Notes'],
+  rows: [
+    ['App version', 'version (Version)', '2.4.0', 'Marketing version only — see app_build above for the build number'],
+    ['OS name', 'os_name', 'android', ''],
+    ['OS version', 'os_version', '14', ''],
+    ['Device manufacturer', 'device_manufacturer', 'Samsung', ''],
+    ['Device model', 'device_model', 'SM-G991B', ''],
+    ['Locale', 'language + country', 'English + US', 'Captured as two separate fields, not a single en-US'],
+    ['Device identity', 'device_id', '7f3c…', 'SDK-generated per-install ID; serves as the analytics identity'],
+    ['Session', 'session_id, event_time', '—', 'Session start/end auto-tracked by the SDK'],
+  ],
+};
+
+type CatalogEvent = { event: string; when: string; data: string; reference?: string; isProposed?: boolean };
+type CatalogSection = { title: string; description?: string; events: CatalogEvent[] };
+
+const EVENT_CATALOG: CatalogSection[] = [
+  {
+    title: 'App & Session',
+    description: 'App lifecycle and how long the app runs. Permission prompts live in Onboarding, not here. Running time is measured via a periodic heartbeat (survives crashes/kills) rather than relying on Amplitude’s built-in session length.',
+    events: [
+      { event: 'app_opened', when: 'App cold start / first launch into memory', data: 'permissions_already_granted (bool)' },
+      { event: 'app_foregrounded', when: 'App returns to the foreground', data: '—' },
+      { event: 'app_backgrounded', when: 'App sent to the background', data: 'active_screen (enum: live, recordings, settings, help), foreground_duration_seconds (int) — duration of the run just ended' },
+      { event: 'app_heartbeat', when: 'Hourly while the app is active in the foreground', data: 'elapsed_seconds (int) — continuous foreground time so far; is_streaming (bool) — live video playing at heartbeat time; stream_elapsed_seconds (int) — continuous streaming time so far' },
+    ],
+  },
+  {
+    title: 'Onboarding — Welcome',
+    description: 'Entry screen introducing the app, with Configure My Sami Camera and Learn More About Sami actions.',
+    events: [
+      { event: 'onboarding_welcome_viewed', when: 'Welcome screen is shown', data: '—' },
+      { event: 'onboarding_welcome_option_selected', when: 'User taps one of the two buttons', data: 'option (enum: configure_camera, learn_more)' },
+    ],
+  },
+  {
+    title: 'Onboarding — Disclaimers',
+    description: 'Lists safety/legal disclaimers as toggles, a Terms & Conditions / Privacy Policy checkbox, and Accept All / Cancel.',
+    events: [
+      { event: 'onboarding_disclaimers_viewed', when: 'Disclaimers step is shown', data: '—' },
+      { event: 'onboarding_disclaimers_accepted', when: 'Accept All tapped', data: 'accepted_disclaimers (array of enum — toggles ON at accept, e.g. nocturnal_movement_monitor, no_guarantee_of_effectiveness; full list TBD), terms_agreed (bool)' },
+      { event: 'onboarding_disclaimers_cancelled', when: 'Cancel tapped', data: '—' },
+    ],
+  },
+  {
+    title: 'Onboarding — Setup Guide',
+    description: 'Recommends a setup guide based on connection method; an early signal of hardware configuration.',
+    events: [
+      { event: 'onboarding_guide_viewed', when: 'Setup Guide step is shown', data: '—' },
+      { event: 'onboarding_guide_option_selected', when: 'User taps a guide card', data: 'guide (enum: complete_kit, camera_plus_hub, camera_only)' },
+      { event: 'onboarding_guide_continued', when: 'Continue Setup tapped', data: '—' },
+      { event: 'onboarding_guide_cancelled', when: 'Cancel tapped', data: '—' },
+    ],
+  },
+  {
+    title: 'Onboarding — Verify Camera',
+    description: 'Confirms the camera power light is green and the device is on the same Wi-Fi network.',
+    events: [
+      { event: 'onboarding_camera_ready_viewed', when: 'Verify Camera is Ready screen is shown', data: '—' },
+      { event: 'onboarding_camera_ready_option_selected', when: 'User taps a button', data: 'option (enum: light_green, having_trouble)' },
+    ],
+  },
+  {
+    title: 'Onboarding — Permissions',
+    description: 'Requests Location, Local Network, and Notifications permissions, one event per permission.',
+    events: [
+      { event: 'onboarding_permissions_viewed', when: 'Permissions step is shown', data: '—' },
+      { event: 'onboarding_permission_requested', when: 'A permission’s system prompt is presented', data: 'permission (enum: location, local_network, notifications)' },
+      { event: 'onboarding_permission_result', when: 'User responds, or returns from system settings', data: 'permission (enum, same), granted (bool), location_precision (enum: precise, approximate, none — location only), trigger (enum: prompt, settings_return)' },
+      { event: 'onboarding_permissions_continued', when: 'User advances to the Connect step', data: 'all_granted (bool)' },
+    ],
+  },
+  {
+    title: 'Onboarding — Connect',
+    description: 'Camera discovery, selection, password configuration, and the onboarding-completion event. Password/hint text is never sent, only whether a hint was provided.',
+    events: [
+      { event: 'onboarding_connect_viewed', when: 'Connect step is shown (search starts automatically)', data: '—' },
+      { event: 'onboarding_camera_search_started', when: 'Camera discovery begins (auto on display, or via Search Again)', data: 'trigger (enum: auto, search_again)' },
+      { event: 'onboarding_camera_search_succeeded', when: 'One or more cameras found (list screen shown)', data: 'cameras_found (array of MAC addresses)' },
+      { event: 'onboarding_camera_search_failed', when: 'Search ends with the error screen', data: 'error_reason (enum: no_cameras_found, network_error, timeout — full list TBD)' },
+      { event: 'onboarding_camera_selected', when: 'User taps a camera in the found list', data: 'camera_mac_address (string)' },
+      { event: 'onboarding_camera_password_viewed', when: 'Password configuration screen shown after a camera is selected', data: 'mode (enum: new_camera, existing), camera_mac_address (string)' },
+      { event: 'onboarding_camera_password_submitted', when: 'User submits the password form', data: 'mode (enum, same), camera_mac_address (string), hint_provided (bool — new_camera only)' },
+      { event: 'onboarding_camera_add_requested', when: 'Add Selected Camera tapped', data: 'camera_mac_address (string)' },
+      { event: 'onboarding_camera_added', when: 'Camera successfully added / connected — onboarding complete', data: 'camera_mac_address (string), connection_type (enum: wired, wireless — confirmed with Julio 7/30 to close the gap where a camera that never changes networks after setup would otherwise have no camera_wifi data at all; pending Confluence update)' },
+      { event: 'onboarding_camera_add_failed', when: 'Add / connect attempt fails', data: 'camera_mac_address (string), error_reason (enum: e.g. bad_password, connection_failed — full list TBD)' },
+      { event: 'onboarding_connect_back', when: 'Go Back tapped', data: '—' },
+    ],
+  },
+  {
+    title: 'App Settings',
+    description: 'The Settings screen. All control changes are captured with one consolidated setting_changed event rather than one event per control. Sliders/steppers fire once on commit, not per drag.',
+    events: [
+      { event: 'settings_viewed', when: 'Settings screen is shown', data: '—' },
+      {
+        event: 'setting_changed',
+        when: 'A setting is changed (on commit — see slider rule)',
+        data: 'setting (enum — see reference), new_value (string), previous_value (string), section (enum: devices, alarms, schedule, audio, display, recordings, mobile_data)',
+        reference:
+          'The possible values of "setting", grouped by settings section:\n\n' +
+          'Devices: selected_device\n' +
+          'Alarms: alarm_enabled, motion_threshold, alarm_threshold, sensitivity_boost, max_pause_time, border_size (not wired), smart_edge, beep_camera_fault, beep_app_not_active\n' +
+          'Schedule: schedule_enabled, alarm_enable_time, alarm_disable_time\n' +
+          'Audio: alarm_volume, alarm_sound (values A–F), alarm_duration, vibrate_on_alarm, microphone_boost, noise_reduction\n' +
+          'Display: screen_timeout_to_clock, screen_timeout_delay\n' +
+          'Recordings: recording_transfers_enabled (not wired), storage_limit_gb, auto_delete_older_videos (not wired — GC not built yet), hide_shorter_than (not wired), google_drive_backup (not wired)\n' +
+          'Mobile Data: disable_telemetry (not wired), always_allow_mobile_data (not wired)',
+      },
+      { event: 'settings_reset_viewed', when: 'Reset dialog is shown (Reset tapped)', data: '—' },
+      { event: 'settings_reset', when: 'A reset option is confirmed', data: 'reset_type (enum: user_settings, app_settings, erase_all_content)' },
+      { event: 'settings_reset_cancelled', when: 'Cancel tapped in the Reset dialog', data: '—' },
+    ],
+  },
+  {
+    title: 'Camera Settings',
+    description: 'Reached via Camera Settings on the Settings screen. Every change is pushed to the camera over an HTTP REST call that can fail, so each event carries the call outcome.',
+    events: [
+      { event: 'camera_settings_viewed', when: 'Camera Settings screen is shown', data: '—' },
+      {
+        event: 'camera_setting_changed',
+        when: 'A camera setting’s REST update completes (on commit)',
+        data: 'setting (enum — see reference), new_value (string), previous_value (string), success (bool), error_reason (enum, when success=false — full list TBD)',
+        reference:
+          'The possible values of "setting", with what each value means:\n\n' +
+          'camera_password: Edited — password value never sent\n' +
+          'camera_wifi: Network changed (e.g. wired / Wi-Fi SSID)\n' +
+          'night_vision_mode: off / on / auto / auto_plus\n' +
+          'ir_illuminator_mode: off / on / auto\n' +
+          'record_mode: never / motion_only / everything\n' +
+          'record_threshold: Percentage (slider — commit only)\n' +
+          'record_schedule: Edited schedule\n' +
+          'internet_viewing: enabled / disabled\n' +
+          'power_light_flash_on_internet_viewer: Toggle (bool)\n' +
+          'ip_address: automatic / manual',
+      },
+      { event: 'camera_action_requested', when: 'An operation button is tapped (after any confirmation dialog)', data: 'action (enum: remove_camera, format_sd_card, firmware_update, reboot, factory_reset)' },
+      { event: 'camera_action_result', when: 'The operation’s REST call completes', data: 'action (enum, same), success (bool), error_reason (enum, when success=false — full list TBD)' },
+    ],
+  },
+  {
+    title: 'Clock Mode',
+    description: 'Replaces the live view with a dimmable clock, driven by the screen-timeout-to-clock display setting.',
+    events: [
+      { event: 'clock_mode_shown', when: 'Clock mode is displayed', data: 'trigger (enum: auto_timeout, manual)' },
+      { event: 'clock_mode_hidden', when: 'Clock mode is dismissed', data: 'trigger (enum: manual, alarm_triggered)' },
+      { event: 'clock_mode_brightness_adjusted', when: 'User swipes the screen to change brightness (fires once on swipe end, not per frame)', data: 'brightness (number 0–1), previous_brightness (number 0–1)' },
+    ],
+  },
+  {
+    title: 'Lock Screen',
+    description: 'The live view can be manually locked to prevent accidental touches. Locking is always manual; there is no automatic unlock.',
+    events: [
+      { event: 'screen_locked', when: 'User taps lock (always manual)', data: '—' },
+      { event: 'screen_unlocked', when: 'User unlocks (onUnlock)', data: 'reason (enum: manual, alarm_dismiss — alarm was triggered at unlock and this unlock also dismissed it)' },
+    ],
+  },
+  {
+    title: 'Live Monitoring',
+    description: 'The live camera view: overlay toggles, monitored region, Smart Edge suppression, stream health, and streaming duration.',
+    events: [
+      { event: 'live_view_opened', when: 'Live view (video player) is shown', data: '—' },
+      { event: 'live_border_toggled', when: 'Border / detection-zone overlay toggled', data: 'enabled (bool), coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1)' },
+      { event: 'live_detection_zone_changed', when: 'User adjusts the monitored region (debounced commit, not per drag)', data: 'coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1)' },
+      { event: 'live_motion_overlay_toggled', when: 'Red motion overlay toggled', data: 'enabled (bool)' },
+      { event: 'alarm_smart_edge_suppressed', when: 'Smart Edge suppresses an alarm (border-only motion → Paused instead of trigger)', data: 'edge_motion (number), motion_threshold (number)' },
+      { event: 'stream_health_changed', when: 'Stream health transitions between states', data: 'health (enum: searching, low_frame_rate, healthy), signal_level (int 1–4, healthy only), fps (number)' },
+      { event: 'stream_session_ended', when: 'Streaming stops (leave live view, backgrounded, or stream lost)', data: 'duration_seconds (int), end_reason (enum: left_screen, backgrounded, stream_lost)' },
+    ],
+  },
+  {
+    title: 'Alarm',
+    description: 'Runtime alarm behavior on the live view (alarm configuration settings live in App Settings). Four states: disabled, inactive, paused, active.',
+    events: [
+      { event: 'alarm_state_changed', when: 'Alarm status moves between states', data: 'from_state / to_state (enum: disabled, inactive, paused, active), trigger (enum: manual_tap, long_press, countdown_elapsed, smart_edge, schedule, alarm_dismissed)' },
+      { event: 'alarm_arm_blocked', when: 'User taps the alarm button to arm but the action is refused', data: 'reason (enum: no_connection — stream still Searching, disabled — alarm globally disabled / kill-switch)' },
+      { event: 'alarm_triggered', when: 'Motion exceeds threshold while Active — alarm sounds', data: 'motion_level (number), motion_threshold (number), audible (bool — alarm volume > 0), was_locked (bool), clock_mode_active (bool)' },
+      { event: 'alarm_dismissed', when: 'Alarm stops and returns to Paused', data: 'method (enum: manual, auto_timeout — auto-stop after the alarm-duration setting)' },
+      { event: 'mic_toggled', when: 'Microphone turned on or off', data: 'enabled (bool), source (enum: manual, alarm_auto — auto-enabled on alarm dismiss, auto_timeout — auto-off after the post-dismiss timeout)' },
+    ],
+  },
+  {
+    title: 'Recordings — Creation',
+    description: 'Confirmed with Julio (eng) 7/30 — agreed this was missing and he\'ll add it to the live Confluence catalog; shown here in the meantime. Every existing Recordings event only fires when a user interacts with a recording that already exists (plays, downloads, tags it); nothing fires when a recording is first created, so there is no way to count total recording volume or know whether a recording coincided with an active alarm. Legacy SAMi3 had an equivalent step for reference: the camera reports a manifest of available recordings (filenames only) before any video is transferred, and the app lists the recording from that manifest — the video download happens separately, either automatically in the background or on-demand when played. Camera identity (camera_mac_address, camera_model) is already attached to every event via Identify, so it isn’t repeated here.',
+    events: [
+      {
+        event: 'recording_created',
+        when: 'A new recording is discovered from the camera’s storage manifest and added to the Recordings list — the video file itself may not be downloaded to the device yet (that can happen later, automatically or on-demand). Fires once per recording, the first time the app becomes aware of it.',
+        data: 'recording_id (string), recorded_at (timestamp — when the recording actually started on the camera; can lag behind this event’s own fired-at time if the camera was offline), duration_seconds (int), record_mode_at_creation (enum: motion_only, everything — mirrors the camera’s record_mode setting at capture time), was_during_alarm (bool — true if the alarm was in the active state, per alarm_state_changed, at the moment this recording started capturing)',
+        isProposed: true,
+      },
+    ],
+  },
+  {
+    title: 'Recordings — Screen Views',
+    events: [
+      { event: 'recordings_viewed', when: 'Recordings list is shown', data: '—' },
+      { event: 'trash_viewed', when: 'Trash view is shown', data: '—' },
+    ],
+  },
+  {
+    title: 'Recordings — Downloading',
+    events: [
+      { event: 'recording_download_requested', when: 'Download requested', data: 'recording_ids (array), item_count (int), source (enum: video_player, list)' },
+      { event: 'recording_download_completed', when: 'A download finishes (fires per recording)', data: 'recording_id (string)' },
+      { event: 'recording_download_failed', when: 'A download fails', data: 'recording_id (string), error_reason (enum: no_space, network_error, timeout — full list TBD)' },
+    ],
+  },
+  {
+    title: 'Recordings — Selection',
+    description: 'Single-vs-multiple is captured by item_count / recording_ids on the action itself, so per-row selection toggles aren’t tracked separately.',
+    events: [
+      { event: 'recordings_edit_mode_toggled', when: 'User enters / exits multi-select (Edit)', data: 'enabled (bool)' },
+      { event: 'recordings_select_all', when: 'A select-all control is used', data: 'scope (enum: all, all_unlocked)' },
+    ],
+  },
+  {
+    title: 'Recordings — Filter',
+    events: [
+      { event: 'recordings_filter_changed', when: 'A filter is applied, de-selected, or cleared', data: 'active_filters (array of enum: alarmed, locked, duration_at_least_20s, last_24_hours) — the full resulting set after the change; an empty array means all filters were cleared' },
+    ],
+  },
+  {
+    title: 'Recordings — Actions',
+    description: 'Actions operate on a set of recording IDs, invoked from the video player (always single), a single row action, or a bulk edit-mode selection. Trash/restore/delete_forever are folded in here as action values.',
+    events: [
+      { event: 'recording_action', when: 'A recording action is performed (single or bulk)', data: 'action (enum: trash, restore, delete_forever, lock, unlock, mark_alarmed, unmark_alarmed, share), source (enum: video_player, single, bulk), recording_ids (array), item_count (int)' },
+    ],
+  },
+  {
+    title: 'Recordings — Playback',
+    events: [
+      { event: 'recording_played', when: 'A recording starts playing in the player', data: 'recording_id (string), source (enum: recordings, trash)' },
+      { event: 'recording_player_navigated', when: 'User moves to the previous / next recording within the player', data: 'direction (enum: previous, next)' },
+    ],
+  },
+  {
+    title: 'Recordings — Storage',
+    description: 'recordings_auto_deleted is defined ahead of implementation — the garbage collector is not built yet.',
+    events: [
+      { event: 'recordings_storage_full_shown', when: 'The "no space for more recordings" dialog is displayed', data: 'storage_limit_gb (number)' },
+      { event: 'recordings_auto_deleted', when: 'Garbage collection auto-deletes older recordings per the GC / storage setting (not yet implemented)', data: 'deleted_count (int), recording_ids (array), storage_limit_gb (number)' },
+    ],
+  },
+  {
+    title: 'Connectivity — Dialogs',
+    description: 'Connectivity issues surfaced as dialogs. SSID names are intentionally not sent.',
+    events: [
+      { event: 'connectivity_dialog_shown', when: 'A connectivity issue dialog is displayed', data: 'dialog (enum: network_error — no Wi-Fi/mobile network; camera_not_found — "Can’t find Sami Camera"; wrong_network — device on a different Wi-Fi than the camera)' },
+      { event: 'connectivity_dialog_dismissed', when: 'User dismisses / resolves the dialog', data: 'dialog (enum, same)' },
+    ],
+  },
+  {
+    title: 'Connectivity — Notifications',
+    description: 'Posted only while the alarm is enabled. The shown/opened ratio is a safety signal.',
+    events: [
+      { event: 'notification_shown', when: 'A monitoring notification is posted', data: 'type (enum: camera_fault — camera disconnected while armed; app_not_active — app backgrounded while armed)' },
+      { event: 'notification_opened', when: 'User taps the notification (returns to the app)', data: 'type (enum, same)' },
+    ],
+  },
+  {
+    title: 'Help',
+    description: 'Switches between an online and offline view based on connectivity. mode records which view was shown.',
+    events: [
+      { event: 'help_viewed', when: 'Help screen is shown', data: 'mode (enum: online, offline)' },
+      { event: 'help_link_clicked', when: 'A help link is tapped', data: 'link (enum: support, user_manual, installation_instructions)' },
+      { event: 'help_logs_sent', when: 'Send Logs is tapped', data: 'success (bool), error_reason (enum, when success=false — full list TBD)' },
+    ],
+  },
+];
+
+// Flattened for the single unified table (Category / Event / When / Data /
+// Reference) — the section-level title + description above still comes from
+// EVENT_CATALOG directly.
+const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
+  section.events.map((e) => ({ category: section.title, ...e }))
+);
+
+// Which catalog events would power each dashboard chart — maps the small
+// chart ID shown in each ChartCard's footer back to the events behind it, so
+// the Event Catalog can be filtered by chart. Illustrative/documentation-only
+// mapping (this mockup uses dummy data, not live events): Device Family and
+// OS Version Breakdown have no dedicated events since they come from
+// Amplitude's auto-captured properties on every event, not one specific event.
+// Same reasoning applies to the 3 connection-retention charts below (RET-01/
+// 02/03): they're driven by `camera_status`, a shared property that rides on
+// every event rather than a dedicated event of its own — see Conventions &
+// Metadata > Shared Event Properties. RET-01 keeps onboarding_camera_added
+// since that event genuinely defines the retention cohort's Day 0.
+const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
+  { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
+  { id: 'USG-02', title: 'Camera Type of Connection', events: ['camera_setting_changed'] },
+  { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
+  { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added'] },
+  { id: 'RET-02', title: 'Connection Consistency', events: [] },
+  { id: 'RET-03', title: 'Days Until Reconnection', events: [] },
+  { id: 'RET-04', title: 'Onboarding Funnel', events: ['onboarding_welcome_viewed', 'onboarding_disclaimers_viewed', 'onboarding_guide_viewed', 'onboarding_camera_ready_viewed', 'onboarding_permissions_viewed', 'onboarding_connect_viewed', 'onboarding_camera_added'] },
+  { id: 'ALM-01', title: 'Recordings Created Over Time', events: ['recording_created'] },
+  { id: 'ALM-02', title: 'Alarms Triggered Over Time', events: ['alarm_triggered'] },
+  { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
+  { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
+  { id: 'ALM-07', title: 'Recordings — Actions', events: ['recording_played', 'recording_download_requested', 'recording_action', 'recordings_filter_changed', 'recordings_edit_mode_toggled'] },
+  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked'] },
+  { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed', 'settings_reset'] },
+  { id: 'FEA-04', title: 'Most-Changed Camera Settings', events: ['camera_setting_changed'] },
+  { id: 'DEV-01', title: 'Device Family', events: [] },
+  { id: 'DEV-02', title: 'OS Version Breakdown', events: [] },
+  { id: 'DEV-03', title: 'Firmware Version Breakdown', events: [] },
+  { id: 'DEV-04', title: 'Device Model Breakdown', events: [] },
+];
+
+const CATALOG_OPEN_ITEMS = [
+  'Not-yet-wired settings — border_size, recording_transfers_enabled, hide_shorter_than, google_drive_backup, disable_telemetry, always_allow_mobile_data are present in the UI but no-op/local-only; their setting_changed events apply only once wired.',
+  'active_screen coverage — extend the enum on app_backgrounded beyond live/recordings/settings/help to also include trash, recording_player, camera_selection (and onboarding once it ships).',
+  'Post-onboarding "Add Camera" — the Connect/camera-add events also fire when adding a camera from Settings → Add Sami Network Camera; add a source (onboarding vs. settings) to those events, or factor out a shared Add-Camera section.',
+  'error_reason enum values — define the full lists for onboarding search/add failures, camera-settings/action failures, recording download failures, and Help send-logs.',
+  'Full disclaimer list — complete the accepted_disclaimers enum from the Disclaimers screen.',
+  'Device identifier — Amplitude auto device_id vs. a custom persisted app-install UUID.',
+  'camera_firmware_version — confirm parsing it from the camera system-info raw fields.',
+  'Garbage collector — recordings_auto_deleted and the auto_delete_older_videos setting are both defined ahead of implementation (GC not built yet); toggling the setting today has no real effect.',
+  'Live sensitivity tuning — to be removed from the code, so not tracked.',
+];
+
+// ---------------------------------------------------------------------------
+
+// Standalone item shown above the "Sami Analytics" group — frames how to
+// read every category below it, so it isn't nested under Reference /
+// Conventions & Metadata like the rest of the documentation content.
+const TOP_CATEGORIES = [
+  { id: 'assumptions', label: 'Assumptions & Limitations', icon: AlertTriangle },
+] as const;
+
+const CATEGORIES = [
+  { id: 'cameraConnectivity', label: 'Camera Connectivity', icon: Activity },
+  { id: 'appConnectivity', label: 'App Navigation', icon: RefreshCw },
+  { id: 'alarms', label: 'Alarms & Recordings', icon: Bell },
+  { id: 'features', label: 'Feature Adoption', icon: SettingsIcon },
+  { id: 'devices', label: 'Devices Info', icon: Smartphone },
+] as const;
+
+// Its own sidebar group, below "Sami Analytics" — a reference doc (real,
+// not dummy data), not a data view, so it doesn't get Platform/Time filters.
+const DOCS_CATEGORIES = [
+  { id: 'catalog', label: 'Event Catalog', icon: BookOpen },
+  { id: 'conventions', label: 'Conventions & Metadata', icon: FileText },
+] as const;
+
+const ALL_CATEGORIES = [...TOP_CATEGORIES, ...CATEGORIES, ...DOCS_CATEGORIES];
+
+type CategoryId = typeof TOP_CATEGORIES[number]['id'] | typeof CATEGORIES[number]['id'] | typeof DOCS_CATEGORIES[number]['id'];
+
+// Shown for Usage & Connectivity, Alarms, and Recordings only — their
+// time-series/summable charts (Active Cameras, Alarms Triggered, the
+// Recordings funnel) share the same daily axis, so a range picker is
+// meaningful there. It doesn't extend to other charts (cohort retention,
+// snapshot tables, distributions), same reasoning as why the Platform
+// filter isn't wired to everything either.
+const TIME_RANGES = [
+  { label: '7 Days', days: 7 },
+  { label: '30 Days', days: 30 },
+  { label: '60 Days', days: 60 },
+  { label: '90 Days', days: 90 },
+  { label: '1 Year', days: 365 },
+  { label: 'Ever', days: LONG_RANGE_DAYS },
+] as const;
+
+export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('cameraConnectivity');
+  const contentScrollRef = useRef<HTMLDivElement>(null);
+  // Always land at the top of the page on any category switch — otherwise a
+  // scrolled-down position from a previous visit (e.g. to Event Catalog)
+  // sticks around and the "View events used" CTA looks like it did nothing.
+  useEffect(() => {
+    contentScrollRef.current?.scrollTo({ top: 0 });
+  }, [activeCategory]);
+  const [platformFilter, setPlatformFilter] = useState('All Platforms');
+  const [timeRange, setTimeRange] = useState('30 Days');
+  const [catalogCategoryFilter, setCatalogCategoryFilter] = useState('All Categories');
+  const [catalogSearch, setCatalogSearch] = useState('');
+  const [catalogChartFilter, setCatalogChartFilter] = useState('All Charts');
+  const timeRangeDays = TIME_RANGES.find((r) => r.label === timeRange)?.days ?? 30;
+  // Keep roughly ~8 x-axis labels visible regardless of how many days are shown.
+  const timeTickInterval = Math.max(0, Math.ceil(timeRangeDays / 8) - 1);
+
+  // Platform filter applies globally, but only to metrics that are genuinely
+  // platform-scoped (counts of events/cameras, or device/OS breakdowns).
+  // It intentionally does NOT touch: retention/adoption rates or ratios
+  // (scaling a percentage by a headcount multiplier would corrupt it), the
+  // churn-vs-alarms comparison (a rate, not a count), or camera-level data
+  // like Recordings-by-Camera / Connectivity (a camera's recordings and its
+  // own Wi-Fi connection aren't tied to which platform happens to view it).
+  // Same reason it doesn't touch any chart in Camera Connectivity (Online
+  // Cameras Over Time, Camera Connectivity, Internet Connection Retention,
+  // Connection Consistency, Days Until Reconnection): the whole category is
+  // camera-side data (camera_status, camera_wifi, camera counts), not scoped
+  // to whichever phone platform happened to be checking it — the Platform
+  // dropdown is hidden entirely on that category's page for this reason.
+  const platformMultiplier = platformFilter === 'iOS' ? 0.61 : platformFilter === 'Android' ? 0.39 : 1;
+  const scaleCount = (n: number) => Math.round(n * platformMultiplier);
+
+  // Overview-only, range-picker-aware slice of the long 400-day dataset.
+  // Not platform-scaled: a camera being online isn't scoped to whichever
+  // phone platform happens to be checking it (same reasoning as the rest of
+  // Camera Connectivity).
+  const scaledNightly = useMemo(
+    () => lastNDays(nightlyActiveCameras, timeRangeDays),
+    [timeRangeDays]
+  );
+
+  // Single source of truth for Created/Watched/Shared/Locked/Alarmed —
+  // summed over the selected time range, then scaled by the Platform filter
+  // (all 5 are counts of things that happen via the app, same as each other).
+  const recordingsStageTotals = useMemo(() => {
+    const createdTotal = lastNDays(recordingsCreatedLong, timeRangeDays).reduce((sum, d) => sum + d.created, 0);
+    const created = scaleCount(createdTotal);
+    const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
+    const downloaded = Math.round(created * RECORDINGS_DOWNLOADED_RATE);
+    const shared = Math.round(created * RECORDINGS_SHARED_RATE);
+    const locked = Math.round(created * RECORDINGS_LOCKED_RATE);
+    const alarmed = Math.round(created * RECORDINGS_ALARMED_RATE);
+    return [
+      { stage: 'Created', count: created },
+      { stage: 'Downloaded', count: downloaded },
+      { stage: 'Watched', count: watched },
+      { stage: 'Alarmed', count: alarmed },
+      { stage: 'Locked', count: locked },
+      { stage: 'Shared', count: shared },
+    ];
+  }, [platformMultiplier, timeRangeDays]);
+
+  // A per-day distribution snapshot, not a real time series — unaffected by
+  // the time-range picker (same reasoning as camera-level/rate metrics
+  // elsewhere not being scaled by filters that don't conceptually apply).
+  const scaledAlarmsDistribution = useMemo(
+    () => alarmsPerCameraDistribution.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledRecordingsAndAlarms = useMemo(
+    () =>
+      lastNDays(recordingsAndAlarmsLong, timeRangeDays).map((d) => ({
+        date: d.date,
+        created: scaleCount(d.created),
+        alarms: scaleCount(d.alarms),
+      })),
+    [platformMultiplier, timeRangeDays]
+  );
+
+  const scaledOnboardingFunnel = useMemo(() => {
+    const starts = lastNDays(onboardingStartsLong, timeRangeDays).reduce((sum, d) => sum + d.starts, 0);
+    return ONBOARDING_STEP_RATES.map((r) => ({ step: r.step, count: scaleCount(Math.round(starts * r.rate)) }));
+  }, [platformMultiplier, timeRangeDays]);
+
+  const scaledFeatureUsage = useMemo(
+    () => featureUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledAppSettingsUsage = useMemo(
+    () => appSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledNavigationEvents = useMemo(() => {
+    const total = lastNDays(navigationEventsTotalLong, timeRangeDays).reduce((sum, d) => sum + d.events, 0);
+    return NAVIGATION_EVENT_SHARES.map((r) => ({ event: r.event, count: scaleCount(Math.round(total * r.share)) })).sort(
+      (a, b) => b.count - a.count
+    );
+  }, [platformMultiplier, timeRangeDays]);
+
+  const scaledRecordingsActionEvents = useMemo(
+    () => recordingsActionEvents.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  const scaledCameraSettingsUsage = useMemo(
+    () => cameraSettingsUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
+    [platformMultiplier]
+  );
+
+  // Device Family / OS Version: filter rows to the selected platform.
+  const filteredDeviceFamily = deviceFamily.filter((d) => {
+    if (platformFilter === 'iOS') return d.name === 'iPad' || d.name === 'iPhone';
+    if (platformFilter === 'Android') return d.name === 'Android Tablet' || d.name === 'Android Phone';
+    return true;
+  });
+  const filteredOsVersionTable = osVersionTable.filter((d) => {
+    if (platformFilter === 'iOS') return d.os.startsWith('iOS');
+    if (platformFilter === 'Android') return d.os.startsWith('Android');
+    return true;
+  });
+  const filteredDeviceModelTable = deviceModelTable.filter((d) => {
+    if (platformFilter === 'iOS') return d.family === 'iPhone' || d.family === 'iPad';
+    if (platformFilter === 'Android') return d.family === 'Android Phone' || d.family === 'Android Tablet';
+    return true;
+  });
+
+  // Event Catalog: Category dropdown + Chart dropdown + free-text search
+  // across event name, when-it-fires, and event-specific data.
+  const catalogCategoryOptions = useMemo(
+    () => ['All Categories', ...Array.from(new Set(EVENT_CATALOG_ROWS.map((r) => r.category)))],
+    []
+  );
+  // Chart dropdown is dependent on the Category filter: once a Category is
+  // chosen, only charts that actually use at least one event from that
+  // category are offered. Previously the 2 dropdowns were fully independent
+  // AND filters over the same table, so picking an unrelated Category +
+  // Chart combo (e.g. "Onboarding — Welcome" + "Internet Connection
+  // Retention") silently produced an empty table — confusing, per Luis's
+  // question. "All Charts" and "None (unused by any chart)" stay available
+  // regardless, since they're not tied to one chart's specific events.
+  const catalogChartOptions = useMemo(() => {
+    const relevantCharts =
+      catalogCategoryFilter === 'All Categories'
+        ? CHART_REGISTRY
+        : CHART_REGISTRY.filter((c) =>
+            c.events.some((ev) =>
+              EVENT_CATALOG_ROWS.some((r) => r.event === ev && r.category === catalogCategoryFilter)
+            )
+          );
+    return ['All Charts', 'None (unused by any chart)', ...relevantCharts.map((c) => `${c.id} — ${c.title}`)];
+  }, [catalogCategoryFilter]);
+  // If the Category filter changes and the currently-selected Chart is no
+  // longer one of the relevant options, fall back to "All Charts" instead of
+  // silently keeping a stale selection that would filter everything out.
+  useEffect(() => {
+    if (
+      catalogChartFilter !== 'All Charts' &&
+      catalogChartFilter !== 'None (unused by any chart)' &&
+      !catalogChartOptions.includes(catalogChartFilter)
+    ) {
+      setCatalogChartFilter('All Charts');
+    }
+  }, [catalogChartOptions, catalogChartFilter]);
+  const selectedChart = useMemo(
+    () => CHART_REGISTRY.find((c) => `${c.id} — ${c.title}` === catalogChartFilter),
+    [catalogChartFilter]
+  );
+  const chartMappedEvents = useMemo(
+    () => new Set(CHART_REGISTRY.flatMap((c) => c.events)),
+    []
+  );
+  const filteredCatalogRows = useMemo(() => {
+    const q = catalogSearch.trim().toLowerCase();
+    return EVENT_CATALOG_ROWS.filter((r) => {
+      if (catalogCategoryFilter !== 'All Categories' && r.category !== catalogCategoryFilter) return false;
+      if (catalogChartFilter === 'None (unused by any chart)' && chartMappedEvents.has(r.event)) return false;
+      if (selectedChart && !selectedChart.events.includes(r.event)) return false;
+      if (!q) return true;
+      return (
+        r.event.toLowerCase().includes(q) ||
+        r.when.toLowerCase().includes(q) ||
+        r.data.toLowerCase().includes(q) ||
+        r.category.toLowerCase().includes(q)
+      );
+    });
+  }, [catalogCategoryFilter, catalogChartFilter, catalogSearch, selectedChart, chartMappedEvents]);
+
+  // "View events used" CTA on each chart — jumps to the Event Catalog with
+  // the Chart filter pre-set to that chart, and clears the other filters
+  // so nothing hides the result.
+  const goToChartEvents = (id: string) => {
+    const chart = CHART_REGISTRY.find((c) => c.id === id);
+    if (!chart) return;
+    setCatalogCategoryFilter('All Categories');
+    setCatalogSearch('');
+    setCatalogChartFilter(`${chart.id} — ${chart.title}`);
+    setActiveCategory('catalog');
+  };
+
+  return (
+    <div className="w-screen h-screen bg-[#F7F8FB] text-[#111827] flex overflow-hidden" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      {/* Sidebar */}
+      <div className="w-64 bg-white border-r border-[#E5E9F2] flex flex-col flex-shrink-0">
+        <div className="h-16 flex items-center gap-2 px-4 border-b border-[#E5E9F2]">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#2F6FEB] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+        </div>
+
+        <div className="px-3 py-2 flex-1 overflow-y-auto">
+          {TOP_CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const active = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 mt-1 transition-colors ${
+                  active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </button>
+            );
+          })}
+
+          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1 mt-5">
+            Sami Analytics
+          </div>
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const active = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-colors ${
+                  active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </button>
+            );
+          })}
+
+          <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-3 mb-1 mt-5">
+            Reference
+          </div>
+          {DOCS_CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const active = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-colors ${
+                  active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+      </div>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <div className="h-16 border-b border-[#E5E9F2] bg-white flex items-center justify-between px-6 flex-shrink-0">
+          <div className="text-lg font-semibold">
+            {ALL_CATEGORIES.find((c) => c.id === activeCategory)?.label}
+          </div>
+        </div>
+
+        {/* Filters row — hidden for the Event Catalog, which is reference
+            documentation, not a filterable data view. Platform is also
+            hidden for Camera Connectivity: nothing in that category is
+            scoped to a phone platform (it's all camera-side data), so the
+            filter would just sit there doing nothing. */}
+        {activeCategory !== 'catalog' && activeCategory !== 'conventions' && activeCategory !== 'assumptions' && (
+          <div className="h-14 border-b border-[#E5E9F2] bg-white flex items-center gap-4 px-6 flex-shrink-0">
+            {activeCategory !== 'cameraConnectivity' && (
+              <Dropdown label="Platform" options={['All Platforms', 'iOS', 'Android']} value={platformFilter} onChange={setPlatformFilter} />
+            )}
+            {(activeCategory === 'cameraConnectivity' || activeCategory === 'alarms' || activeCategory === 'appConnectivity') && (
+              <Dropdown
+                label="Time range"
+                options={TIME_RANGES.map((r) => r.label)}
+                value={timeRange}
+                onChange={setTimeRange}
+              />
+            )}
+            <span className="text-xs text-gray-400 ml-auto">All figures below are illustrative / dummy data</span>
+          </div>
+        )}
+
+        {/* Scrollable content */}
+        <div ref={contentScrollRef} className="flex-1 overflow-y-auto p-6">
+          {activeCategory === 'cameraConnectivity' && (
+            <div className="space-y-6">
+              <ChartCard
+                title="Online Cameras Over Time"
+                answers="How many cameras are online each day?"
+                chartId="USG-01"
+                onViewEvents={() => goToChartEvents('USG-01')}
+              >
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={scaledNightly}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Online cameras" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard
+                title="Camera Type of Connection"
+                answers="Connectivity: how many cameras connect wirelessly vs. wired?"
+                chartId="USG-02"
+                onViewEvents={() => goToChartEvents('USG-02')}
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  Each camera&apos;s last known value of Camera Wifi Value . This is the last reported value per camera, not a real-time read.
+                </p>
+                <SimpleTable
+                  columns={['Connection type', 'Cameras', '% of fleet']}
+                  rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
+                />
+              </ChartCard>
+
+              <ChartCard
+                title="Firmware Version Breakdown"
+                answers="What firmware version are cameras running?"
+                chartId="DEV-03"
+                onViewEvents={() => goToChartEvents('DEV-03')}
+              >
+                <SimpleTable
+                  columns={['Firmware Version', 'Cameras', '% of fleet']}
+                  rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
+              </ChartCard>
+
+              <ChartCard
+                title="Internet Connection Retention"
+                answers="Are cameras still connecting to the internet weeks after setup?"
+                chartId="RET-01"
+                onViewEvents={() => goToChartEvents('RET-01')}
+                footer={
+                  <SimpleTable
+                    columns={['Segment', 'Cameras', 'Day 0', 'Day 1', 'Day 7', 'Day 30']}
+                    rows={retentionTable.map((r) => [r.segment, r.cameras, r.day0, r.day1, r.day7, r.day30])}
+                  />
+                }
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  % of newly paired cameras still reporting camera_status online, day by day since setup. Sami cameras can run fully offline over local network. This measures internet connectivity, not real-world usage.
+                </p>
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={retentionData}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: COLORS.axis }} interval={2} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} unit="%" />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="overall" name="All Cameras" stroke={COLORS.primary} strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <div className="grid grid-cols-2 gap-6">
+                <ChartCard
+                  title="Connection Consistency"
+                  answers="Consistent vs. sporadic internet check-ins — how many cameras connect daily vs. only occasionally?"
+                  chartId="RET-02"
+                  onViewEvents={() => goToChartEvents('RET-02')}
+                >
+                  <p className="text-xs text-gray-500 -mt-1 mb-3">
+                    Cameras grouped by how many days a week they report camera_status online. Not affected by the Platform filter.
+                  </p>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={usageConsistency}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="segment" tick={{ fontSize: 10, fill: COLORS.axis }} interval={0} angle={-15} textAnchor="end" height={60} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.primary} radius={[6, 6, 0, 0]} name="Cameras" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard
+                  title="Days Until Reconnection"
+                  answers="When a camera goes quiet, how long does it typically take to reconnect?"
+                  chartId="RET-03"
+                  onViewEvents={() => goToChartEvents('RET-03')}
+                >
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={reconnectionGaps}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="bucket" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Bar dataKey="count" name="Cameras" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Comparing consecutive camera_status timestamps per camera and measuring the gap whenever one exceeds a day. &quot;90+ days / never&quot; includes cameras that may simply be in ongoing offline-only use. Not affected by the Platform filter.
+                  </p>
+                </ChartCard>
+              </div>
+            </div>
+          )}
+
+          {activeCategory === 'appConnectivity' && (
+            <div className="space-y-6">
+              <ChartCard
+                title="Navigation Events"
+                answers="Across the whole app, which screens do people actually go to?"
+                chartId="USG-03"
+                onViewEvents={() => goToChartEvents('USG-03')}
+              >
+                <ResponsiveContainer width="100%" height={360}>
+                  <BarChart data={scaledNavigationEvents} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.amber} radius={[0, 6, 6, 0]} name={`Events (${timeRange})`} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard
+                title="Onboarding Funnel"
+                answers="How far do new users get through onboarding — where do they finish, and where do they drop off?"
+                chartId="RET-04"
+                onViewEvents={() => goToChartEvents('RET-04')}
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  Each step is the screen-viewed event for that part of onboarding; the last bar is cameras successfully added (onboarding complete). Totals reflect the selected time range.
+                </p>
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={scaledOnboardingFunnel} layout="vertical" margin={{ left: 16 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="step" tick={{ fontSize: 12, fill: '#111827' }} width={90} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name={`Users (${timeRange})`} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'alarms' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <ChartCard
+                  title="Recordings Created Over Time"
+                  answers="How many recordings are being made?"
+                  badge={<NewEventBadge eventName="recording_created" />}
+                  chartId="ALM-01"
+                  onViewEvents={() => goToChartEvents('ALM-01')}
+                >
+                  <ResponsiveContainer width="100%" height={220}>
+                    <AreaChart data={scaledRecordingsAndAlarms}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="created" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Recordings created" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard
+                  title="Alarms Triggered Over Time"
+                  answers="How many alarms are being triggered?"
+                  chartId="ALM-02"
+                  onViewEvents={() => goToChartEvents('ALM-02')}
+                >
+                  <ResponsiveContainer width="100%" height={220}>
+                    <LineChart data={scaledRecordingsAndAlarms}>
+                      <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                      <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="alarms" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarms triggered" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+              </div>
+
+              <ChartCard
+                title="Alarms per Camera per Day"
+                answers="How many alarms are triggered per camera per day"
+                chartId="ALM-03"
+                onViewEvents={() => goToChartEvents('ALM-03')}
+              >
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={scaledAlarmsDistribution}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="bin" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.amber} radius={[6, 6, 0, 0]} name="Cameras" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <ChartCard
+                title="Recordings Distribution"
+                answers="How many recordings are being made, watched, downloaded, locked, alarmed, and shared?"
+                badge={<NewEventBadge eventName="recording_created" />}
+                chartId="ALM-04"
+                onViewEvents={() => goToChartEvents('ALM-04')}
+              >
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={recordingsStageTotals} layout="vertical" margin={{ left: 24 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={80} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-gray-500 mt-3">
+                  This is not a live snapshot, so a recording locked then unlocked still counts here.
+                </p>
+              </ChartCard>
+
+              <ChartCard
+                title="Recordings — Actions"
+                answers="Within Recordings, which events are a deliberate user action on a recording?"
+                chartId="ALM-07"
+                onViewEvents={() => goToChartEvents('ALM-07')}
+              >
+                <ResponsiveContainer width="100%" height={520}>
+                  <BarChart data={scaledRecordingsActionEvents} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="event" tick={{ fontSize: 11, fill: '#111827' }} width={200} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.teal} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'features' && (
+            <div className="space-y-6">
+              <ChartCard
+                title="Feature Usage"
+                answers="What features are being used? How many times do people utilize a given feature?"
+                chartId="FEA-01"
+                onViewEvents={() => goToChartEvents('FEA-01')}
+              >
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
+                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <YAxis type="category" dataKey="feature" tick={{ fontSize: 11, fill: '#111827' }} width={220} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartCard>
+
+              <div className="grid grid-cols-2 gap-6">
+                <ChartCard
+                  title="Most-Changed App Settings"
+                  answers="Which App Settings do people change the most?"
+                  chartId="FEA-03"
+                  onViewEvents={() => goToChartEvents('FEA-03')}
+                >
+                  <ResponsiveContainer width="100%" height={440}>
+                    <BarChart data={scaledAppSettingsUsage} layout="vertical" margin={{ left: 8 }}>
+                      <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis type="category" dataKey="setting" tick={{ fontSize: 11, fill: '#111827' }} width={190} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Changes (30d)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard
+                  title="Most-Changed Camera Settings"
+                  answers="Which Camera Settings do people change the most?"
+                  chartId="FEA-04"
+                  onViewEvents={() => goToChartEvents('FEA-04')}
+                >
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={scaledCameraSettingsUsage} layout="vertical" margin={{ left: 8 }}>
+                      <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis type="category" dataKey="setting" tick={{ fontSize: 11, fill: '#111827' }} width={150} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.purple} radius={[0, 6, 6, 0]} name="Changes (30d)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartCard>
+              </div>
+            </div>
+          )}
+
+          {activeCategory === 'devices' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 max-w-md">
+                <ChartCard
+                  title="Device Family"
+                  answers="Apple device: what device type is being used to monitor?"
+                  chartId="DEV-01"
+                  onViewEvents={() => goToChartEvents('DEV-01')}
+                >
+                  <ResponsiveContainer width="100%" height={220}>
+                    <PieChart>
+                      <Pie data={filteredDeviceFamily} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85} paddingAngle={2}>
+                        {filteredDeviceFamily.map((_, i) => (
+                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: 12 }} />
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <p className="text-xs text-gray-500 mt-2">From Amplitude&apos;s auto-captured <code className="font-mono">device_model</code>.</p>
+                </ChartCard>
+              </div>
+
+              <ChartCard
+                title="OS Version Breakdown"
+                answers="What iOS / Android version are monitoring devices running?"
+                chartId="DEV-02"
+                onViewEvents={() => goToChartEvents('DEV-02')}
+              >
+                <SimpleTable
+                  columns={['OS Version', 'Devices', '% of platform']}
+                  rows={filteredOsVersionTable.map((r) => [r.os, r.devices, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">From Amplitude&apos;s auto-captured <code className="font-mono">os_name</code> / <code className="font-mono">os_version</code>.</p>
+              </ChartCard>
+
+              <ChartCard
+                title="Device Model Breakdown"
+                answers="Which specific device models are people using to monitor — beyond just iPhone vs. iPad vs. Android?"
+                chartId="DEV-04"
+                onViewEvents={() => goToChartEvents('DEV-04')}
+              >
+                <SimpleTable
+                  columns={['Device model (raw)', 'Family', 'Devices', '% of fleet']}
+                  rows={filteredDeviceModelTable.map((r) => [r.model, r.family, r.devices, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">
+                  From Amplitude&apos;s auto-captured <code className="font-mono">device_model</code>, shown raw/unresolved. On iOS this is Apple&apos;s internal hardware identifier, not a marketing name — e.g. <code className="font-mono">iPhone15,3</code> is what Apple calls the iPhone 14 Pro Max, but resolving that reliably would need a separate identifier→name lookup table we don&apos;t have yet.
+                </p>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'catalog' && (
+            <div className="space-y-6">
+              <ChartCard title="All Events">
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <Dropdown
+                    label="Category"
+                    options={catalogCategoryOptions}
+                    value={catalogCategoryFilter}
+                    onChange={setCatalogCategoryFilter}
+                  />
+                  <Dropdown
+                    label="Chart"
+                    options={catalogChartOptions}
+                    value={catalogChartFilter}
+                    onChange={setCatalogChartFilter}
+                  />
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={catalogSearch}
+                      onChange={(e) => setCatalogSearch(e.target.value)}
+                      placeholder="Search events..."
+                      className="bg-white border border-[#E5E9F2] rounded-lg pl-8 pr-3 py-1.5 text-sm text-[#111827] placeholder:text-gray-400 focus:outline-none focus:border-[#2F6FEB] w-56"
+                    />
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {filteredCatalogRows.length} of {EVENT_CATALOG_ROWS.length} events
+                  </span>
+                </div>
+                {selectedChart && selectedChart.events.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-6 text-center">
+                    &quot;{selectedChart.title}&quot; ({selectedChart.id}) isn&apos;t built from a specific catalog event — it&apos;s derived from a property attached to every event (auto-captured by Amplitude, or one we send ourselves), not a dedicated event.
+                  </p>
+                ) : (
+                  <CatalogTable rows={filteredCatalogRows} />
+                )}
+              </ChartCard>
+
+              <ChartCard title="Category Descriptions">
+                <div className="space-y-3 text-sm">
+                  {EVENT_CATALOG.filter((section) => section.description).map((section) => (
+                    <p key={section.title}>
+                      <span className="font-medium text-[#111827]">{section.title}</span>
+                      <span className="text-gray-600"> — {section.description}</span>
+                    </p>
+                  ))}
+                </div>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'assumptions' && (
+            <div className="space-y-6">
+              <div className="text-xs text-gray-400 -mt-1">
+                What this data can and can&apos;t actually tell us — worth reading before drawing conclusions from any chart in this dashboard.
+              </div>
+
+              <ChartCard title="Assumptions & Limitations">
+                <ul className="list-disc pl-5 space-y-2 text-sm text-[#1F2937] mb-5">
+                  {CATALOG_ASSUMPTIONS.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+                <div className="pt-4 border-t border-[#EEF1F6]">
+                  <p className="text-sm font-medium text-[#111827] mb-1">Who actually sends this data?</p>
+                  <p className="text-xs text-gray-500 mb-3">
+                    The camera itself never talks to Amplitude. Every event in this catalog is logged by the mobile app, based on what it observes from or does with the camera — the camera has no analytics SDK of its own.
+                  </p>
+                  <DataFlowDiagram />
+                </div>
+              </ChartCard>
+            </div>
+          )}
+
+          {activeCategory === 'conventions' && (
+            <div className="space-y-6">
+              <div className="text-xs text-gray-400 -mt-1">
+                Shared conventions and metadata that apply across the Event Catalog — how it&apos;s structured, what&apos;s sent on every event, and what Amplitude captures automatically.
+              </div>
+
+              <ChartCard title="Conventions">
+                <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
+                  {CATALOG_CONVENTIONS.map((c, i) => (
+                    <li key={i}>{c}</li>
+                  ))}
+                </ul>
+              </ChartCard>
+
+              <ChartCard title="Shared Event Properties">
+                <SimpleTable columns={CATALOG_SHARED_PROPERTIES.columns} rows={CATALOG_SHARED_PROPERTIES.rows} />
+              </ChartCard>
+
+              <ChartCard title="Camera / Device Identity">
+                <SimpleTable columns={CATALOG_IDENTITY_PROPERTIES.columns} rows={CATALOG_IDENTITY_PROPERTIES.rows} />
+              </ChartCard>
+
+              <ChartCard title="Automatically Captured by Amplitude">
+                <SimpleTable columns={CATALOG_AUTO_CAPTURED.columns} rows={CATALOG_AUTO_CAPTURED.rows} />
+              </ChartCard>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
