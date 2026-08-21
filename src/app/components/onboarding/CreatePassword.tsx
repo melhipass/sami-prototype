@@ -83,9 +83,9 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
   const canSubmit = validation.isValid && passwordsMatch;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
+        <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
           <Lock className="w-10 h-10 text-app-amber" />
         </div>
 

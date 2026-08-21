@@ -20,7 +20,7 @@ export function CompletionState({ success, onRetry, onDone }: CompletionStatePro
   }, [success, onDone]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#FCEAAD] px-6">
+    <div className="flex flex-col items-center justify-center h-full bg-[#FCEAAD] px-6">
       <div className="flex flex-col items-center max-w-md text-center">
         {success ? (
           <>

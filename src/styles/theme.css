@@ -88,6 +88,10 @@
   --app-tint-high: #FDE7E2;     /* high-intensity chip ground */
   --app-focus-ring: rgba(41, 50, 131, 0.25);
 
+  /* Settings slider/selection accent — Light uses brand Dark Blue; Dark keeps the
+     original medium-blue (#6BA3D4) so Dark Mode stays unchanged. */
+  --app-slider-accent: #293283;
+
   /* Fixed palette — one value in both themes */
   --app-navy: #293283;
   --app-navy-700: #1B2266;   /* pressed / hover */
@@ -198,6 +202,9 @@
      here instead of inheriting the spec's single navy value. */
   --app-navy: #5B8BBF;            /* was --app-cta (dark) — unchanged medium-blue accent */
   --app-navy-700: rgba(91, 139, 191, 0.8); /* reproduces the old hover:bg-app-cta/80 */
+
+  /* Settings slider/selection accent — keep the original #6BA3D4 in Dark Mode. */
+  --app-slider-accent: #6BA3D4;
 
   /* Same exception for the onboarding info-box color: "green" is meant to
      be fixed in both themes per COLOR_SYSTEM.md, but the onboarding boxes'

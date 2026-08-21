@@ -7,7 +7,7 @@ interface FinalConfirmationProps {
 
 export function FinalConfirmation({ onContinue, onCancel }: FinalConfirmationProps) {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#FCEAAD] px-6">
+    <div className="flex items-center justify-center h-full bg-[#FCEAAD] px-6">
       <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
         <div className="flex flex-col items-center text-center">
           <AlertCircle className="w-12 h-12 text-orange-500 mb-4" />

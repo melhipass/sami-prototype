@@ -25,17 +25,17 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
         {cameras.length > 0 ? (
-          <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
+          <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
             <Camera className="w-10 h-10 text-app-amber" />
-            <div className="absolute -top-2 -right-2 bg-[#BFE3D9] rounded-full p-1 border-2 border-black">
-              <CheckCircle className="w-6 h-6 text-[#2C3B4A]" />
+            <div className="absolute -top-2 -right-2 bg-app-mint dark:bg-[#BFE3D9] rounded-full p-1 border-2 border-app-card dark:border-black">
+              <CheckCircle className="w-6 h-6 text-app-mint-ink dark:text-[#2C3B4A]" />
             </div>
           </div>
         ) : (
-          <div className="w-20 h-20 bg-app-mint rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
+          <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-alert">
             <AlertCircle className="w-10 h-10 text-app-alert" />
           </div>
         )}
@@ -62,15 +62,15 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
                   <p className="text-base font-semibold text-app-content">{camera.name}</p>
                 </div>
                 {selectedCamera === camera.id && (
-                  <div className="w-6 h-6 bg-[#FCEAAD] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-[#2C3B4A]" />
+                  <div className="w-6 h-6 bg-app-cream rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check className="w-4 h-4 text-app-cream-ink dark:text-[#2C3B4A]" />
                   </div>
                 )}
               </button>
               ))}
             </div>
           ) : (
-            <div className="w-full bg-app-mint rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
+            <div className="w-full bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
               <p className="text-sm text-app-alert text-left">
                 Confirm the Camera Power Light is green and that you're on the same Wi-Fi network.
@@ -94,7 +94,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
 
           <button
             onClick={onSearchAgain}
-            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
           >
             Search Again
           </button>
