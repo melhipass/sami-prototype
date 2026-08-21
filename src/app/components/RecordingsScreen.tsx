@@ -259,7 +259,7 @@ export function RecordingsScreen({
                     setIsDownloadingRecording(false);
                     setIsWaitingForCamera(false);
                   }}
-                  className="px-6 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content transition-colors flex items-center gap-2"
+                  className="px-6 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors flex items-center gap-2"
                 >
                   <ChevronLeft className="w-5 h-5" />
                   <span>{showArchivedSection ? 'Trashed' : 'Recordings'}</span>
@@ -460,7 +460,7 @@ export function RecordingsScreen({
                     disabled={isDownloadingRecording}
                     className={`px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 ${
                       isDownloadingRecording
-                        ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                        ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
                         : 'bg-app-navy hover:bg-app-navy-700 dark:hover:bg-app-navy/90 text-white'
                     }`}
                   >
@@ -881,7 +881,7 @@ export function RecordingsScreen({
                   setShowRecordings(false);
                 }
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
             >
               <ChevronLeft className="w-5 h-5" />
               <span>{showArchivedSection ? 'Recordings' : 'Back'}</span>
@@ -903,7 +903,7 @@ export function RecordingsScreen({
                   setSelectedRecordingIds([]);
                 }
               }}
-              className="px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content text-sm transition-colors"
+              className="px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white text-sm transition-colors"
             >
               {isEditingRecordings ? 'Done' : 'Edit'}
             </button>
@@ -912,7 +912,7 @@ export function RecordingsScreen({
           {/* Archived Confirmation Message */}
           {showArchivedMessage && (
             <div className="bg-[#B95555] py-3 px-6 flex items-center justify-center border-b border-app-line/8 dark:border-[#1f2937]">
-              <span className="text-app-content text-base font-medium">Video(s) have been Trashed</span>
+              <span className="text-white text-base font-medium">Video(s) have been Trashed</span>
             </div>
           )}
 
@@ -946,7 +946,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.alarmOnly
                       ? 'bg-[#FCEAAD] text-[#2C3B4A]'
-                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >Alarmed<Bell className="w-4 h-4" /></button>
                 <button
@@ -954,7 +954,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.lockedOnly
                       ? 'bg-[#FFC7BD] text-gray-900'
-                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >Locked<Lock className="w-4 h-4" /></button>
                 <button
@@ -962,7 +962,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.longVideosOnly
                       ? 'bg-[#BFE3D9] text-[#2C3B4A]'
-                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >
                   <HardDrive className="w-4 h-4" />
@@ -973,7 +973,7 @@ export function RecordingsScreen({
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.last24Hours
                       ? 'bg-app-navy text-white'
-                      : 'bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >
                   <History className="w-4 h-4" />
@@ -1004,7 +1004,7 @@ export function RecordingsScreen({
                       setCollapsedDateGroups(new Set(allDateLabels));
                     }
                   }}
-                  className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
+                  className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
                 >
                   {(() => {
                     const allMonthLabels = Object.keys(groupedRecordings);
@@ -1037,7 +1037,7 @@ export function RecordingsScreen({
                   setIsEditingRecordings(false);
                   setSelectedRecordingIds([]);
                 }}
-                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ml-3 bg-app-sunken text-app-content-soft border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
+                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ml-3 bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
               >
                 <Trash2 className="w-4 h-4" />
                 Trashed
@@ -1433,7 +1433,7 @@ export function RecordingsScreen({
                                         setSwipedRecordingId(null);
                                         setSwipeOffset(0);
                                       }}
-                                      className="flex items-center gap-2 text-app-content font-semibold"
+                                      className="flex items-center gap-2 text-white font-semibold"
                                     >
                                       <Archive className="w-5 h-5" />
                                       <span>Trash</span>
@@ -1696,7 +1696,7 @@ export function RecordingsScreen({
                                       </div>
                                     )}
                                     {/* Duration */}
-                                    <div className="px-2.5 py-1 bg-app-sunken rounded text-app-content-soft text-sm font-medium">
+                                    <div className="px-2.5 py-1 bg-app-sunken border border-app-line/15 dark:border-[#374151] rounded text-app-content-soft text-sm font-medium">
                                       {recording.duration}
                                     </div>
                                   </div>
@@ -1734,7 +1734,7 @@ export function RecordingsScreen({
                 <div className="flex gap-2">
                   <button
                     onClick={() => setSelectedRecordingIds([])}
-                    className="px-3 py-1.5 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded text-app-content text-sm transition-colors"
+                    className="px-3 py-1.5 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded text-white text-sm transition-colors"
                   >
                     Clear
                   </button>
@@ -1743,7 +1743,7 @@ export function RecordingsScreen({
                       const allIds = currentRecordings.map(r => r.id);
                       setSelectedRecordingIds(allIds);
                     }}
-                    className="px-3 py-1.5 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded text-app-content text-sm transition-colors"
+                    className="px-3 py-1.5 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded text-white text-sm transition-colors"
                   >
                     Select All
                   </button>
@@ -1753,7 +1753,7 @@ export function RecordingsScreen({
                         const unlockedIds = currentRecordings.filter(r => !r.isLocked).map(r => r.id);
                         setSelectedRecordingIds(unlockedIds);
                       }}
-                      className="px-3 py-1.5 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded text-app-content text-sm transition-colors"
+                      className="px-3 py-1.5 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded text-white text-sm transition-colors"
                     >
                       Unlocked
                     </button>
@@ -1781,7 +1781,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
                           : 'bg-[#BFE3D9] text-[#2C3B4A] hover:bg-[#BFE3D9]/90'
                       }`}
                     >
@@ -1797,7 +1797,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
                           : 'bg-[#B85555] text-white hover:bg-[#B85555]/90'
                       }`}
                     >
@@ -1819,7 +1819,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
                           : 'bg-[#FFC7BD] text-gray-900 hover:bg-[#FFC7BD]/90'
                       }`}
                     >
@@ -1837,7 +1837,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
                           : 'bg-[#FCEAAD] text-[#2C3B4A] hover:bg-[#FCEAAD]/90'
                       }`}
                     >
@@ -1875,7 +1875,7 @@ export function RecordingsScreen({
                       }}
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
-                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 cursor-not-allowed'
+                          ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
                           : 'bg-[#B95555] text-white hover:bg-[#B95555]/90'
                       }`}
                     >

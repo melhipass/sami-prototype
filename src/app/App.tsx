@@ -1980,7 +1980,7 @@ function AppContent({
   if (selectedOS === null) {
     return (
       <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
-        <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex flex-col items-center justify-center bg-app-surface">
+        <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex flex-col items-center justify-center bg-app-surface dark:bg-[linear-gradient(135deg,#0d1b2e_0%,#1a2f4a_50%,#0d2233_100%)]">
           {/* Logo */}
           <div className="flex flex-col items-center gap-3 mb-16">
             <img src={splashLogo} alt="Sami" className="w-24 h-24 object-contain" />
@@ -1996,31 +1996,31 @@ function AppContent({
           <div className="flex gap-8">
             <button
               onClick={() => setSelectedOS('ios')}
-              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 hover:border-app-link transition-all group bg-app-content/5"
+              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 dark:border-[#4b5563] hover:border-app-link dark:hover:border-[#22C7E8] transition-all group bg-app-content/5"
             >
               {/* Apple logo SVG */}
-              <svg className="w-14 h-14 text-app-content group-hover:text-app-link transition-colors" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-14 h-14 text-app-content group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
               </svg>
-              <span className="text-app-content text-xl font-semibold group-hover:text-app-link transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>iOS</span>
+              <span className="text-app-content text-xl font-semibold group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>iOS</span>
             </button>
 
             <button
               onClick={() => setSelectedOS('android')}
-              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 hover:border-app-link transition-all group bg-app-content/5"
+              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 dark:border-[#4b5563] hover:border-app-link dark:hover:border-[#22C7E8] transition-all group bg-app-content/5"
             >
               {/* Android logo SVG */}
-              <svg className="w-14 h-14 text-app-content group-hover:text-app-link transition-colors" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-14 h-14 text-app-content group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.523 15.341a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m-9.546 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0M2.976 8.25h18.048v8.625c0 .621-.504 1.125-1.125 1.125H4.1a1.125 1.125 0 0 1-1.125-1.125V8.25zM8.358 3.102l-1.56-2.7a.375.375 0 0 1 .65-.376l1.58 2.737A9.77 9.77 0 0 1 12 2.25c1.12 0 2.196.188 3.196.537l1.558-2.699a.375.375 0 0 1 .65.376l-1.56 2.7A9.754 9.754 0 0 1 21.024 8.25H2.976a9.754 9.754 0 0 1 5.382-5.148z"/>
               </svg>
-              <span className="text-app-content text-xl font-semibold group-hover:text-app-link transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Android</span>
+              <span className="text-app-content text-xl font-semibold group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Android</span>
             </button>
           </div>
 
           {/* Analytics Dashboard CTA */}
           <button
             onClick={() => setShowAnalyticsDashboard(true)}
-            className="mt-12 flex items-center gap-2 text-app-content-faint hover:text-app-link transition-colors text-sm underline underline-offset-4"
+            className="mt-12 flex items-center gap-2 text-app-content-faint hover:text-app-link dark:hover:text-[#22C7E8] transition-colors text-sm underline underline-offset-4"
             style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}
           >
             View Analytics Dashboard →
@@ -2042,7 +2042,7 @@ function AppContent({
 
   if (showHomeScreen) {
     return (
-      <div className="relative w-full h-screen bg-app-surface flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
         <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3]">
           {/* iOS Wallpaper Background */}
           <img 
@@ -2052,7 +2052,7 @@ function AppContent({
           />
           
           {/* Status Bar */}
-          <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 text-app-content text-sm z-10">
+          <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 text-white text-sm z-10">
             <div className="font-semibold">9:41 AM</div>
             <div className="flex items-center gap-2">
               <Wifi className="w-4 h-4" />
@@ -2087,7 +2087,7 @@ function AppContent({
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="text-app-content text-xs text-center font-medium drop-shadow-md">Sami</span>
+                <span className="text-white text-xs text-center font-medium drop-shadow-md">Sami</span>
               </div>
             </div>
           </div>
@@ -2120,13 +2120,13 @@ function AppContent({
   if (showSplash) {
     return (
       <motion.div
-        className="relative w-full h-screen bg-app-surface flex items-center justify-center cursor-pointer"
+        className="relative w-full h-screen bg-black flex items-center justify-center cursor-pointer"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
         <div
-          className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex items-center justify-center bg-app-navy"
+          className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] flex items-center justify-center bg-[#293891]"
           onClick={() => {
             setShowSplash(false);
             setOnboardingInitialStep(0);
@@ -2161,7 +2161,28 @@ function AppContent({
 
   // Onboarding Flow
   if (showOnboarding) {
+    // Prototype-only control (like Logout): skip the entire onboarding.
+    const handleOnboardingSkip = () => {
+      setShowOnboarding(false);
+      setOnboardingInitialStep(0);
+      setOnboardingSkipPermissions(false);
+      setCameraPaired(true);
+      setSelectedDevice('sami-3c: 7812FFA01839');
+      setSettingsWifiNetwork('Sami-5G');
+      setSavedCameraPassword('Sami55');
+      setSavedCameraPasswordHint('This is my hint');
+    };
     return (
+      <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
+        {/* Prototype control — sits directly under the Logout control, outside the app design */}
+        <button
+          onClick={handleOnboardingSkip}
+          className="fixed top-16 left-6 z-[9999] flex items-center gap-2 text-[#9ca3af] hover:text-white transition-colors text-lg"
+        >
+          <X className="w-5 h-5" />
+          Skip
+        </button>
+        <div className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] overflow-hidden">
       <OnboardingFlow
         initialStep={onboardingInitialStep}
         skipPermissions={onboardingSkipPermissions}
@@ -2170,16 +2191,7 @@ function AppContent({
         savedPasswordHint={savedPasswordHint}
         onPasswordHintSaved={(hint) => { setSavedPasswordHint(hint); setSavedCameraPasswordHint(hint); }}
         onPasswordSaved={(password) => setSavedCameraPassword(password)}
-        onSkip={() => {
-          setShowOnboarding(false);
-          setOnboardingInitialStep(0);
-          setOnboardingSkipPermissions(false);
-          setCameraPaired(true);
-          setSelectedDevice('sami-3c: 7812FFA01839');
-          setSettingsWifiNetwork('Sami-5G');
-          setSavedCameraPassword('Sami55');
-          setSavedCameraPasswordHint('This is my hint');
-        }}
+        onSkip={handleOnboardingSkip}
         onComplete={() => {
           setShowOnboarding(false);
           setOnboardingInitialStep(0);
@@ -2194,12 +2206,14 @@ function AppContent({
           setShowSettings(true);
         }}
       />
+        </div>
+      </div>
     );
   }
 
   // Main Baby Monitor Screen
   return (
-    <div className="relative w-full h-screen bg-app-surface flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
       <div 
         className="relative w-full h-full max-w-[133.33vh] max-h-[75vw] aspect-[4/3] bg-gradient-to-b from-[#1a3d4d] via-[#0f2532] to-[#0a1520] overflow-hidden flex flex-col"
         onClick={handleWakeUp}
@@ -2247,7 +2261,7 @@ function AppContent({
             <div className="bg-app-surface py-4 flex items-center justify-between">
               <button 
                 onClick={() => setShowHelp(false)}
-                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content transition-colors"
+                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
@@ -2259,7 +2273,7 @@ function AppContent({
               
               <button 
                 onClick={() => setShowSendLogDialog(true)}
-                className="mr-6 px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content transition-colors"
+                className="mr-6 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
               >
                 Send log
               </button>
@@ -2366,7 +2380,7 @@ function AppContent({
             <div className="bg-app-surface py-4 flex items-center justify-between">
               <button
                 onClick={() => setShowOfflineHelp(false)}
-                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content transition-colors"
+                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
@@ -2378,7 +2392,7 @@ function AppContent({
 
               <button
                 onClick={() => setShowSendLogDialog(true)}
-                className="mr-6 px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded-lg text-app-content transition-colors"
+                className="mr-6 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
               >
                 Send log
               </button>
@@ -3307,11 +3321,11 @@ IP is Dynamic`}
         )}
 
         {/* Video Feed Area */}
-        <div className="relative flex-1 overflow-hidden bg-app-card dark:bg-black">
+        <div className="relative flex-1 overflow-hidden bg-black">
           {/* Baby monitor video feed */}
           <div
             onClick={handleScreenClick}
-            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-app-card dark:bg-black flex items-center justify-center cursor-pointer"
+            className="video-feed-container absolute top-0 left-0 bottom-0 right-28 bg-black flex items-center justify-center cursor-pointer"
           >
             {!cameraPaired ? (
               <div className="flex flex-col items-center justify-center text-center px-8 max-w-md">
@@ -3321,10 +3335,10 @@ IP is Dynamic`}
                 </div>
 
                 {/* Text Content */}
-                <h2 className="text-2xl text-app-content mb-3 font-semibold">
+                <h2 className="text-2xl text-white mb-3 font-semibold">
                   No camera paired
                 </h2>
-                <p className="text-base text-app-content-faint leading-relaxed">
+                <p className="text-base text-[#9ca3af] leading-relaxed">
                   Please go to Device section on settings and configure one.
                 </p>
               </div>
@@ -3687,12 +3701,12 @@ IP is Dynamic`}
               onTouchEnd={enableAlarm && cameraPaired ? handleAlarmPressEnd : undefined}
               className={`w-full px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center h-20 ${
                 !cameraPaired || !enableAlarm
-                  ? 'bg-app-content/10 dark:bg-[#4b5563] text-app-content cursor-not-allowed'
+                  ? 'bg-app-content/10 dark:bg-[#4b5563] text-app-content border border-app-line/15 dark:border-transparent cursor-not-allowed'
                   : isPaused
                     ? 'bg-[#FCEAAD] text-app-content'
                     : cameraOn
                       ? 'bg-app-teal text-app-content'
-                      : 'bg-app-coral text-app-content'
+                      : 'bg-app-coral text-white'
               }`}
             >
               {!cameraPaired || !enableAlarm ? (
@@ -3724,11 +3738,11 @@ IP is Dynamic`}
             <div className="flex gap-6 items-center justify-center">
               {/* Movement Meter Slider (Green) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-app-sunken border border-app-line/20 rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/20 dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div 
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all"
-                    style={{ height: `${volumeLevel}%`, backgroundColor: '#BFE3D9' }}
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#BFE3D9]"
+                    style={{ height: `${volumeLevel}%` }}
                   />
                 </div>
                 
@@ -3755,11 +3769,11 @@ IP is Dynamic`}
 
               {/* Time Detection Slider (Coral Red) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-app-sunken border border-app-line/20 rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/20 dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all"
-                    style={{ height: `${sensitivityLevel}%`, backgroundColor: '#FFC7BD' }}
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#FFC7BD]"
+                    style={{ height: `${sensitivityLevel}%` }}
                   />
                 </div>
                 
@@ -3814,7 +3828,7 @@ IP is Dynamic`}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
                   ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50 text-app-content'
-                  : micOn ? 'text-app-content' : 'bg-app-navy dark:bg-[#5B6C7E] text-app-baby'
+                  : micOn ? 'text-app-content' : 'bg-app-navy dark:bg-[#5B6C7E] text-app-baby dark:text-app-content'
               }`}
               style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
             >
@@ -3987,7 +4001,7 @@ function PrototypeLogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className="fixed top-6 left-6 z-[9999] text-app-content-faint hover:text-app-content transition-colors text-lg disabled:opacity-60"
+      className="fixed top-6 left-6 z-[9999] text-[#9ca3af] hover:text-white transition-colors text-lg disabled:opacity-60"
     >
       {isLoggingOut ? 'Saliendo...' : 'Logout'}
     </button>
@@ -4015,9 +4029,9 @@ function AppIcon({ name, color, Icon }: { name: string; color: string; Icon: Rea
         className="w-20 h-20 rounded-2xl shadow-lg flex items-center justify-center"
         style={{ backgroundColor: color }}
       >
-        <Icon className="w-12 h-12 text-app-content" />
+        <Icon className="w-12 h-12 text-white" />
       </div>
-      <span className="text-app-content text-xs text-center font-medium drop-shadow-md">{name}</span>
+      <span className="text-white text-xs text-center font-medium drop-shadow-md">{name}</span>
     </div>
   );
 }
@@ -4030,7 +4044,7 @@ function DockAppIcon({ name, color, Icon }: { name: string; color: string; Icon:
         className="w-16 h-16 rounded-2xl shadow-lg flex items-center justify-center"
         style={{ backgroundColor: color }}
       >
-        <Icon className="w-10 h-10 text-app-content" />
+        <Icon className="w-10 h-10 text-white" />
       </div>
     </div>
   );

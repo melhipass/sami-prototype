@@ -44,7 +44,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
   const allAccepted = acceptedDisclaimers.every((accepted) => accepted) && agreedToTerms;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
         <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
           <AlertTriangle className="w-10 h-10 text-app-amber" />
@@ -67,7 +67,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                   >
                     {disclaimer.title}
                   </label>
-                  <p className="text-sm text-app-content-soft">
+                  <p className="text-sm text-app-content-soft dark:text-app-content-faint">
                     {disclaimer.description}
                   </p>
                 </div>
@@ -105,7 +105,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                 href="https://www.samialert.com/policies/terms-of-service"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-app-link hover:text-app-link/80 underline"
+                className="text-app-link dark:text-[#5B8BBF] hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80 underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 Terms and Conditions
@@ -115,7 +115,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                 href="https://www.samialert.com/policies/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-app-link hover:text-app-link/80 underline"
+                className="text-app-link dark:text-[#5B8BBF] hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80 underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 Privacy Policy

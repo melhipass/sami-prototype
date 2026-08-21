@@ -52,7 +52,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
       <div className="bg-app-card rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-app-line/15 dark:border-[#374151]">
         {/* Header */}
         <div className="p-6 border-b border-app-line/15 dark:border-[#374151] flex items-start justify-between">
@@ -90,7 +90,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
         <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
           >
             Cancel
           </button>

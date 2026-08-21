@@ -25,13 +25,13 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
         {cameras.length > 0 ? (
           <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
             <Camera className="w-10 h-10 text-app-amber" />
-            <div className="absolute -top-2 -right-2 bg-app-mint rounded-full p-1 border-2 border-app-card">
-              <CheckCircle className="w-6 h-6 text-app-mint-ink" />
+            <div className="absolute -top-2 -right-2 bg-app-mint dark:bg-[#BFE3D9] rounded-full p-1 border-2 border-app-card dark:border-black">
+              <CheckCircle className="w-6 h-6 text-app-mint-ink dark:text-[#2C3B4A]" />
             </div>
           </div>
         ) : (
@@ -63,7 +63,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
                 </div>
                 {selectedCamera === camera.id && (
                   <div className="w-6 h-6 bg-app-cream rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-app-cream-ink" />
+                    <Check className="w-4 h-4 text-app-cream-ink dark:text-[#2C3B4A]" />
                   </div>
                 )}
               </button>

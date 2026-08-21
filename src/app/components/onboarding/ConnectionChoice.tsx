@@ -10,7 +10,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
   const [selectedConnection, setSelectedConnection] = useState<'hub' | 'wifi'>('hub');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full">
         <h1 className="text-3xl mb-8 text-app-content text-center">Select connection method</h1>
 

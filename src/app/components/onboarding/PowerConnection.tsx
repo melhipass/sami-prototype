@@ -12,7 +12,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
   const [showTroublePopup, setShowTroublePopup] = useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
       <div className="flex flex-col items-center max-w-md w-full text-center">
         <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
           <Power className="w-10 h-10 text-app-amber" />
@@ -26,23 +26,23 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
           <div className="flex items-center justify-center gap-4">
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-app-content/10 dark:bg-[#4b5563] border-2 border-gray-500 mb-1"></div>
-              <span className="text-xs text-app-mint-ink">Off</span>
+              <span className="text-xs text-app-mint-ink dark:text-app-content-faint">Off</span>
             </div>
-            <ArrowRight className="w-5 h-5 text-app-mint-ink" />
+            <ArrowRight className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-[#B95555] border-2 border-[#B95555] mb-1 shadow-lg shadow-[#B95555]/50"></div>
-              <span className="text-xs text-app-mint-ink">Red</span>
+              <span className="text-xs text-app-mint-ink dark:text-app-content-faint">Red</span>
             </div>
-            <ArrowRight className="w-5 h-5 text-app-mint-ink" />
+            <ArrowRight className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-app-quiet border-2 border-app-quiet mb-1 shadow-lg shadow-app-quiet/50"></div>
-              <span className="text-xs text-app-mint-ink">Green</span>
+              <span className="text-xs text-app-mint-ink dark:text-app-content-faint">Green</span>
             </div>
           </div>
         </div>
 
         <div className="bg-app-card border border-app-quiet/30 rounded-xl p-6 w-full mx-[0px] mt-[0px] mb-[20px]">
-          <p className="text-base text-app-mint-ink leading-relaxed">
+          <p className="text-base text-app-mint-ink dark:text-app-content-soft leading-relaxed">
             Pro tip: For better speed and a more reliable connection, leave the camera connected to the Sami Hub or your home Wi-Fi router with an Ethernet cable (LAN port).
           </p>
         </div>
@@ -57,7 +57,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
 
           <button
             onClick={isAndroid ? onGoBack : onLightIsNotGreen}
-            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
           >
             {isAndroid ? 'Go Back' : 'Having trouble'}
           </button>
@@ -71,11 +71,11 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
             <div className="flex items-center justify-between px-6 pt-6 pb-4">
               <h2 className="text-app-mint-ink text-xl font-semibold">Having Trouble?</h2>
               <button onClick={() => setShowTroublePopup(false)} className="p-1 hover:bg-app-content/10 dark:hover:bg-[#374151] rounded-lg transition-colors">
-                <X className="w-5 h-5 text-app-mint-ink" />
+                <X className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
               </button>
             </div>
             <div className="px-6 pb-6">
-              <p className="text-app-mint-ink text-base leading-relaxed">
+              <p className="text-app-mint-ink dark:text-app-content-soft text-base leading-relaxed">
                 If you are having trouble please check the instructions included on the Sami Package or contact support.
               </p>
             </div>
