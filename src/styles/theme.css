@@ -118,12 +118,12 @@
   --app-accent-green: #4E9C82; /* Gentle Green family, deepened for text/icon contrast on light bg */
   --app-accent-green-dark: #3D7C66;
   --app-accent-green-hover: #356B58;
-  --app-accent-yellow: #3E6EA0; /* (name is legacy; this is actually the "paused" blue) */
-  --app-accent-red: #A6453F;
+  --app-accent-yellow: #5B8BBF; /* (name is legacy; this is actually the "paused" blue) */
+  --app-accent-red: #B95555;
   --app-accent-red-dark: #BD6058;
   --app-accent-blue: #5C87BE;
   --app-accent-blue-hover: #4A72A8;
-  --app-accent-cyan: #3E6EA0;
+  --app-accent-cyan: #5B8BBF;
   --app-accent-teal: #4E9C82;
   --app-accent-dark-red: #C67373;
   --app-background-gradient-start: #EEF6FD;

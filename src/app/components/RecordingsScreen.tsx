@@ -375,7 +375,7 @@ export function RecordingsScreen({
                       />
 
                       {/* Timestamp */}
-                      <div className="text-app-content text-lg font-mono opacity-40">
+                      <div className="text-white text-lg font-mono opacity-40">
                         {(() => {
                           const date = new Date(selectedRecording.timestamp);
                           const year = date.getFullYear();
@@ -1130,9 +1130,9 @@ export function RecordingsScreen({
                                   ) : (
                                     <ChevronUp className="w-5 h-5 text-app-content-faint" />
                                   )}
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-app-card rounded-lg">
+                                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-app-navy dark:bg-app-card rounded-lg">
                                     <Calendar className="w-3.5 h-3.5 text-[#5B8BBF]" />
-                                    <span className="text-app-content font-semibold text-xs">{dateLabel}</span>
+                                    <span className="text-white font-semibold text-xs">{dateLabel}</span>
                                   </div>
                                   <span className="text-app-content-faint text-sm">{recordings.length} recording{recordings.length !== 1 ? 's' : ''}</span>
                                 </button>
@@ -1331,7 +1331,7 @@ export function RecordingsScreen({
                             return (
                               <div
                                 key={recording.id}
-                                className={`relative ${index < recordings.length - 1 ? 'border-b-2 border-[#000000]' : ''}`}
+                                className={`relative ${index < recordings.length - 1 ? 'border-b-2 border-[#EFEFEF] dark:border-[#000000]' : ''}`}
                               >
                                 {/* Lock and Alarm buttons behind (left side) — regular view only */}
                                 {!isEditingRecordings && !showArchivedSection && (

@@ -3367,7 +3367,7 @@ IP is Dynamic`}
                 />
                 
                 {/* Timestamp */}
-                <div className="text-app-content text-lg font-mono opacity-40 select-none" draggable="false">
+                <div className="text-white text-lg font-mono opacity-40 select-none" draggable="false">
                   {(() => {
                     const year = currentTimestamp.getFullYear();
                     const month = String(currentTimestamp.getMonth() + 1).padStart(2, '0');
@@ -3620,12 +3620,12 @@ IP is Dynamic`}
               onClick={handleVolumePickerInteraction}
             >
               {/* Mic icon at left */}
-              <Mic className="w-6 h-6 text-app-content" style={{ color: micVolume === 0 ? 'var(--app-amber)' : 'var(--app-quiet)' }} />
+              <Mic className="w-6 h-6 text-app-content" style={{ color: micVolume === 0 ? 'var(--app-amber)' : '#BFE3D9' }} />
               
               {/* Volume slider */}
               <div className="relative flex flex-row items-center">
                 <div 
-                  className="relative h-3 w-40 bg-[#2C3B4A] rounded-full cursor-pointer"
+                  className="relative h-3 w-40 bg-[#2E8266] dark:bg-[#2C3B4A] rounded-full cursor-pointer"
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -3670,7 +3670,7 @@ IP is Dynamic`}
               </div>
               
               {/* Volume percentage label */}
-              <span className="text-app-content text-sm font-medium w-12 text-right">{Math.round(micVolume)}%</span>
+              <span className="text-[#BFE3D9] dark:text-white text-sm font-medium w-12 text-right">{Math.round(micVolume)}%</span>
             </div>
           )}
 
@@ -3701,9 +3701,9 @@ IP is Dynamic`}
               onTouchEnd={enableAlarm && cameraPaired ? handleAlarmPressEnd : undefined}
               className={`w-full px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center h-20 ${
                 !cameraPaired || !enableAlarm
-                  ? 'bg-app-content/10 dark:bg-[#4b5563] text-app-content border border-app-line/15 dark:border-transparent cursor-not-allowed'
+                  ? 'bg-app-content/10 dark:bg-[#4b5563] text-app-content border-2 border-app-line/15 dark:border dark:border-transparent cursor-not-allowed'
                   : isPaused
-                    ? 'bg-[#FCEAAD] text-app-content'
+                    ? 'bg-[#FCEAAD] text-app-content border-2 border-app-line/15 dark:border dark:border-transparent'
                     : cameraOn
                       ? 'bg-app-teal text-app-content'
                       : 'bg-app-coral text-white'
@@ -3716,15 +3716,15 @@ IP is Dynamic`}
                 </>
               ) : isPaused ? (
                 <>
-                  <span className="text-base font-bold" style={{ color: '#2C3B4A' }}>Paused</span>
-                  <span className="text-xs mt-1" style={{ color: '#2C3B4A' }}>
+                  <span className="text-base font-bold text-[#293283] dark:text-[#2C3B4A]">Paused</span>
+                  <span className="text-xs mt-1 text-[#293283] dark:text-[#2C3B4A]">
                     {isWaitingForNoMotion ? 'Waiting for no motion' : `On in ${formatCountdown(countdown)}`}
                   </span>
                 </>
               ) : cameraOn ? (
                 <>
-                  <Bell className="w-8 h-8 mb-1" style={{ color: '#2C3B4A' }} />
-                  <span className="text-base" style={{ color: '#2C3B4A' }}>{isHoldingAlarm ? 'HOLD' : 'On'}</span>
+                  <Bell className="w-8 h-8 mb-1 text-white dark:text-[#2C3B4A]" />
+                  <span className="text-base text-white dark:text-[#2C3B4A]">{isHoldingAlarm ? 'HOLD' : 'On'}</span>
                 </>
               ) : (
                 <>
@@ -3738,10 +3738,10 @@ IP is Dynamic`}
             <div className="flex gap-6 items-center justify-center">
               {/* Movement Meter Slider (Green) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/20 dark:border-transparent rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/15 dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div 
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#BFE3D9]"
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#2E8266] dark:bg-[#BFE3D9]"
                     style={{ height: `${volumeLevel}%` }}
                   />
                 </div>
@@ -3769,10 +3769,10 @@ IP is Dynamic`}
 
               {/* Time Detection Slider (Coral Red) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/20 dark:border-transparent rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/15 dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#FFC7BD]"
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#B95555] dark:bg-[#FFC7BD]"
                     style={{ height: `${sensitivityLevel}%` }}
                   />
                 </div>
@@ -3827,19 +3827,19 @@ IP is Dynamic`}
               disabled={!cameraPaired}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
-                  ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50 text-app-content'
-                  : micOn ? 'text-app-content' : 'bg-app-navy dark:bg-[#5B6C7E] text-app-baby dark:text-app-content'
+                  ? 'bg-[#4b5563] cursor-not-allowed opacity-50 text-white'
+                  : micOn ? 'text-white border-2 border-app-line/15 dark:border dark:border-transparent' : 'bg-app-content/10 dark:bg-[#5B6C7E] text-app-content dark:text-white border-2 border-app-line/15 dark:border dark:border-transparent'
               }`}
               style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
             >
               {!cameraPaired ? (
                 <MicOff className="w-8 h-8 mb-1" />
               ) : micOn ? (
-                <Mic className="w-8 h-8 mb-1" style={{ color: micVolume === 0 ? '#FFFFFF' : '#2C3B4A' }} />
+                <Mic className="w-8 h-8 mb-1 text-[#293283] dark:text-[#2C3B4A]" style={micVolume === 0 ? { color: '#FFFFFF' } : {}} />
               ) : (
                 <MicOff className="w-8 h-8 mb-1" />
               )}
-              <span className="text-base" style={cameraPaired && micOn && micVolume !== 0 ? { color: '#2C3B4A' } : {}}>Mic</span>
+              <span className={`text-base ${cameraPaired && micOn && micVolume !== 0 ? 'text-[#293283] dark:text-[#2C3B4A]' : ''}`}>Mic</span>
             </button>
 
             {/* Settings button - triggers bottom panel */}
