@@ -8,12 +8,12 @@ interface ConnectivityTestProps {
 
 export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestProps) {
   const [attempt, setAttempt] = useState(1);
-  const maxAttempts = 5;
+  const maxAttempts = 13;
 
   useEffect(() => {
     const timer = setInterval(() => {
       setAttempt((prev) => prev + 1);
-    }, 600);
+    }, 1154); // 13 steps × ~1154ms ≈ 15s total
 
     return () => {
       clearInterval(timer);
