@@ -16,6 +16,9 @@ interface WiFiSelectionProps {
 export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Network' }: WiFiSelectionProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedSsid, setSelectedSsid] = useState('Sami-5G');
+  const [wifiEnabled, setWifiEnabled] = useState(true);
+  const [locationEnabled, setLocationEnabled] = useState(true);
+  const canScan = wifiEnabled && locationEnabled;
 
   const networks: WiFiNetwork[] = [
     { ssid: 'Sami-5G', secured: true, strength: 3 },
@@ -24,6 +27,10 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
     { ssid: 'CoffeeShop_Free', secured: false, strength: 2 },
     { ssid: 'Guest-Network', secured: true, strength: 2 },
     { ssid: 'OpenWifi_Lobby', secured: false, strength: 1 },
+    { ssid: 'NETGEAR-72', secured: true, strength: 2 },
+    { ssid: 'ATT-WiFi-4521', secured: true, strength: 1 },
+    { ssid: 'Xfinity-Mobile', secured: false, strength: 2 },
+    { ssid: 'TP-Link_A9C3', secured: true, strength: 1 },
   ];
 
   const selectedNetwork = networks.find(n => n.ssid === selectedSsid);
@@ -63,16 +70,51 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
           </div>
           <button
             onClick={handleRefresh}
-            disabled={isRefreshing}
+            disabled={isRefreshing || !canScan}
             className="ml-4 mt-1 p-2 rounded-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-5 h-5 text-[#5B8BBF] ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
 
+        {/* Wi-Fi / Location toggles */}
+        <div className="px-4 py-2 border-b border-app-line/15 dark:border-[#374151]">
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <span className="text-app-content">Wi-Fi</span>
+              <p className="text-app-content-faint text-xs mt-0.5">Turn Wi-Fi on to see available networks</p>
+            </div>
+            <button
+              onClick={() => setWifiEnabled(v => !v)}
+              className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${wifiEnabled ? 'bg-app-navy' : 'bg-app-muted'}`}
+            >
+              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${wifiEnabled ? 'right-1' : 'left-1'}`} />
+            </button>
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <span className="text-app-content">Location</span>
+              <p className="text-app-content-faint text-xs mt-0.5">Required to discover nearby Wi-Fi network</p>
+            </div>
+            <button
+              onClick={() => setLocationEnabled(v => !v)}
+              className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${locationEnabled ? 'bg-app-navy' : 'bg-app-muted'}`}
+            >
+              <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${locationEnabled ? 'right-1' : 'left-1'}`} />
+            </button>
+          </div>
+        </div>
+
         {/* Network list */}
-        <div className="max-h-96 overflow-y-auto">
-          {isRefreshing ? (
+        <div className="max-h-60 overflow-y-auto">
+          {!canScan ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-2 px-6 text-center">
+              <Wifi className="w-8 h-8 text-app-content-faint" />
+              <p className="text-app-content-faint text-sm">
+                Turn on {!wifiEnabled && !locationEnabled ? 'Wi-Fi and Location' : !wifiEnabled ? 'Wi-Fi' : 'Location'} to see available networks
+              </p>
+            </div>
+          ) : isRefreshing ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <RefreshCw className="w-8 h-8 text-[#5B8BBF] animate-spin" />
               <p className="text-app-content-faint text-sm">Searching for networks...</p>
@@ -96,7 +138,8 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
           </button>
           <button
             onClick={() => onSelect(selectedSsid, selectedNetwork?.secured ?? true)}
-            className="flex-1 bg-app-navy text-white py-3 rounded-xl hover:bg-app-navy-700 transition-colors font-semibold"
+            disabled={!canScan}
+            className="flex-1 bg-app-navy text-white py-3 rounded-xl hover:bg-app-navy-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-app-navy"
           >
             Select
           </button>
