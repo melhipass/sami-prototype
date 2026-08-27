@@ -1089,7 +1089,7 @@ function AppContent({
         id: index,
         timestamp: rec.time,
         title: `${dayName}, ${monthName} ${day} ${year} at ${hour}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}${ampm}`,
-        camera: 'camara [7812FFA01839]',
+        camera: 'camera [7812FFA01839]',
         duration: formatDuration(rec.duration),
         durationSeconds: rec.duration,
         thumbnail: 'https://images.unsplash.com/photo-1644691211587-a0107492ad0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYWJ5JTIwc2xlZXBpbmclMjBjcmliJTIwYmVkcm9vbSUyMGRhcmt8ZW58MXx8fHwxNzY2NzY0ODU4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
@@ -1105,6 +1105,20 @@ function AppContent({
 
   // All recordings (as state so we can update lock/alarm status)
   const [allRecordings, setAllRecordings] = useState(() => generateTimelineRecordings());
+
+  // Seed the "already downloaded" set so the Recordings header doesn't start
+  // at "0 of N downloaded" — the 133 oldest recordings (highest ids) start
+  // out already downloaded, leaving the newest 3 (ids 0-2) untouched since
+  // those are reserved for the download-simulation demo.
+  useEffect(() => {
+    const total = allRecordings.length;
+    const seeded = new Set<number>();
+    for (let i = Math.max(0, total - 133); i < total; i++) {
+      seeded.add(i);
+    }
+    setDownloadedRecordingIds(seeded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Filter recordings based on active filters
   const currentRecordings = useMemo(() => {

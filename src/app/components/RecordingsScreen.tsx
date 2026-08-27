@@ -894,7 +894,7 @@ export function RecordingsScreen({
                 {showArchivedSection ? 'Trashed Recordings' : 'Recordings'}
               </span>
               <span className="text-app-content-faint text-sm">
-                ({currentRecordings.length})
+                ({currentRecordings.filter(r => downloadedRecordingIds.has(r.id)).length} of {currentRecordings.length} downloaded)
               </span>
             </div>
 
@@ -1510,31 +1510,30 @@ export function RecordingsScreen({
 
                                           setDownloadingRecordingIds(prev => new Map(prev).set(recording.id, 0));
 
+                                          let simulatedProgress = 0;
                                           const interval = setInterval(() => {
-                                            setDownloadProgress(prev => {
-                                              const newProgress = prev + 10;
+                                            simulatedProgress += 10;
+                                            setDownloadProgress(simulatedProgress);
 
-                                              if (newProgress >= 20) {
-                                                clearInterval(interval);
-                                                setActiveDownloadInterval(null);
-                                                setIsRecordingMissing(true);
-                                                // Never mark as downloaded, and clear it from the
-                                                // downloading map so the list thumbnail doesn't get
-                                                // stuck showing a frozen progress bar.
-                                                setDownloadingRecordingIds(prevMap => {
-                                                  const newMap = new Map(prevMap);
-                                                  newMap.delete(recording.id);
-                                                  return newMap;
-                                                });
-                                                return newProgress;
-                                              }
-
+                                            if (simulatedProgress >= 20) {
+                                              clearInterval(interval);
+                                              setActiveDownloadInterval(null);
+                                              setIsRecordingMissing(true);
+                                              // Never mark as downloaded, and clear it from the
+                                              // downloading map so the list thumbnail doesn't get
+                                              // stuck showing a frozen progress bar.
                                               setDownloadingRecordingIds(prevMap => {
                                                 const newMap = new Map(prevMap);
-                                                newMap.set(recording.id, newProgress);
+                                                newMap.delete(recording.id);
                                                 return newMap;
                                               });
-                                              return newProgress;
+                                              return;
+                                            }
+
+                                            setDownloadingRecordingIds(prevMap => {
+                                              const newMap = new Map(prevMap);
+                                              newMap.set(recording.id, simulatedProgress);
+                                              return newMap;
                                             });
                                           }, 300);
 
@@ -1553,33 +1552,31 @@ export function RecordingsScreen({
                                           setDownloadingRecordingIds(prev => new Map(prev).set(recording.id, 0));
 
                                           // Simulate download progress
+                                          let simulatedProgress = 0;
                                           const interval = setInterval(() => {
-                                            setDownloadProgress(prev => {
-                                              const newProgress = prev + 10;
+                                            simulatedProgress += 10;
+                                            setDownloadProgress(simulatedProgress);
 
-                                              // Update the map for list view
+                                            // Update the map for list view
+                                            setDownloadingRecordingIds(prevMap => {
+                                              const newMap = new Map(prevMap);
+                                              newMap.set(recording.id, simulatedProgress);
+                                              return newMap;
+                                            });
+
+                                            if (simulatedProgress >= 100) {
+                                              clearInterval(interval);
+                                              setIsDownloadingRecording(false);
+                                              setActiveDownloadInterval(null);
+                                              // Mark this recording as downloaded
+                                              setDownloadedRecordingIds(prevIds => new Set(prevIds).add(recording.id));
+                                              // Remove from downloading map
                                               setDownloadingRecordingIds(prevMap => {
                                                 const newMap = new Map(prevMap);
-                                                newMap.set(recording.id, newProgress);
+                                                newMap.delete(recording.id);
                                                 return newMap;
                                               });
-
-                                              if (newProgress >= 100) {
-                                                clearInterval(interval);
-                                                setIsDownloadingRecording(false);
-                                                setActiveDownloadInterval(null);
-                                                // Mark this recording as downloaded
-                                                setDownloadedRecordingIds(prevIds => new Set(prevIds).add(recording.id));
-                                                // Remove from downloading map
-                                                setDownloadingRecordingIds(prevMap => {
-                                                  const newMap = new Map(prevMap);
-                                                  newMap.delete(recording.id);
-                                                  return newMap;
-                                                });
-                                                return 100;
-                                              }
-                                              return newProgress;
-                                            });
+                                            }
                                           }, 300);
 
                                           setActiveDownloadInterval(interval);
