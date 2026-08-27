@@ -202,6 +202,7 @@ export function RecordingsScreen({
 
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [shareProgress, setShareProgress] = useState(0);
+  const [showSharePreview, setShowSharePreview] = useState(false);
   const [isWaitingForCamera, setIsWaitingForCamera] = useState(false);
   // Simulates the legacy "file no longer on camera" download failure
   // (NSURLErrorNetworkConnectionLost mid-transfer, per HPDSAMi3.m:5528) —
@@ -221,6 +222,7 @@ export function RecordingsScreen({
       if (pct >= 100) {
         clearInterval(shareIntervalRef.current!);
         setShowSharePopup(false);
+        setShowSharePreview(true);
       }
     }, 50);
   };
@@ -1919,6 +1921,54 @@ export function RecordingsScreen({
           </div>
         </div>
       )}
+
+      {/* Shared Video Preview — shown after "Preparing Video" completes */}
+      {showSharePreview && (() => {
+        const previewRec = currentRecordings.find(r => r.id === selectedRecordingIndex);
+        return (
+          <div className="absolute inset-0 bg-black/80 z-50 flex items-center justify-center p-6">
+            <div className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl border border-app-line/15 dark:border-[#374151]">
+              {/* Video image (simulated) */}
+              <img
+                src={previewRec?.thumbnail}
+                alt="Shared video"
+                className="w-full h-full object-cover"
+                style={{ filter: 'brightness(0.6) contrast(1.1) saturate(0.3) sepia(0.3) hue-rotate(60deg)' }}
+              />
+              {/* Night vision overlay to match the player look */}
+              <div className="absolute inset-0 bg-app-night-vision mix-blend-overlay pointer-events-none" />
+              {/* Timestamp overlay */}
+              <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-[#5B6C7F]/40 backdrop-blur-sm text-white text-sm font-mono opacity-70 pointer-events-none select-none">
+                {(() => {
+                  const d = new Date(previewRec?.timestamp ?? Date.now());
+                  const y = d.getFullYear();
+                  const mo = String(d.getMonth() + 1).padStart(2, '0');
+                  const da = String(d.getDate()).padStart(2, '0');
+                  const h = String(d.getHours()).padStart(2, '0');
+                  const mi = String(d.getMinutes()).padStart(2, '0');
+                  const s = String(d.getSeconds()).padStart(2, '0');
+                  return `${y}/${mo}/${da} ${h}:${mi}:${s}`;
+                })()}
+              </div>
+              {/* Brand logo watermark — bottom right, smaller */}
+              <img
+                src={splashLogo}
+                alt="Sami watermark"
+                className="absolute bottom-3 right-3 w-[14%] max-w-[67px] object-contain opacity-40 brightness-0 invert pointer-events-none select-none"
+                draggable="false"
+              />
+              {/* Close button */}
+              <button
+                onClick={() => setShowSharePreview(false)}
+                aria-label="Close"
+                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
