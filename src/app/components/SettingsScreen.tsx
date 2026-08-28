@@ -2371,6 +2371,7 @@ export function SettingsScreen({
         <div className="absolute inset-0 z-40">
           {settingsWifiPickerStep === 'select' && (
             <WiFiSelection
+              showSubtitle={false}
               onSelect={(ssid, secured) => {
                 if (!secured) {
                   setSettingsWifiPendingSsid(ssid);

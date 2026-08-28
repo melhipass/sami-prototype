@@ -11,9 +11,10 @@ interface WiFiSelectionProps {
   onSelect: (ssid: string, secured: boolean) => void;
   onCancel: () => void;
   title?: string;
+  showSubtitle?: boolean;
 }
 
-export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Network' }: WiFiSelectionProps) {
+export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Network', showSubtitle = true }: WiFiSelectionProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedSsid, setSelectedSsid] = useState('Sami-5G');
   const [wifiEnabled, setWifiEnabled] = useState(true);
@@ -65,8 +66,12 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
         <div className="p-6 border-b border-app-line/15 dark:border-[#374151] flex items-start justify-between">
           <div>
             <h2 className="text-2xl text-app-content">{title}</h2>
-            <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
-            <p className="text-base text-app-amber mt-2">For better use, select a Sami-5G network</p>
+            {showSubtitle && (
+              <>
+                <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
+                <p className="text-base text-app-amber mt-2">For better use, select a Sami-5G network</p>
+              </>
+            )}
           </div>
           <button
             onClick={handleRefresh}
