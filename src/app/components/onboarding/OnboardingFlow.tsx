@@ -206,7 +206,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     } else {
       if (step === 1) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 0 };
       if (step === 2 || step === 3) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 1 };
-      if (step === 4 || step === 5 || step === 6 || step === 12) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 2 };
+      if (step === 4 || step === 5 || step === 6 || step === 12 || step === 16) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 2 };
       if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 3 };
     }
     return null; // Hide on welcome screen
@@ -253,7 +253,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         />
       )}
       {step === 4 && (
-        <LocationExplainer onContinue={() => setStep(5)} onCancel={() => setStep(3)} />
+        <LocationExplainer onContinue={() => setStep(isAndroid ? 5 : 16)} onCancel={() => setStep(3)} />
       )}
       {step === 5 && (
         <div className="flex items-center justify-center h-full bg-app-surface px-6">
@@ -406,6 +406,45 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <p className="text-base text-app-content-soft mb-8 leading-relaxed">
               Sami needs Location and Network permissions to discover and connect to your Sami camera.
               Please go to your device's Settings &gt; Sami &gt; Permissions and enable Location and Local Network access, then close and reopen the app.
+            </p>
+
+            <div className="space-y-3 w-full">
+              <button
+                onClick={() => setStep(5)}
+                title="Opens the device's Settings app (native app only)"
+                className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+              >
+                Go to Settings
+              </button>
+
+              <button
+                onClick={() => setStep(5)}
+                className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+              >
+                Try Again
+              </button>
+
+              <button
+                onClick={() => setStep(0)}
+                className="w-full text-app-content-faint py-3 text-base hover:text-app-content transition-colors"
+              >
+                Exit Setup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* iOS-only: simulated "Location Services off" error shown right after Access Permissions */}
+      {step === 16 && (
+        <div className="flex items-center justify-center h-full bg-app-surface px-6 py-8">
+          <div className="flex flex-col items-center max-w-md w-full text-center">
+            <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
+              <AlertCircle className="w-16 h-16 text-app-alert" />
+            </div>
+
+            <h1 className="text-3xl mb-4 text-app-content">Permissions Required</h1>
+            <p className="text-base text-app-content-soft mb-8 leading-relaxed">
+              Sami needs Location Services turned on to continue. Go to Settings &gt; Privacy &amp; Security &gt; Location Services and turn it on.
             </p>
 
             <div className="space-y-3 w-full">
