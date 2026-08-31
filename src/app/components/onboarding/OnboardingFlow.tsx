@@ -312,6 +312,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
           platform={platform}
           errorType={networkCheckAttempt === 0 ? 'no-wifi' : networkCheckAttempt === 1 ? 'vpn' : null}
           onSearchAgain={handleNetworkCheckSearchAgain}
+          onCancel={isAndroid ? () => setStep(13) : undefined}
         />
       )}
       {step === 8 && (
@@ -393,6 +394,11 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
               setStep(isAndroid ? 3 : 2);
             }
           }}
+          onCancel={isAndroid ? () => {
+            setWifiPasswordAttempt(0);
+            setWifiShowErrorOnReturn(false);
+            setStep(13);
+          } : undefined}
         />
       )}
       {step === 12 && (

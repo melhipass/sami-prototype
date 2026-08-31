@@ -21,9 +21,12 @@ interface NetworkCheckProps {
   // Called when the user taps "Search Again" (or "Go to Settings") on one of the
   // connectivity error screens. Parent decides what to show next.
   onSearchAgain?: () => void;
+  // Optional: when provided, a "Cancel" button is shown on the verifying/searching
+  // spinner so the user can abort the wait (Android connections can take a while).
+  onCancel?: () => void;
 }
 
-export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, selectedWifi, platform = 'ios', errorType = null, onSearchAgain }: NetworkCheckProps) {
+export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, selectedWifi, platform = 'ios', errorType = null, onSearchAgain, onCancel }: NetworkCheckProps) {
   const [status, setStatus] = useState<'verifying' | 'searching' | 'found'>('verifying');
   const [networkName, setNetworkName] = useState(selectedWifi ?? 'Sami-5G');
 
@@ -147,7 +150,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
-      <div className="flex flex-col items-center max-w-md text-center">
+      <div className="flex flex-col items-center max-w-md w-full text-center">
         <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
           <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
         </div>
@@ -161,6 +164,15 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
             ? 'Checking your network connection'
             : 'This may take a few moments'}
         </p>
+
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            className="mt-8 w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+          >
+            Cancel
+          </button>
+        )}
       </div>
     </div>
   );
