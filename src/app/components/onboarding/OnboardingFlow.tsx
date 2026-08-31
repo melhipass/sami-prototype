@@ -418,13 +418,6 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
               </button>
 
               <button
-                onClick={() => setStep(5)}
-                className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
-              >
-                Try Again
-              </button>
-
-              <button
                 onClick={() => setStep(0)}
                 className="w-full text-app-content-faint py-3 text-base hover:text-app-content transition-colors"
               >
@@ -454,13 +447,6 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
                 className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
               >
                 Go to Settings
-              </button>
-
-              <button
-                onClick={() => setStep(5)}
-                className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
-              >
-                Try Again
               </button>
 
               <button
