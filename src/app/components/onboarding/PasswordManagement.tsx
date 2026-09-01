@@ -75,14 +75,12 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
             />
           </div>
 
-          {passwordHint && (
-            <button
-              onClick={() => setShowForgotPasswordDialog(true)}
-              className="mt-2 text-sm text-app-link dark:text-[#5B8BBF] underline hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80"
-            >
-              Forgot password?
-            </button>
-          )}
+          <button
+            onClick={() => setShowForgotPasswordDialog(true)}
+            className="mt-2 text-sm text-app-link dark:text-[#5B8BBF] underline hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80"
+          >
+            Forgot password?
+          </button>
         </div>
 
         <div className="space-y-3 w-full">
@@ -109,12 +107,14 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
           <div className="bg-app-card rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
             <h2 className="text-2xl font-semibold text-app-mint-ink mb-4 text-center">Forgot Password</h2>
 
-            <div className="mb-4">
-              <label className="block text-sm mb-2 text-app-mint-ink dark:text-app-content-faint text-left">Password Hint:</label>
-              <div className="bg-app-sunken rounded-lg p-4">
-                <p className="text-app-content text-lg text-center">{passwordHint}</p>
+            {passwordHint && (
+              <div className="mb-4">
+                <label className="block text-sm mb-2 text-app-mint-ink dark:text-app-content-faint text-left">Password Hint:</label>
+                <div className="bg-app-sunken rounded-lg p-4">
+                  <p className="text-app-content text-lg text-center">{passwordHint}</p>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="bg-app-quiet/10 border border-app-quiet/30 rounded-lg p-4 mb-6">
               <p className="text-sm text-app-quiet text-center">

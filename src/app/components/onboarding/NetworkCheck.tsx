@@ -6,6 +6,9 @@ interface CameraDevice {
   name: string;
   status: string;
   isNewCamera: boolean;
+  // Only relevant when isNewCamera is false. Simulates a camera whose password was
+  // set previously but with no hint saved, so the "no hint" case can be demoed.
+  hasHint?: boolean;
 }
 
 interface NetworkCheckProps {
@@ -46,8 +49,8 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
 
         const mockCameras: CameraDevice[] = isFirstAttempt ? [] : [
           { id: 'Sami-3c: 7812FFA01839', name: 'Sami-3c: 7812FFA01839', status: 'online', isNewCamera: true },
-          { id: 'Sami-3c: 7812FFA01840', name: 'Sami-3c: 7812FFA01840', status: 'offline', isNewCamera: false },
-          { id: 'Sami-3c: 7812FFA01841', name: 'Sami-3c: 7812FFA01841', status: 'online', isNewCamera: true },
+          { id: 'Sami-3c: 7812FFA01840', name: 'Sami-3c: 7812FFA01840', status: 'offline', isNewCamera: false, hasHint: true },
+          { id: 'Sami-3c: 7812FFA01841', name: 'Sami-3c: 7812FFA01841', status: 'online', isNewCamera: false, hasHint: false },
         ];
 
         // Simulate finding a camera

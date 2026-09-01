@@ -4,7 +4,7 @@ import { Camera, CheckCircle, Check, AlertCircle } from 'lucide-react';
 interface CameraIdentifiedProps {
   cameraName: string;
   cameras: CameraDevice[];
-  onAdd: (isNewCamera: boolean) => void;
+  onAdd: (isNewCamera: boolean, hasHint: boolean) => void;
   onSearchAgain: () => void;
   onCancel: () => void;
 }
@@ -14,6 +14,7 @@ interface CameraDevice {
   name: string;
   status: string;
   isNewCamera: boolean;
+  hasHint?: boolean;
 }
 
 export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, onCancel }: CameraIdentifiedProps) {
@@ -21,7 +22,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
 
   const handleAdd = () => {
     const camera = cameras.find((c) => c.id === selectedCamera);
-    onAdd(camera?.isNewCamera ?? true);
+    onAdd(camera?.isNewCamera ?? true, camera?.hasHint ?? true);
   };
 
   return (
