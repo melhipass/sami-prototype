@@ -376,11 +376,6 @@ function AppContent({
   const [showStorageNotification, setShowStorageNotification] = useState(true);
   const [hasShownStoragePopup, setHasShownStoragePopup] = useState(false);
 
-  // Enable alarm alerts state
-  const [hasSeenEnableAlarmAlerts, setHasSeenEnableAlarmAlerts] = useState(false);
-  const [showEnableAlarmAlert, setShowEnableAlarmAlert] = useState(false);
-  const [currentAlertIndex, setCurrentAlertIndex] = useState(0);
-  
   // Alarm time states
   const [alarmEnableHour, setAlarmEnableHour] = useState(7);
   const [alarmEnableMinute, setAlarmEnableMinute] = useState(0);
@@ -1210,52 +1205,11 @@ function AppContent({
     return monthGroups;
   }, [currentRecordings]);
 
-  // Enable alarm alert messages
-  const enableAlarmAlertMessages = [
-    "1 of 5: IMPORTANT! READ THIS FIRST! Sami is a nocturnal movement monitor and will detect all types of movement regardless of the movement's origin.",
-    "2 of 5: HiPass Design LLC. does not guarantee the effectiveness of Sami for any particular application and use of Sami is solely at your own risk.",
-    "3 of 5: Sami has not been evaluated or approved by the U.S. Food and Drug Administration or any other government agency for any purpose.",
-    "4 of 5: Sami is not a medical device and is not intended for use in the prevention, diagnosis, mitigation, treatment, or cure of any disease or other conditions.",
-    "5 of 5: Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition."
-  ];
-
-  // Handle enable alarm toggle with alerts
+  // Handle enable alarm toggle
+  // Disclaimers are already shown and accepted during onboarding (DisclaimerScreen),
+  // so this just toggles the setting directly without re-showing them.
   const handleEnableAlarmToggle = () => {
-    // If turning OFF, just toggle
-    if (enableAlarm) {
-      setEnableAlarm(false);
-      return;
-    }
-    
-    // If turning ON and haven't seen alerts, show first alert
-    if (!hasSeenEnableAlarmAlerts) {
-      setCurrentAlertIndex(0);
-      setShowEnableAlarmAlert(true);
-      return;
-    }
-    
-    // Otherwise just toggle on
-    setEnableAlarm(true);
-  };
-
-  // Handle alert OK button
-  const handleAlertOk = () => {
-    // If there are more alerts, show next one
-    if (currentAlertIndex < enableAlarmAlertMessages.length - 1) {
-      setCurrentAlertIndex(currentAlertIndex + 1);
-    } else {
-      // All alerts shown, enable alarm and mark as seen
-      setShowEnableAlarmAlert(false);
-      setEnableAlarm(true);
-      setHasSeenEnableAlarmAlerts(true);
-    }
-  };
-
-  // Handle alert Cancel button
-  const handleAlertCancel = () => {
-    setShowEnableAlarmAlert(false);
-    setEnableAlarm(false);
-    setCurrentAlertIndex(0);
+    setEnableAlarm(!enableAlarm);
   };
 
   // Handle Smart Border toggle
@@ -2854,11 +2808,6 @@ IP is Dynamic`}
           showSmartBorderPopup2={showSmartBorderPopup2}
           handleSmartBorderPopup2Ok={handleSmartBorderPopup2Ok}
           handleSmartBorderPopup2Cancel={handleSmartBorderPopup2Cancel}
-          showEnableAlarmAlert={showEnableAlarmAlert}
-          currentAlertIndex={currentAlertIndex}
-          enableAlarmAlertMessages={enableAlarmAlertMessages}
-          handleAlertOk={handleAlertOk}
-          handleAlertCancel={handleAlertCancel}
           showQCSection={showQCSection}
           setShowQCSection={setShowQCSection}
           handleQCTitlePressStart={handleQCTitlePressStart}

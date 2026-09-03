@@ -184,12 +184,6 @@ export interface SettingsScreenProps {
   handleSmartBorderPopup2Ok: () => void;
   handleSmartBorderPopup2Cancel: () => void;
 
-  // Enable alarm alerts
-  showEnableAlarmAlert: boolean;
-  currentAlertIndex: number;
-  enableAlarmAlertMessages: string[];
-  handleAlertOk: () => void;
-  handleAlertCancel: () => void;
 
   // QC section
   showQCSection: boolean;
@@ -366,11 +360,6 @@ export function SettingsScreen({
   showSmartBorderPopup2,
   handleSmartBorderPopup2Ok,
   handleSmartBorderPopup2Cancel,
-  showEnableAlarmAlert,
-  currentAlertIndex,
-  enableAlarmAlertMessages,
-  handleAlertOk,
-  handleAlertCancel,
   showQCSection,
   setShowQCSection,
   handleQCTitlePressStart,
@@ -2403,37 +2392,6 @@ export function SettingsScreen({
               }}
             />
           )}
-        </div>
-      )}
-
-      {/* Enable Alarm Alert */}
-      {showEnableAlarmAlert && (
-        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-app-card rounded-lg w-[600px] overflow-hidden">
-            {/* Alert Content */}
-            <div className="p-8">
-              <p className="text-app-content text-lg leading-relaxed text-center">
-                {enableAlarmAlertMessages[currentAlertIndex]}
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div className="border-t border-app-line/15 dark:border-[#374151] grid grid-cols-2">
-              <button
-                onClick={handleAlertCancel}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-app-content-faint"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAlertOk}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold"
-                style={{ color: SETTINGS_ACCENT_COLOR }}
-              >
-                OK
-              </button>
-            </div>
-          </div>
         </div>
       )}
 
