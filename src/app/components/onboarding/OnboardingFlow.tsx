@@ -87,10 +87,10 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   };
 
   const handleLightIsGreen = () => {
-    if (skipPermissions || isAndroid) {
+    if (isAndroid) {
       setStep(7); // Skip to Network Check (Android has pre-configured permissions)
     } else {
-      setStep(4); // Location Explainer
+      setStep(4); // Location Explainer (iOS shows Permissions in both onboarding and pairing)
     }
   };
 
@@ -194,9 +194,10 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         if (step === 3) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 1 };
         if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Wi-Fi', 'Verify', 'Connect'], index: 2 };
       } else {
-        // Labels: Guide, Connect
-        if (step === 2 || step === 3) return { labels: ['Guide', 'Connect'], index: 0 };
-        if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Guide', 'Connect'], index: 1 };
+        // Labels: Guide, Permissions, Connect
+        if (step === 2 || step === 3) return { labels: ['Guide', 'Permissions', 'Connect'], index: 0 };
+        if (step === 4 || step === 5 || step === 6 || step === 16) return { labels: ['Guide', 'Permissions', 'Connect'], index: 1 };
+        if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Guide', 'Permissions', 'Connect'], index: 2 };
       }
       return null;
     }
