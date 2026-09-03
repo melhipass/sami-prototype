@@ -1780,7 +1780,6 @@ function AppContent({
   const handleResetUserSettings = () => {
     // Reset user preferences only (alarm, motion, audio, display settings)
     setEnableAlarm(false);
-    setHasSeenEnableAlarmAlerts(false);
     setMotionThresholdSetting(25);
     setAlarmThresholdSetting(20);
     setSensitivityBoost(0);
@@ -1814,7 +1813,6 @@ function AppContent({
     setCameraPaired(false);
     setShowSamiNetworkBanner(true);
     setEnableAlarm(false);
-    setHasSeenEnableAlarmAlerts(false);
     setMotionThresholdSetting(25);
     setAlarmThresholdSetting(20);
     setSensitivityBoost(0);
