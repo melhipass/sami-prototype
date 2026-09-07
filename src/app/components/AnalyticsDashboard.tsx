@@ -60,10 +60,21 @@ const longDates = pastDates(LONG_RANGE_DAYS);
 // Metadata > Shared Event Properties) — it belongs to the camera, not to
 // whichever phone last checked it, so this is intentionally NOT split by
 // the Platform filter.
+// Also segmented by alarm_triggered frequency (10+ alarms/day vs. the rest,
+// same "10+" bin as Alarms per Camera per Day) per Matt's feedback: heavy
+// alarm activity is a proxy for genuinely-active households, who should
+// retain noticeably better than the overall cohort.
 const retentionData = dayLabels(31).map((day, i) => {
   const noise = Math.sin(i / 3) * 2;
   const overall = i === 0 ? 100 : Math.max(24, Math.round((58 - i * 0.9 + noise) * (i < 3 ? 1.4 : 1) * 10) / 10);
-  return { day, overall: i === 0 ? 100 : Math.max(24, Math.round(overall)) };
+  const heavyAlarms = i === 0 ? 100 : Math.max(45, Math.round((72 - i * 0.5 + noise) * (i < 3 ? 1.2 : 1) * 10) / 10);
+  const lightAlarms = i === 0 ? 100 : Math.max(18, Math.round((50 - i * 1.1 + noise) * (i < 3 ? 1.5 : 1) * 10) / 10);
+  return {
+    day,
+    overall: i === 0 ? 100 : Math.max(24, Math.round(overall)),
+    heavyAlarms: i === 0 ? 100 : Math.max(45, Math.round(heavyAlarms)),
+    lightAlarms: i === 0 ? 100 : Math.max(18, Math.round(lightAlarms)),
+  };
 });
 
 // 400 days of history, ending "today" — supports the Overview time-range
@@ -77,6 +88,74 @@ const nightlyActiveCameras = longDates.map((date, i) => {
   const noise = Math.round(Math.random() * 20 - 10);
   return { date, cameras: Math.max(50, Math.round(trend + weekly + weekend + noise)) };
 });
+
+// Distinct cameras (by MAC address — the closest proxy we have to a
+// "customer," since the app has no login) that reported Online at least once
+// in the trailing 7 days ending on that date. Per Matt's feedback (9/4):
+// a single day undercounts real usage since not everyone connects daily, so
+// this smooths over that gap. Modeled as the trailing-7-day average of
+// nightlyActiveCameras times an illustrative turnover factor (1.32) — some
+// cameras that are online on 1 day of the week but not others still count.
+// Same camera_health_check data as Online Cameras Over Time, just windowed
+// differently, so no new event needed.
+const weeklyActiveCamerasLong = longDates.map((date, i) => {
+  const windowStart = Math.max(0, i - 6);
+  const window = nightlyActiveCameras.slice(windowStart, i + 1);
+  const avg = window.reduce((sum, d) => sum + d.cameras, 0) / window.length;
+  return { date, cameras: Math.round(avg * 1.32) };
+});
+
+// Distinct app installs (device IDs, not accounts — see "No user accounts" in
+// Assumptions & Limitations) with at least one app_heartbeat that day.
+// Bare-bones per Matt's ask (9/4): just app runtime, no distinction between
+// live view / recordings / anything else within the app.
+const activeDevicesLong = longDates.map((date, i) => {
+  const progress = i / (LONG_RANGE_DAYS - 1);
+  const trend = 340 + progress * 420;
+  const weekly = Math.sin(i / 3.5) * 35;
+  const weekend = i % 7 === 5 || i % 7 === 6 ? 20 : 0;
+  const noise = Math.round(Math.random() * 20 - 10);
+  return { date, devices: Math.max(60, Math.round(trend + weekly + weekend + noise)) };
+});
+
+// Illustrative share of that day's online cameras that stayed continuously
+// online for at least each threshold, per Matt's feedback: a single ping
+// doesn't tell us apart from hours of real monitoring. Backed by
+// camera_health_check (hourly, see Event Catalog > Camera Periodic Health
+// Checks) — bucketing how many of a camera's hourly checks that day came
+// back Online. "Any connectivity" is the existing unfiltered count.
+const ONLINE_DURATION_OPTIONS = [
+  { label: 'Any connectivity', rate: 1, answers: 'How many cameras are online each day?' },
+  { label: '1+ hr', rate: 0.83, answers: 'How many cameras had at least 1 continuous hour of connectivity that day?' },
+  { label: '5+ hr', rate: 0.61, answers: 'How many cameras stayed online for at least 5 hours that day?' },
+  { label: '8+ hr', rate: 0.42, answers: 'How many cameras stayed online for at least 8 hours that day — our proxy for genuinely-monitoring “core” users?' },
+] as const;
+
+// Illustrative share of that day's created recordings that were at least
+// each duration threshold, per Matt's feedback: a sub-10s clip is likely
+// noise/false-positive, while 30s+ is a probable real event and 1min+ is
+// near-certain. Backed by the existing recording_created.duration_seconds
+// field (see Event Catalog) — no new event or field needed. "Any duration"
+// is the existing unfiltered count.
+const RECORDING_DURATION_OPTIONS = [
+  { label: 'Any duration', rate: 1, answers: 'How many recordings are being made?' },
+  { label: '10s+', rate: 0.82, answers: 'How many recordings were at least 10 seconds — filtering out likely noise/false positives?' },
+  { label: '30s+', rate: 0.58, answers: 'How many recordings were at least 30 seconds — a probable real event?' },
+  { label: '1min+', rate: 0.31, answers: 'How many recordings were at least 1 minute — near-certain a real event occurred?' },
+] as const;
+
+// Illustrative share of that day's active devices that ran the app
+// continuously for at least each threshold, per Matt's feedback (9/4): a
+// simple, "bare bones" app-runtime proxy for active users — deliberately
+// not split by live view / recordings / anything else. Backed by
+// app_heartbeat.elapsed_seconds (see Event Catalog > App Lifecycle &
+// Runtime) — no new event needed. "Any use" is the existing unfiltered count.
+const ACTIVE_DEVICE_DURATION_OPTIONS = [
+  { label: 'Any use', rate: 1, answers: 'How many devices used the app each day?' },
+  { label: '1+ hr', rate: 0.58, answers: 'How many devices ran the app for at least 1 continuous hour that day?' },
+  { label: '5+ hr', rate: 0.27, answers: 'How many devices ran the app for at least 5 continuous hours that day?' },
+  { label: '8+ hr', rate: 0.12, answers: 'How many devices ran the app for at least 8 continuous hours that day?' },
+] as const;
 
 const usageConsistency = [
   { segment: 'Daily (6–7 days/wk)', count: 412 },
@@ -97,6 +176,8 @@ const reconnectionGaps = [
 
 const retentionTable = [
   { segment: 'All Cameras', cameras: 982, day0: '100%', day1: '54%', day7: '39%', day30: '27%' },
+  { segment: '10+ alarms/day', cameras: 54, day0: '100%', day1: '87%', day7: '70%', day30: '56%' },
+  { segment: 'Rest of cameras', cameras: 928, day0: '100%', day1: '74%', day7: '44%', day30: '18%' },
 ];
 
 // Onboarding funnel — each step corresponds to a real screen-viewed event
@@ -175,6 +256,28 @@ const recordingsAndAlarmsLong = longDates.map((date, i) => ({
   created: recordingsCreatedLong[i].created,
   alarms: alarmsOverTimeLong[i].alarms,
 }));
+
+// Watched/Downloaded/Shared/Locked/Alarmed, day by day, driven off that same
+// day's Created using the rates above plus independent daily jitter per
+// metric (so the lines don't move in perfect lockstep). Deliberately leaves
+// out Created — it already has its own trend chart (Recordings Created Over
+// Time) and dwarfs these in scale, which would flatten the smaller lines
+// (especially Shared) if plotted together. Each point counts the action on
+// the day it happened, not the day the recording was created — someone can
+// watch/download/share/lock a recording well after its creation day, so
+// tying this to the creation-day cohort would understate real engagement.
+const recordingsEngagementLong = longDates.map((date, i) => {
+  const created = recordingsCreatedLong[i].created;
+  const jitter = () => 1 + (Math.random() * 0.16 - 0.08);
+  return {
+    date,
+    watched: Math.round(created * RECORDINGS_WATCHED_RATE * jitter()),
+    downloaded: Math.round(created * RECORDINGS_DOWNLOADED_RATE * jitter()),
+    shared: Math.round(created * RECORDINGS_SHARED_RATE * jitter()),
+    locked: Math.round(created * RECORDINGS_LOCKED_RATE * jitter()),
+    alarmed: Math.round(created * RECORDINGS_ALARMED_RATE * jitter()),
+  };
+});
 
 // App-wide navigation — every real screen-shown event in the catalog
 // (Settings, Camera Settings, Recordings, Trash, Live View, Help), plus
@@ -263,6 +366,30 @@ const featureUsage = [
   { feature: 'Clock mode used', count: 1490 },
   { feature: 'Screen locked (manual)', count: 1120 },
 ].sort((a, b) => b.count - a.count);
+
+// Illustrative "Measured as" alternative to the raw toggle-count view above,
+// per Matt's feedback: counting clicks doesn't tell us whether a feature was
+// actually left on. Backed by the duration_seconds field added to
+// mic_toggled, live_motion_overlay_toggled, live_border_toggled, and
+// clock_mode_hidden (see Event Catalog) — only covers the 4 features that
+// are genuinely an on/off state a user leaves running, not one-off actions
+// like the alarm button or Border Zone Adjusted.
+// Mirrors the "Measured as" filter on Online Cameras Over Time (Any
+// connectivity / 1+ hr / 5+ hr / 8+ hr) — same baseline-plus-thresholds
+// shape, just renamed for a feature instead of a camera connection.
+// "Toggle count" is kept as an extra option (not on the camera chart) since
+// raw click counts are still useful as a friction signal.
+const FEATURE_USAGE_MEASURED_AS = ['Toggle count', 'Any use', '1+ hr', '5+ hr', '8+ hr'] as const;
+// Lock screen deliberately trails off fast at the higher thresholds — unlike
+// Clock mode (often left on overnight), it's meant to prevent accidental
+// touches for a few minutes at a time, not hours.
+const featureUsageDuration = [
+  { feature: 'Clock mode', anyUse: 78, hr1: 64, hr5: 48, hr8: 31 },
+  { feature: 'Motion overlay', anyUse: 71, hr1: 59, hr5: 44, hr8: 29 },
+  { feature: 'Mic', anyUse: 53, hr1: 41, hr5: 24, hr8: 14 },
+  { feature: 'View Border', anyUse: 38, hr1: 26, hr5: 15, hr8: 8 },
+  { feature: 'Lock screen', anyUse: 44, hr1: 6, hr5: 1, hr8: 0 },
+].sort((a, b) => b.hr1 - a.hr1);
 
 // Which "setting" values on setting_changed / camera_setting_changed get
 // changed most. Recording transfers enabled and Auto-delete older videos are
@@ -551,7 +678,7 @@ function InfoTooltip({ text }: { text: string }) {
 // (setting_changed, camera_setting_changed) have a documented `setting`
 // enum reference — shown as a hover tooltip on an info icon next to the
 // event name, rather than its own mostly-empty column.
-function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string; isProposed?: boolean }[] }) {
+function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string; isProposed?: boolean; badgeText?: string }[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
@@ -571,7 +698,7 @@ function CatalogTable({ rows }: { rows: { category: string; event: string; when:
                 <span className="inline-flex items-center gap-1.5">
                   {r.isProposed && (
                     <span className="font-sans text-[9px] font-semibold text-[#8A5A00] bg-[#FFF3D6] border border-[#F5D98B] rounded px-1 py-0.5 tracking-wide">
-                      CLAUDE
+                      {r.badgeText ?? 'CLAUDE'}
                     </span>
                   )}
                   {r.event}
@@ -630,10 +757,13 @@ function Dropdown({
 // structured) and Shared/Identity Properties (what's on the wire). This is
 // about what the data can and can't tell us.
 const CATALOG_ASSUMPTIONS = [
-  'No user accounts: the app has no login, so there’s no reliable way to count distinct people. Cameras are the closest proxy we have to “families” or “households,” on the assumption that most households set up just 1 camera. This likely undercounts households with 2+ cameras, and can’t distinguish multiple people sharing one household’s app.',
-  'A few sections measure app usage, not camera usage, and shouldn’t be read as “per camera” or “per family”: App Navigation (Navigation Events, Onboarding Funnel), Feature Adoption (Feature Usage, Most-Changed App Settings, Most-Changed Camera Settings), Recordings — Actions, and Devices Info (Device Family, OS Version Breakdown). Keep in mind one camera can be viewed from multiple mobile devices at the same time (e.g. two family members’ phones) — so these app-side counts can overstate how many distinct households are represented.',
-  'Sami cameras can run fully offline over the local network indefinitely. Any camera that stays offline the whole time never reports analytics at all — so there’s a real, unknown population of active cameras that’s invisible to every chart in this dashboard.',
-  '“Online” only means the camera currently has an internet connection (camera_status ≠ Offline). It does not imply remote viewing is enabled, that the camera is actively streaming, or that any other internet-dependent feature is turned on.',
+  { text: 'No user accounts: the app has no login, so there’s no reliable way to count distinct people. Cameras are the closest proxy we have to “families” or “households,” on the assumption that most households set up just 1 camera. This likely undercounts households with 2+ cameras, and can’t distinguish multiple people sharing one household’s app.' },
+  { text: 'A few sections measure app usage, not camera usage, and shouldn’t be read as “per camera” or “per family”: App Navigation (Navigation Events, Onboarding Funnel), Feature Adoption (Feature Usage, Most-Changed App Settings, Most-Changed Camera Settings), Recordings — Actions, and Devices Info (Device Family, OS Version Breakdown). Keep in mind one camera can be viewed from multiple mobile devices at the same time (e.g. two family members’ phones) — so these app-side counts can overstate how many distinct households are represented.' },
+  { text: 'Sami cameras can run fully offline over the local network indefinitely. Any camera that stays offline the whole time never reports analytics at all — so there’s a real, unknown population of active cameras that’s invisible to every chart in this dashboard.' },
+  { text: '“Online” only means the camera currently has an internet connection (camera_status ≠ Offline). It does not imply remote viewing is enabled, that the camera is actively streaming, or that any other internet-dependent feature is turned on.' },
+  { text: 'Online-duration thresholds (1+ hr / 5+ hr / 8+ hr on Online Cameras Over Time) are sampled hourly via camera_health_check, not measured continuously — a camera is counted as meeting a threshold if it reported Online on that many consecutive hourly checks. This is an approximation: a brief drop between two hourly checks would not be detected.', isNew: true },
+  { text: 'Feature Usage duration fields (duration_seconds on mic_toggled, live_motion_overlay_toggled, live_border_toggled, clock_mode_hidden, and screen_unlocked) are only sent on a clean turn-off/dismiss/unlock. If the app is killed or crashes while a feature is still on, that activation’s duration is lost entirely — unlike camera online-hours (sampled by an hourly heartbeat, so it degrades gracefully), a single long activation cut short by a crash won’t be counted at all.', isNew: true },
+  { text: 'Duration thresholds on Recordings Created Over Time (10s+ / 30s+ / 1min+) are an illustrative approximation of the share of that day’s recordings meeting each duration_seconds cutoff, not an exact per-recording breakdown — the underlying dataset is a daily aggregate count, not individual recordings, in this prototype.', isNew: true },
 ];
 
 const CATALOG_CONVENTIONS = [
@@ -676,7 +806,7 @@ const CATALOG_AUTO_CAPTURED = {
   ],
 };
 
-type CatalogEvent = { event: string; when: string; data: string; reference?: string; isProposed?: boolean };
+type CatalogEvent = { event: string; when: string; data: string; reference?: string; isProposed?: boolean; badgeText?: string };
 type CatalogSection = { title: string; description?: string; events: CatalogEvent[] };
 
 const EVENT_CATALOG: CatalogSection[] = [
@@ -807,7 +937,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     description: 'Replaces the live view with a dimmable clock, driven by the screen-timeout-to-clock display setting.',
     events: [
       { event: 'clock_mode_shown', when: 'Clock mode is displayed', data: 'trigger (enum: auto_timeout, manual)' },
-      { event: 'clock_mode_hidden', when: 'Clock mode is dismissed', data: 'trigger (enum: manual, alarm_triggered)' },
+      { event: 'clock_mode_hidden', when: 'Clock mode is dismissed', data: 'trigger (enum: manual, alarm_triggered), duration_seconds (int — NEW) — continuous time clock mode was shown before being dismissed, sent by the app rather than derived from timestamps, same pattern as stream_session_ended.duration_seconds' },
       { event: 'clock_mode_brightness_adjusted', when: 'User swipes the screen to change brightness (fires once on swipe end, not per frame)', data: 'brightness (number 0–1), previous_brightness (number 0–1)' },
     ],
   },
@@ -816,7 +946,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     description: 'The live view can be manually locked to prevent accidental touches. Locking is always manual; there is no automatic unlock.',
     events: [
       { event: 'screen_locked', when: 'User taps lock (always manual)', data: '—' },
-      { event: 'screen_unlocked', when: 'User unlocks (onUnlock)', data: 'reason (enum: manual, alarm_dismiss — alarm was triggered at unlock and this unlock also dismissed it)' },
+      { event: 'screen_unlocked', when: 'User unlocks (onUnlock)', data: 'reason (enum: manual, alarm_dismiss — alarm was triggered at unlock and this unlock also dismissed it), duration_seconds (int — NEW) — continuous time the screen was locked before being unlocked, sent by the app rather than derived from timestamps, same pattern as stream_session_ended.duration_seconds' },
     ],
   },
   {
@@ -824,9 +954,9 @@ const EVENT_CATALOG: CatalogSection[] = [
     description: 'The live camera view: overlay toggles, monitored region, Smart Edge suppression, stream health, and streaming duration.',
     events: [
       { event: 'live_view_opened', when: 'Live view (video player) is shown', data: '—' },
-      { event: 'live_border_toggled', when: 'Border / detection-zone overlay toggled', data: 'enabled (bool), coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1)' },
+      { event: 'live_border_toggled', when: 'Border / detection-zone overlay toggled', data: 'enabled (bool), coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1), duration_seconds (int — NEW, only present when enabled=false) — continuous time the border was shown before being hidden' },
       { event: 'live_detection_zone_changed', when: 'User adjusts the monitored region (debounced commit, not per drag)', data: 'coverage_percent (0–100), region_left / region_top / region_right / region_bottom (0–1)' },
-      { event: 'live_motion_overlay_toggled', when: 'Red motion overlay toggled', data: 'enabled (bool)' },
+      { event: 'live_motion_overlay_toggled', when: 'Red motion overlay toggled', data: 'enabled (bool), duration_seconds (int — NEW, only present when enabled=false) — continuous time the overlay was on before being turned off' },
       { event: 'alarm_smart_edge_suppressed', when: 'Smart Edge suppresses an alarm (border-only motion → Paused instead of trigger)', data: 'edge_motion (number), motion_threshold (number)' },
       { event: 'stream_health_changed', when: 'Stream health transitions between states', data: 'health (enum: searching, low_frame_rate, healthy), signal_level (int 1–4, healthy only), fps (number)' },
       { event: 'stream_session_ended', when: 'Streaming stops (leave live view, backgrounded, or stream lost)', data: 'duration_seconds (int), end_reason (enum: left_screen, backgrounded, stream_lost)' },
@@ -840,7 +970,7 @@ const EVENT_CATALOG: CatalogSection[] = [
       { event: 'alarm_arm_blocked', when: 'User taps the alarm button to arm but the action is refused', data: 'reason (enum: no_connection — stream still Searching, disabled — alarm globally disabled / kill-switch)' },
       { event: 'alarm_triggered', when: 'Motion exceeds threshold while Active — alarm sounds', data: 'motion_level (number), motion_threshold (number), audible (bool — alarm volume > 0), was_locked (bool), clock_mode_active (bool)' },
       { event: 'alarm_dismissed', when: 'Alarm stops and returns to Paused', data: 'method (enum: manual, auto_timeout — auto-stop after the alarm-duration setting)' },
-      { event: 'mic_toggled', when: 'Microphone turned on or off', data: 'enabled (bool), source (enum: manual, alarm_auto — auto-enabled on alarm dismiss, auto_timeout — auto-off after the post-dismiss timeout)' },
+      { event: 'mic_toggled', when: 'Microphone turned on or off', data: 'enabled (bool), source (enum: manual, alarm_auto — auto-enabled on alarm dismiss, auto_timeout — auto-off after the post-dismiss timeout), duration_seconds (int — NEW, only present when enabled=false) — continuous time the mic was on before being turned off' },
     ],
   },
   {
@@ -907,6 +1037,19 @@ const EVENT_CATALOG: CatalogSection[] = [
     ],
   },
   {
+    title: 'Camera Periodic Health Checks',
+    description: 'Proposed with Julio and Luis (9/4) to support a duration-based view of camera connectivity — see Assumptions & Limitations. camera_status already rides as a shared property on every event, but nothing previously sampled it on a guaranteed cadence, so a camera left connected for hours with no other interaction had no way to confirm it stayed online in between. This mirrors why app_heartbeat exists for session length, applied to camera connectivity instead of app foreground time. Confirmed with Luis (9/4): runs hourly regardless of which screen is active (Clock Mode, Settings, Recordings, etc.) as long as the app is in the foreground; true OS background is out of scope (iOS suspends background execution after a short window).',
+    events: [
+      {
+        event: 'camera_health_check',
+        when: 'Fires on each periodic connectivity check while a camera connection is active — hourly, same cadence as the timezone/clock resync in Camera Periodic Health Checks (SAMI-728) AC1. Independent of which app screen is currently shown, so it isn’t gated on Live View being open.',
+        data: '— (camera_status, camera_signal_strength, wifi_quality all ride along as shared properties, same as any other event)',
+        isProposed: true,
+        badgeText: 'NEW',
+      },
+    ],
+  },
+  {
     title: 'Connectivity — Dialogs',
     description: 'Connectivity issues surfaced as dialogs. SSID names are intentionally not sent.',
     events: [
@@ -952,19 +1095,21 @@ const EVENT_CATALOG_ROWS = EVENT_CATALOG.flatMap((section) =>
 // Metadata > Shared Event Properties. RET-01 keeps onboarding_camera_added
 // since that event genuinely defines the retention cohort's Day 0.
 const CHART_REGISTRY: { id: string; title: string; events: string[] }[] = [
-  { id: 'USG-01', title: 'Online Cameras Over Time', events: ['stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
+  { id: 'USG-01', title: 'Online Cameras Over Time', events: ['camera_health_check', 'stream_health_changed', 'connectivity_dialog_shown', 'connectivity_dialog_dismissed', 'notification_shown'] },
   { id: 'USG-02', title: 'Camera Type of Connection', events: ['camera_setting_changed'] },
   { id: 'USG-03', title: 'Navigation Events', events: ['live_view_opened', 'recordings_viewed', 'settings_viewed', 'camera_settings_viewed', 'clock_mode_shown', 'live_border_toggled', 'screen_locked', 'trash_viewed', 'recording_player_navigated', 'help_viewed'] },
-  { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added'] },
+  { id: 'USG-04', title: 'Active Devices Over Time', events: ['app_heartbeat'] },
+  { id: 'USG-05', title: 'Weekly Active Cameras', events: ['camera_health_check'] },
+  { id: 'RET-01', title: 'Internet Connection Retention', events: ['onboarding_camera_added', 'alarm_triggered'] },
   { id: 'RET-02', title: 'Connection Consistency', events: [] },
   { id: 'RET-03', title: 'Days Until Reconnection', events: [] },
   { id: 'RET-04', title: 'Onboarding Funnel', events: ['onboarding_welcome_viewed', 'onboarding_disclaimers_viewed', 'onboarding_guide_viewed', 'onboarding_camera_ready_viewed', 'onboarding_permissions_viewed', 'onboarding_connect_viewed', 'onboarding_camera_added'] },
   { id: 'ALM-01', title: 'Recordings Created Over Time', events: ['recording_created'] },
   { id: 'ALM-02', title: 'Alarms Triggered Over Time', events: ['alarm_triggered'] },
   { id: 'ALM-03', title: 'Alarms per Camera per Day', events: ['alarm_triggered'] },
-  { id: 'ALM-04', title: 'Recordings Distribution', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
+  { id: 'ALM-05', title: 'Recordings Engagement Over Time', events: ['recording_created', 'recording_played', 'recording_download_requested', 'recording_action'] },
   { id: 'ALM-07', title: 'Recordings — Actions', events: ['recording_played', 'recording_download_requested', 'recording_action', 'recordings_filter_changed', 'recordings_edit_mode_toggled'] },
-  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'screen_locked'] },
+  { id: 'FEA-01', title: 'Feature Usage', events: ['alarm_state_changed', 'mic_toggled', 'live_border_toggled', 'live_detection_zone_changed', 'live_motion_overlay_toggled', 'clock_mode_shown', 'clock_mode_hidden', 'screen_locked', 'screen_unlocked'] },
   { id: 'FEA-03', title: 'Most-Changed App Settings', events: ['setting_changed', 'settings_reset'] },
   { id: 'FEA-04', title: 'Most-Changed Camera Settings', events: ['camera_setting_changed'] },
   { id: 'DEV-01', title: 'Device Family', events: [] },
@@ -1039,6 +1184,10 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   }, [activeCategory]);
   const [platformFilter, setPlatformFilter] = useState('All Platforms');
   const [timeRange, setTimeRange] = useState('30 Days');
+  const [onlineDurationFilter, setOnlineDurationFilter] = useState('Any connectivity');
+  const [recordingDurationFilter, setRecordingDurationFilter] = useState('Any duration');
+  const [activeDeviceDurationFilter, setActiveDeviceDurationFilter] = useState('Any use');
+  const [featureUsageMeasuredAs, setFeatureUsageMeasuredAs] = useState<typeof FEATURE_USAGE_MEASURED_AS[number]>('Toggle count');
   const [catalogCategoryFilter, setCatalogCategoryFilter] = useState('All Categories');
   const [catalogSearch, setCatalogSearch] = useState('');
   const [catalogChartFilter, setCatalogChartFilter] = useState('All Charts');
@@ -1071,26 +1220,35 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [timeRangeDays]
   );
 
-  // Single source of truth for Created/Watched/Shared/Locked/Alarmed —
-  // summed over the selected time range, then scaled by the Platform filter
-  // (all 5 are counts of things that happen via the app, same as each other).
-  const recordingsStageTotals = useMemo(() => {
-    const createdTotal = lastNDays(recordingsCreatedLong, timeRangeDays).reduce((sum, d) => sum + d.created, 0);
-    const created = scaleCount(createdTotal);
-    const watched = Math.round(created * RECORDINGS_WATCHED_RATE);
-    const downloaded = Math.round(created * RECORDINGS_DOWNLOADED_RATE);
-    const shared = Math.round(created * RECORDINGS_SHARED_RATE);
-    const locked = Math.round(created * RECORDINGS_LOCKED_RATE);
-    const alarmed = Math.round(created * RECORDINGS_ALARMED_RATE);
-    return [
-      { stage: 'Created', count: created },
-      { stage: 'Downloaded', count: downloaded },
-      { stage: 'Watched', count: watched },
-      { stage: 'Alarmed', count: alarmed },
-      { stage: 'Locked', count: locked },
-      { stage: 'Shared', count: shared },
-    ];
-  }, [platformMultiplier, timeRangeDays]);
+  const scaledWeeklyActiveCameras = useMemo(
+    () => lastNDays(weeklyActiveCamerasLong, timeRangeDays),
+    [timeRangeDays]
+  );
+
+  // Applies the selected online-duration threshold (Any connectivity / 1+ hr
+  // / 5+ hr / 8+ hr) to each day's online-camera count — see
+  // ONLINE_DURATION_OPTIONS above. Camera-side data, so not Platform-scaled,
+  // same as scaledNightly.
+  const onlineDurationOption = ONLINE_DURATION_OPTIONS.find((o) => o.label === onlineDurationFilter) ?? ONLINE_DURATION_OPTIONS[0];
+  const scaledNightlyByDuration = useMemo(
+    () => scaledNightly.map((d) => ({ date: d.date, cameras: Math.round(d.cameras * onlineDurationOption.rate) })),
+    [scaledNightly, onlineDurationOption]
+  );
+
+  // Applies the selected app-runtime threshold (Any use / 1+ hr / 5+ hr /
+  // 8+ hr) to each day's active-device count — see
+  // ACTIVE_DEVICE_DURATION_OPTIONS above. Unlike the camera-side charts, this
+  // IS Platform-scaled: it's about which phones are running the app, not
+  // about the camera.
+  const activeDeviceDurationOption = ACTIVE_DEVICE_DURATION_OPTIONS.find((o) => o.label === activeDeviceDurationFilter) ?? ACTIVE_DEVICE_DURATION_OPTIONS[0];
+  const scaledActiveDevices = useMemo(
+    () =>
+      lastNDays(activeDevicesLong, timeRangeDays).map((d) => ({
+        date: d.date,
+        devices: Math.round(scaleCount(d.devices) * activeDeviceDurationOption.rate),
+      })),
+    [platformMultiplier, timeRangeDays, activeDeviceDurationOption]
+  );
 
   // A per-day distribution snapshot, not a real time series — unaffected by
   // the time-range picker (same reasoning as camera-level/rate metrics
@@ -1110,6 +1268,36 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
     [platformMultiplier, timeRangeDays]
   );
 
+  // Applies the selected minimum-duration threshold (Any duration / 10s+ /
+  // 30s+ / 1min+) to each day's created-recordings count — see
+  // RECORDING_DURATION_OPTIONS above. Only "created" is filtered; "alarms" is
+  // passed through unchanged since alarms don't have a duration.
+  const recordingDurationOption = RECORDING_DURATION_OPTIONS.find((o) => o.label === recordingDurationFilter) ?? RECORDING_DURATION_OPTIONS[0];
+  const scaledRecordingsByDuration = useMemo(
+    () =>
+      scaledRecordingsAndAlarms.map((d) => ({
+        date: d.date,
+        created: Math.round(d.created * recordingDurationOption.rate),
+        alarms: d.alarms,
+      })),
+    [scaledRecordingsAndAlarms, recordingDurationOption]
+  );
+
+  // Recordings Engagement Over Time — same Platform/Time range scaling as
+  // scaledRecordingsAndAlarms, but for the 5 engagement metrics instead.
+  const scaledRecordingsEngagement = useMemo(
+    () =>
+      lastNDays(recordingsEngagementLong, timeRangeDays).map((d) => ({
+        date: d.date,
+        watched: scaleCount(d.watched),
+        downloaded: scaleCount(d.downloaded),
+        shared: scaleCount(d.shared),
+        locked: scaleCount(d.locked),
+        alarmed: scaleCount(d.alarmed),
+      })),
+    [platformMultiplier, timeRangeDays]
+  );
+
   const scaledOnboardingFunnel = useMemo(() => {
     const starts = lastNDays(onboardingStartsLong, timeRangeDays).reduce((sum, d) => sum + d.starts, 0);
     return ONBOARDING_STEP_RATES.map((r) => ({ step: r.step, count: scaleCount(Math.round(starts * r.rate)) }));
@@ -1118,6 +1306,25 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
   const scaledFeatureUsage = useMemo(
     () => featureUsage.map((d) => ({ ...d, count: scaleCount(d.count) })),
     [platformMultiplier]
+  );
+
+  // Duration-based view of Feature Usage (Any use / 1+ hr / 5+ hr / 8+ hr) —
+  // a rate, not a headcount, so not Platform-scaled, same reasoning as the
+  // online-duration thresholds above.
+  const scaledFeatureUsageDuration = useMemo(
+    () =>
+      featureUsageDuration.map((d) => ({
+        feature: d.feature,
+        value:
+          featureUsageMeasuredAs === '8+ hr'
+            ? d.hr8
+            : featureUsageMeasuredAs === '5+ hr'
+              ? d.hr5
+              : featureUsageMeasuredAs === '1+ hr'
+                ? d.hr1
+                : d.anyUse,
+      })),
+    [featureUsageMeasuredAs]
   );
 
   const scaledAppSettingsUsage = useMemo(
@@ -1344,12 +1551,20 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             <div className="space-y-6">
               <ChartCard
                 title="Online Cameras Over Time"
-                answers="How many cameras are online each day?"
+                answers={onlineDurationOption.answers}
                 chartId="USG-01"
                 onViewEvents={() => goToChartEvents('USG-01')}
               >
+                <div className="flex items-center justify-end mb-2">
+                  <Dropdown
+                    label="Measured as"
+                    options={ONLINE_DURATION_OPTIONS.map((o) => o.label)}
+                    value={onlineDurationFilter}
+                    onChange={setOnlineDurationFilter}
+                  />
+                </div>
                 <ResponsiveContainer width="100%" height={220}>
-                  <AreaChart data={scaledNightly}>
+                  <AreaChart data={scaledNightlyByDuration}>
                     <CartesianGrid stroke={COLORS.grid} vertical={false} />
                     <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
                     <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1357,34 +1572,29 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Area type="monotone" dataKey="cameras" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Online cameras" />
                   </AreaChart>
                 </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard
-                title="Camera Type of Connection"
-                answers="Connectivity: how many cameras connect wirelessly vs. wired?"
-                chartId="USG-02"
-                onViewEvents={() => goToChartEvents('USG-02')}
-              >
-                <p className="text-xs text-gray-500 -mt-1 mb-3">
-                  Each camera&apos;s last known value of Camera Wifi Value . This is the last reported value per camera, not a real-time read.
+                <p className="text-xs text-gray-500 mt-2">
+                  Based on hourly <code className="font-mono">camera_health_check</code> pings while the camera is connected (see Event Catalog). &quot;1+ hr&quot; etc. means the camera reported Online on that many consecutive hourly checks that day — an approximation from hourly sampling, not a to-the-second measurement.
                 </p>
-                <SimpleTable
-                  columns={['Connection type', 'Cameras', '% of fleet']}
-                  rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
-                />
               </ChartCard>
 
               <ChartCard
-                title="Firmware Version Breakdown"
-                answers="What firmware version are cameras running?"
-                chartId="DEV-03"
-                onViewEvents={() => goToChartEvents('DEV-03')}
+                title="Weekly Active Cameras"
+                answers="Over the trailing 7 days, how many different cameras have connected — not just today?"
+                chartId="USG-05"
+                onViewEvents={() => goToChartEvents('USG-05')}
               >
-                <SimpleTable
-                  columns={['Firmware Version', 'Cameras', '% of fleet']}
-                  rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
-                />
-                <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={scaledWeeklyActiveCameras}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="cameras" stroke={COLORS.teal} fill={COLORS.teal} fillOpacity={0.25} name="Weekly active cameras" />
+                  </AreaChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-gray-500 mt-2">
+                  Distinct cameras (by MAC address — the closest proxy we have to a customer, since the app has no login) reporting Online at least once in the trailing 7 days, not just on a single day. Same camera_health_check data as Online Cameras Over Time, just counted over a rolling week instead of a single day, since not every household connects daily.
+                </p>
               </ChartCard>
 
               <ChartCard
@@ -1410,6 +1620,8 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Tooltip />
                     <Legend />
                     <Line type="monotone" dataKey="overall" name="All Cameras" stroke={COLORS.primary} strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="heavyAlarms" name="10+ alarms/day" stroke={COLORS.teal} strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="lightAlarms" name="Rest of cameras" stroke={COLORS.coral} strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -1455,11 +1667,67 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </p>
                 </ChartCard>
               </div>
+
+              <ChartCard
+                title="Firmware Version Breakdown"
+                answers="What firmware version are cameras running?"
+                chartId="DEV-03"
+                onViewEvents={() => goToChartEvents('DEV-03')}
+              >
+                <SimpleTable
+                  columns={['Firmware Version', 'Cameras', '% of fleet']}
+                  rows={firmwareVersionTable.map((r) => [r.version, r.cameras, r.pct])}
+                />
+                <p className="text-xs text-gray-500 mt-3">From <code className="font-mono">camera_firmware_version</code>, set once via Identify — parsing it reliably from the camera&apos;s system-info fields is still an open item.</p>
+              </ChartCard>
+
+              <ChartCard
+                title="Camera Type of Connection"
+                answers="Connectivity: how many cameras connect wirelessly vs. wired?"
+                chartId="USG-02"
+                onViewEvents={() => goToChartEvents('USG-02')}
+              >
+                <p className="text-xs text-gray-500 -mt-1 mb-3">
+                  Each camera&apos;s last known value of Camera Wifi Value . This is the last reported value per camera, not a real-time read.
+                </p>
+                <SimpleTable
+                  columns={['Connection type', 'Cameras', '% of fleet']}
+                  rows={connectivityTable.map((r) => [r.type, r.cameras, r.pct])}
+                />
+              </ChartCard>
             </div>
           )}
 
           {activeCategory === 'appConnectivity' && (
             <div className="space-y-6">
+              <ChartCard
+                title="Active Devices Over Time"
+                answers={activeDeviceDurationOption.answers}
+                chartId="USG-04"
+                onViewEvents={() => goToChartEvents('USG-04')}
+              >
+                <div className="flex items-center justify-end mb-2">
+                  <Dropdown
+                    label="Measured as"
+                    options={ACTIVE_DEVICE_DURATION_OPTIONS.map((o) => o.label)}
+                    value={activeDeviceDurationFilter}
+                    onChange={setActiveDeviceDurationFilter}
+                  />
+                </div>
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={scaledActiveDevices}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="devices" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Active devices" />
+                  </AreaChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-gray-500 mt-2">
+                  Counts distinct app installs (device IDs, not user accounts — the app has no login), based on app_heartbeat.elapsed_seconds. Deliberately doesn&apos;t distinguish live view, recordings, or any other in-app activity — just whether the app was running.
+                </p>
+              </ChartCard>
+
               <ChartCard
                 title="Navigation Events"
                 answers="Across the whole app, which screens do people actually go to?"
@@ -1504,13 +1772,21 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <div className="grid grid-cols-2 gap-6">
                 <ChartCard
                   title="Recordings Created Over Time"
-                  answers="How many recordings are being made?"
+                  answers={recordingDurationOption.answers}
                   badge={<NewEventBadge eventName="recording_created" />}
                   chartId="ALM-01"
                   onViewEvents={() => goToChartEvents('ALM-01')}
                 >
+                  <div className="flex items-center justify-end mb-2">
+                    <Dropdown
+                      label="Measured as"
+                      options={RECORDING_DURATION_OPTIONS.map((o) => o.label)}
+                      value={recordingDurationFilter}
+                      onChange={setRecordingDurationFilter}
+                    />
+                  </div>
                   <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={scaledRecordingsAndAlarms}>
+                    <AreaChart data={scaledRecordingsByDuration}>
                       <CartesianGrid stroke={COLORS.grid} vertical={false} />
                       <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
                       <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
@@ -1518,6 +1794,9 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                       <Area type="monotone" dataKey="created" stroke={COLORS.primary} fill={COLORS.primaryLight} fillOpacity={0.5} name="Recordings created" />
                     </AreaChart>
                   </ResponsiveContainer>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Based on <code className="font-mono">recording_created.duration_seconds</code> (see Event Catalog). &quot;10s+&quot; etc. filters out recordings shorter than that threshold — an illustrative approximation, not an exact per-recording breakdown in this prototype.
+                  </p>
                 </ChartCard>
 
                 <ChartCard
@@ -1539,6 +1818,30 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </div>
 
               <ChartCard
+                title="Recordings Engagement Over Time"
+                answers="How many recordings are actually watched, downloaded, shared, locked, or marked alarmed — not just created?"
+                chartId="ALM-05"
+                onViewEvents={() => goToChartEvents('ALM-05')}
+              >
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={scaledRecordingsEngagement}>
+                    <CartesianGrid stroke={COLORS.grid} vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: COLORS.axis }} interval={timeTickInterval} />
+                    <YAxis tick={{ fontSize: 11, fill: COLORS.axis }} />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="downloaded" stroke={COLORS.purple} strokeWidth={2} dot={false} name="Downloaded" />
+                    <Line type="monotone" dataKey="watched" stroke={COLORS.primary} strokeWidth={2} dot={false} name="Watched" />
+                    <Line type="monotone" dataKey="locked" stroke={COLORS.teal} strokeWidth={2} dot={false} name="Locked" />
+                    <Line type="monotone" dataKey="alarmed" stroke={COLORS.coral} strokeWidth={2} dot={false} name="Alarmed" />
+                    <Line type="monotone" dataKey="shared" stroke={COLORS.amber} strokeWidth={2} dot={false} name="Shared" />
+                  </LineChart>
+                </ResponsiveContainer>
+                <p className="text-xs text-gray-500 mt-2">
+                  Each line counts that action on the day it happened, not the day the recording was created — a recording can be watched, downloaded, shared, or locked well after its creation day. Created is intentionally left off this chart (see Recordings Created Over Time above) since its scale would flatten the others.
+                </p>
+              </ChartCard>
+
+              <ChartCard
                 title="Alarms per Camera per Day"
                 answers="How many alarms are triggered per camera per day"
                 chartId="ALM-03"
@@ -1553,27 +1856,6 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                     <Bar dataKey="count" fill={COLORS.amber} radius={[6, 6, 0, 0]} name="Cameras" />
                   </BarChart>
                 </ResponsiveContainer>
-              </ChartCard>
-
-              <ChartCard
-                title="Recordings Distribution"
-                answers="How many recordings are being made, watched, downloaded, locked, alarmed, and shared?"
-                badge={<NewEventBadge eventName="recording_created" />}
-                chartId="ALM-04"
-                onViewEvents={() => goToChartEvents('ALM-04')}
-              >
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={recordingsStageTotals} layout="vertical" margin={{ left: 24 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="stage" tick={{ fontSize: 12, fill: '#111827' }} width={80} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-                <p className="text-xs text-gray-500 mt-3">
-                  This is not a live snapshot, so a recording locked then unlocked still counts here.
-                </p>
               </ChartCard>
 
               <ChartCard
@@ -1599,19 +1881,50 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
             <div className="space-y-6">
               <ChartCard
                 title="Feature Usage"
-                answers="What features are being used? How many times do people utilize a given feature?"
+                answers={
+                  featureUsageMeasuredAs === 'Toggle count'
+                    ? 'What features are being used? How many times do people utilize a given feature?'
+                    : featureUsageMeasuredAs === 'Any use'
+                      ? 'On a given day, what share of active users turned each feature on at least once?'
+                      : `On a given day, what share of active users left each feature on for at least ${featureUsageMeasuredAs.replace('+ hr', ' continuous hour(s)')}?`
+                }
                 chartId="FEA-01"
                 onViewEvents={() => goToChartEvents('FEA-01')}
               >
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid stroke={COLORS.grid} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
-                    <YAxis type="category" dataKey="feature" tick={{ fontSize: 11, fill: '#111827' }} width={220} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Events (30d)" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="flex items-center justify-end mb-2">
+                  <Dropdown
+                    label="Measured as"
+                    options={[...FEATURE_USAGE_MEASURED_AS]}
+                    value={featureUsageMeasuredAs}
+                    onChange={(v) => setFeatureUsageMeasuredAs(v as typeof FEATURE_USAGE_MEASURED_AS[number])}
+                  />
+                </div>
+                {featureUsageMeasuredAs === 'Toggle count' ? (
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={scaledFeatureUsage} layout="vertical" margin={{ left: 8 }}>
+                      <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: COLORS.axis }} />
+                      <YAxis type="category" dataKey="feature" tick={{ fontSize: 11, fill: '#111827' }} width={220} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill={COLORS.primary} radius={[0, 6, 6, 0]} name="Events (30d)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <>
+                    <ResponsiveContainer width="100%" height={200}>
+                      <BarChart data={scaledFeatureUsageDuration} layout="vertical" margin={{ left: 8 }}>
+                        <CartesianGrid stroke={COLORS.grid} horizontal={false} />
+                        <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11, fill: COLORS.axis }} />
+                        <YAxis type="category" dataKey="feature" tick={{ fontSize: 11, fill: '#111827' }} width={220} />
+                        <Tooltip formatter={(v: number) => `${v}%`} />
+                        <Bar dataKey="value" fill={COLORS.primary} radius={[0, 6, 6, 0]} name={featureUsageMeasuredAs} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Only covers the 4 features that are a genuine on/off state (mic, clock mode, motion overlay, view border) — driven by the new <code className="font-mono">duration_seconds</code> field (see Event Catalog). One-off actions like the alarm button or Border Zone Adjusted don&apos;t have a duration and are only shown under &quot;Toggle count.&quot;
+                    </p>
+                  </>
+                )}
               </ChartCard>
 
               <div className="grid grid-cols-2 gap-6">
@@ -1767,7 +2080,14 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <ChartCard title="Assumptions & Limitations">
                 <ul className="list-disc pl-5 space-y-2 text-sm text-[#1F2937] mb-5">
                   {CATALOG_ASSUMPTIONS.map((c, i) => (
-                    <li key={i}>{c}</li>
+                    <li key={i}>
+                      {c.isNew && (
+                        <span className="font-sans text-[9px] font-semibold text-[#8A5A00] bg-[#FFF3D6] border border-[#F5D98B] rounded px-1 py-0.5 tracking-wide mr-1.5 align-middle">
+                          NEW
+                        </span>
+                      )}
+                      {c.text}
+                    </li>
                   ))}
                 </ul>
                 <div className="pt-4 border-t border-[#EEF1F6]">
