@@ -394,6 +394,15 @@ export function SettingsScreen({
   const [editPasswordError, setEditPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Single-field "Camera Password" popup — used when the app already knows a
+  // password is wrong (Bad Password) and just needs the user to correct it,
+  // same design as the onboarding Enter Password screen. Distinct from the
+  // Edit Camera Password Modal above (3 fields), which is for voluntarily
+  // changing the password from Settings, not for recovering from a rejection.
+  const [showCameraPasswordPopup, setShowCameraPasswordPopup] = useState(false);
+  const [cameraPasswordInput, setCameraPasswordInput] = useState('');
+  const [showCameraPasswordForgot, setShowCameraPasswordForgot] = useState(false);
+
   function validateCameraPassword(password: string): { isValid: boolean; message: string } {
     const hasCapital = /[A-Z]/.test(password);
     const letterCount = (password.match(/[a-zA-Z]/g) || []).length;
@@ -2136,6 +2145,14 @@ export function SettingsScreen({
                         <span className="text-app-content-soft text-base">{savedCameraPassword || 'Not set'}</span>
                         <button
                           onClick={() => {
+                            if (cameraStatus === 'Bad Password') {
+                              // Same recovery flow as the Bad Password popup's "Enter
+                              // Password" — a single field to correct the rejected
+                              // password, not the 3-field voluntary-change modal.
+                              setCameraPasswordInput(savedCameraPassword || '');
+                              setShowCameraPasswordPopup(true);
+                              return;
+                            }
                             setEditedPassword(savedCameraPassword || '');
                             setEditedConfirmPassword('');
                             setEditedPasswordHint(savedCameraPasswordHint || '');
@@ -2806,12 +2823,8 @@ export function SettingsScreen({
               <button
                 onClick={() => {
                   setShowBadPasswordPopup(false);
-                  setEditedPassword(savedCameraPassword || '');
-                  setEditedConfirmPassword('');
-                  setEditedPasswordHint(savedCameraPasswordHint || '');
-                  setEditPasswordError('');
-                  setShowPassword(false);
-                  setShowEditPasswordModal(true);
+                  setCameraPasswordInput(savedCameraPassword || '');
+                  setShowCameraPasswordPopup(true);
                 }}
                 className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-[#374151]"
                 style={{ color: SETTINGS_ACCENT_COLOR }}
@@ -3978,6 +3991,104 @@ export function SettingsScreen({
           </div>
         );
       })()}
+
+      {/* Camera Password Popup (single field) — reached from the Bad Password
+          popup's "Enter Password" button. Same design as the onboarding
+          Enter Password screen (Camera Password / Enter camera password /
+          Forgot password?), since here the app just needs the corrected
+          password, not a brand-new one with confirmation + hint. */}
+      {showCameraPasswordPopup && (
+        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
+          <div className="bg-app-card rounded-lg w-[520px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
+            <div className="flex flex-col items-center pt-8 pb-2 px-8">
+              <div className="w-16 h-16 bg-app-surface rounded-2xl flex items-center justify-center mb-4 border-2 border-app-amber">
+                <Lock className="w-8 h-8 text-app-amber" />
+              </div>
+              <h2 className="text-app-content text-xl font-semibold text-center mb-2">Camera Password</h2>
+              <p className="text-app-content-faint text-sm text-center">Enter camera password</p>
+            </div>
+
+            <div className="px-8 py-5">
+              <input
+                type="text"
+                value={cameraPasswordInput}
+                onChange={(e) => setCameraPasswordInput(e.target.value)}
+                autoFocus
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface text-app-content placeholder-gray-500 border-app-amber/30 focus:border-app-amber"
+                placeholder="Enter password"
+              />
+              <button
+                onClick={() => setShowCameraPasswordForgot(true)}
+                className="mt-2 text-sm underline w-full text-center"
+                style={{ color: SETTINGS_ACCENT_COLOR }}
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <div className="border-t border-app-line/15 dark:border-[#374151] flex">
+              <button
+                onClick={() => setShowCameraPasswordPopup(false)}
+                className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151]"
+                style={{ color: SETTINGS_ACCENT_COLOR }}
+              >
+                Cancel
+              </button>
+              <button
+                disabled={cameraPasswordInput.length < 2}
+                onClick={() => {
+                  setSavedCameraPassword(cameraPasswordInput);
+                  setShowCameraPasswordPopup(false);
+                  setCameraStatus('Online');
+                }}
+                className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ color: SETTINGS_ACCENT_COLOR }}
+              >
+                Continue
+              </button>
+            </div>
+
+            {/* Forgot Password Dialog */}
+            {showCameraPasswordForgot && (
+              <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 px-6">
+                <div className="bg-app-card rounded-2xl p-6 max-w-md w-full border-2 border-app-amber/30">
+                  <h2 className="text-xl font-semibold text-app-content mb-4 text-center">Forgot Password</h2>
+
+                  {savedCameraPasswordHint && (
+                    <div className="mb-4">
+                      <label className="block text-sm mb-2 text-app-content-faint text-left">Password Hint:</label>
+                      <div className="bg-app-sunken rounded-lg p-4">
+                        <p className="text-app-content text-lg text-center">{savedCameraPasswordHint}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="bg-app-quiet/10 border border-app-quiet/30 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-app-quiet text-center">
+                      💡 If you're connected to this camera on another device, you can check the Camera Password in Camera Settings on that device.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setShowCameraPasswordForgot(false)}
+                      className="w-full bg-app-navy text-white py-3 rounded-xl hover:bg-app-navy-700 transition-colors"
+                    >
+                      Try Again
+                    </button>
+                    <button
+                      onClick={() => window.open('https://support.samialert.com/hc/en-us/requests/new', '_blank')}
+                      className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                    >
+                      Contact Customer Service
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
