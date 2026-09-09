@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Wifi, Check, Eye, EyeOff, Lock, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wifi, Check, Eye, EyeOff, Lock, AlertCircle, RefreshCw } from 'lucide-react';
 import { WiFiSelection } from '@/app/components/onboarding/WiFiSelection';
 import { NetworkPassword } from '@/app/components/onboarding/NetworkPassword';
 import { WifiTestingScreen } from '@/app/components/onboarding/WifiTestingScreen';
@@ -3207,7 +3207,7 @@ export function SettingsScreen({
                 </div>
                 <div className="px-8 py-6 flex flex-col items-center gap-4">
                   <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
-                    <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
+                    <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
                   </div>
                   <p className="text-app-content-soft text-base text-center leading-snug">
                     {ivProgress === 'configuring-port' && (ivRouterMode === 'automatic' ? 'Opening a port for the camera through your router to the internet...' : 'Configuring port...')}
@@ -3413,7 +3413,7 @@ export function SettingsScreen({
             </div>
             <div className="px-8 py-6 flex justify-center">
               <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
-                <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
+                <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
               </div>
             </div>
           </div>
@@ -3459,7 +3459,7 @@ export function SettingsScreen({
             </div>
             <div className="px-8 py-6 flex flex-col items-center">
               <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
-                <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
+                <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
               </div>
             </div>
           </div>
@@ -3511,7 +3511,7 @@ export function SettingsScreen({
             </div>
             <div className="px-8 py-6 flex flex-col items-center gap-4">
               <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
-                <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
+                <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
               </div>
             </div>
           </div>
@@ -3844,7 +3844,7 @@ export function SettingsScreen({
               </div>
               <div className="px-8 py-8 flex flex-col items-center gap-4">
                 <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
-                  <Loader2 className="w-12 h-12 text-app-quiet animate-spin" />
+                  <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
                 </div>
                 <p className="text-sm text-app-content-faint">This may take a few seconds</p>
               </div>
