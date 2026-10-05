@@ -2307,7 +2307,7 @@ function AppContent({
                 <div className="bg-app-surface rounded-lg p-8 max-w-md w-full mx-4">
                   <h2 className="text-app-content text-2xl font-bold mb-4">Send Log</h2>
                   {emailError ? (
-                    <p className="text-app-content mb-6">{emailError} is not a valid email address. Please re-enter</p>
+                    <p className="text-app-alert dark:text-[#F08080] mb-6">{emailError} is not a valid email address. Please re-enter</p>
                   ) : (
                     <p className="text-app-content mb-6">Enter an email address for us to contact you:</p>
                   )}
@@ -2407,7 +2407,7 @@ function AppContent({
                 <div className="bg-app-surface rounded-lg p-8 max-w-md w-full mx-4">
                   <h2 className="text-app-content text-2xl font-bold mb-4">Send Log</h2>
                   {emailError ? (
-                    <p className="text-app-content mb-6">{emailError} is not a valid email address. Please re-enter</p>
+                    <p className="text-app-alert dark:text-[#F08080] mb-6">{emailError} is not a valid email address. Please re-enter</p>
                   ) : (
                     <p className="text-app-content mb-6">Enter an email address for us to contact you:</p>
                   )}
