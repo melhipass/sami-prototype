@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
+import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw, RefreshCw, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
@@ -136,6 +136,26 @@ function AppContent({
   const [emailError, setEmailError] = useState('');
   const [showSendLogScreen, setShowSendLogScreen] = useState(false);
   const [logProblemDescription, setLogProblemDescription] = useState('');
+  // Prototype submit flow for the Send Log report (simulated Zendesk ticket).
+  const [logSendStatus, setLogSendStatus] = useState<null | 'sending' | 'error' | 'success'>(null);
+  const [logSendAttempt, setLogSendAttempt] = useState(0);
+  const logSendTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Runs one simulated submit attempt: shows the spinner for 4s, then fails on the
+  // first attempt and succeeds on any later one, so "fail first, succeed on retry" repeats.
+  const runLogSendAttempt = (attempt: number) => {
+    setLogSendAttempt(attempt);
+    setLogSendStatus('sending');
+    if (logSendTimerRef.current) clearTimeout(logSendTimerRef.current);
+    logSendTimerRef.current = setTimeout(() => {
+      setLogSendStatus(attempt >= 2 ? 'success' : 'error');
+    }, 4000);
+  };
+
+  // Clean up the pending submit timer if the component unmounts mid-flow.
+  useEffect(() => () => {
+    if (logSendTimerRef.current) clearTimeout(logSendTimerRef.current);
+  }, []);
   const [showUnlockMessage, setShowUnlockMessage] = useState(false);
   const [isHoldingAlarm, setIsHoldingAlarm] = useState(false);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
@@ -2462,12 +2482,17 @@ function AppContent({
 
               <button
                 onClick={() => {
-                  // Prototype: simulate creating the support ticket.
+                  // Land back on the Help screen and start the simulated submit flow.
+                  // Email/description are kept until the user taps OK (Retry needs the email).
                   setShowSendLogScreen(false);
-                  setLogEmail('');
-                  setLogProblemDescription('');
+                  runLogSendAttempt(1);
                 }}
-                className="text-[#5A8BBF] text-lg font-medium"
+                disabled={logProblemDescription.trim().length < 10}
+                className={`text-lg font-medium ${
+                  logProblemDescription.trim().length < 10
+                    ? 'text-app-content-faint opacity-50 cursor-not-allowed'
+                    : 'text-[#5A8BBF]'
+                }`}
               >
                 Send
               </button>
@@ -2491,9 +2516,18 @@ function AppContent({
                     value={logProblemDescription}
                     onChange={(e) => setLogProblemDescription(e.target.value)}
                     rows={6}
+                    maxLength={1000}
                     placeholder="Tell us what's happening so we can help…"
                     className="w-full px-4 py-3 rounded-lg bg-app-card border border-app-line/15 dark:border-[#374151] text-app-content placeholder-app-content-faint focus:outline-none focus:border-[#5A8BBF] resize-none"
                   />
+                  <div className="flex justify-between items-center mt-2">
+                    {logProblemDescription.trim().length < 10 ? (
+                      <p className="text-app-content-faint text-sm">Minimum 10 characters</p>
+                    ) : (
+                      <span />
+                    )}
+                    <p className="text-app-content-faint text-sm text-right">{1000 - logProblemDescription.length} characters left</p>
+                  </div>
                 </div>
 
                 {/* Technical info disclaimer */}
@@ -2501,6 +2535,76 @@ function AppContent({
                   Sending this report includes technical information about your app and camera. By submitting, you agree to let us use this information to review your issue and respond to you.
                 </p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Send Log submit flow popup (shown over the Help screen) */}
+        {logSendStatus && (
+          <div className="absolute inset-0 bg-black/70 z-[60] flex items-center justify-center">
+            <div className="bg-app-card rounded-lg w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
+              {logSendStatus === 'sending' && (
+                <>
+                  <div className="px-8 pt-6 pb-2">
+                    <h2 className="text-app-content text-xl font-semibold text-center">Sending your report...</h2>
+                  </div>
+                  <div className="px-8 py-6 flex flex-col items-center gap-4">
+                    <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
+                      <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
+                    </div>
+                    <p className="text-app-content-soft text-base text-center leading-snug">Please wait...</p>
+                  </div>
+                </>
+              )}
+
+              {logSendStatus === 'error' && (
+                <>
+                  <div className="px-8 pt-6 pb-2">
+                    <h2 className="text-app-content text-xl font-semibold text-center">Couldn&apos;t Send Report</h2>
+                  </div>
+                  <div className="px-8 py-6 flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-app-card rounded-2xl flex items-center justify-center border-2 border-app-alert">
+                      <AlertCircle className="w-8 h-8 text-app-alert" />
+                    </div>
+                    <p className="text-app-content-soft text-base text-center leading-snug">We couldn&apos;t send your report. Please check your connection and try again.</p>
+                  </div>
+                  <div className="border-t border-app-line/15 dark:border-[#374151]">
+                    <button
+                      onClick={() => runLogSendAttempt(logSendAttempt + 1)}
+                      className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {logSendStatus === 'success' && (
+                <>
+                  <div className="px-8 pt-6 pb-2">
+                    <h2 className="text-app-content text-xl font-semibold text-center">Report Sent</h2>
+                  </div>
+                  <div className="px-8 py-6 flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-app-mint dark:bg-[#BFE3D9] rounded-2xl flex items-center justify-center">
+                      <CheckCircle className="w-8 h-8 text-app-mint-ink dark:text-[#2C3B4A]" />
+                    </div>
+                    <p className="text-app-content-soft text-base text-center leading-snug">Thanks! Our support team has received your report and will get back to you at {logEmail}.</p>
+                  </div>
+                  <div className="border-t border-app-line/15 dark:border-[#374151]">
+                    <button
+                      onClick={() => {
+                        setLogSendStatus(null);
+                        setLogSendAttempt(0);
+                        setLogEmail('');
+                        setLogProblemDescription('');
+                      }}
+                      className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
+                    >
+                      OK
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
