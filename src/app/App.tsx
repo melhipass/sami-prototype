@@ -134,7 +134,8 @@ function AppContent({
   const micButtonRef = useRef<HTMLButtonElement>(null);
   const [logEmail, setLogEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [showEmailComposer, setShowEmailComposer] = useState(false);
+  const [showSendLogScreen, setShowSendLogScreen] = useState(false);
+  const [logProblemDescription, setLogProblemDescription] = useState('');
   const [showUnlockMessage, setShowUnlockMessage] = useState(false);
   const [isHoldingAlarm, setIsHoldingAlarm] = useState(false);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
@@ -2322,10 +2323,10 @@ function AppContent({
                         if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
                           setEmailError(trimmedEmail || '(empty)');
                         } else {
-                          // Email is valid, show composer
+                          // Email is valid, show the Send Log screen
                           setShowSendLogDialog(false);
                           setEmailError('');
-                          setShowEmailComposer(true);
+                          setShowSendLogScreen(true);
                         }
                       }}
                       className="px-6 py-2 rounded-lg bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] text-app-content transition-colors"
@@ -2356,12 +2357,11 @@ function AppContent({
                 Help [Version 1.0 build 1]
               </span>
 
-              <button
-                onClick={() => setShowSendLogDialog(true)}
-                className="mr-6 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
-              >
+              {/* Send Log is unavailable while offline (it creates a support ticket, which needs a connection).
+                  Invisible placeholder keeps the title centered where the button used to be. */}
+              <div aria-hidden className="mr-6 px-4 py-2 opacity-0 pointer-events-none">
                 Send log
-              </button>
+              </div>
             </div>
 
             {/* Content area */}
@@ -2423,10 +2423,10 @@ function AppContent({
                         if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
                           setEmailError(trimmedEmail || '(empty)');
                         } else {
-                          // Email is valid, show composer
+                          // Email is valid, show the Send Log screen
                           setShowSendLogDialog(false);
                           setEmailError('');
-                          setShowEmailComposer(true);
+                          setShowSendLogScreen(true);
                         }
                       }}
                       className="px-6 py-2 rounded-lg bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] text-app-content transition-colors"
@@ -2440,140 +2440,66 @@ function AppContent({
           </div>
         )}
 
-        {/* Email Composer */}
-        {showEmailComposer && (
+        {/* Send Log Screen */}
+        {showSendLogScreen && (
           <div className="absolute inset-0 bg-app-surface z-50 flex flex-col">
             {/* Top bar */}
             <div className="bg-app-surface py-4 px-6 flex items-center justify-between border-b border-app-line/15 dark:border-[#374151]">
-              <button 
+              <button
                 onClick={() => {
-                  setShowEmailComposer(false);
+                  setShowSendLogScreen(false);
                   setLogEmail('');
+                  setLogProblemDescription('');
                 }}
                 className="text-[#5A8BBF] text-lg"
               >
                 Cancel
               </button>
-              
+
               <span className="text-app-content text-lg font-medium">
-                New Message
+                Send Log
               </span>
-              
-              <button 
+
+              <button
                 onClick={() => {
-                  // Simulate sending email
-                  setShowEmailComposer(false);
+                  // Prototype: simulate creating the support ticket.
+                  setShowSendLogScreen(false);
                   setLogEmail('');
+                  setLogProblemDescription('');
                 }}
-                className="text-[#5A8BBF] text-lg"
+                className="text-[#5A8BBF] text-lg font-medium"
               >
                 Send
               </button>
             </div>
-            
-            {/* Email fields */}
-            <div className="flex-1 bg-white overflow-y-auto">
-              {/* To field */}
-              <div className="flex items-center border-b border-gray-300 px-4 py-3">
-                <span className="text-app-content-faint mr-3 w-16">To:</span>
-                <span className="text-black flex-1">Sami3_support@hipassdesign.com</span>
-              </div>
-              
-              {/* From field */}
-              <div className="flex items-center border-b border-gray-300 px-4 py-3">
-                 <span className="text-app-content-faint mr-3 w-16">From:</span>
-                <span className="text-black flex-1">{logEmail}</span>
-              </div>
-              
-              {/* Subject field */}
-              <div className="flex items-center border-b border-gray-300 px-4 py-3">
-                <span className="text-app-content-faint mr-3 w-16">Subject:</span>
-                <span className="text-black flex-1">!!! Support request for Sami-3c [7812FFA010C1]</span>
-              </div>
-              
-              {/* Body */}
-              <div className="px-4 py-4">
-                <pre className="text-black font-mono text-sm whitespace-pre-wrap">
-{`^^^Please describe the problem above here^^^
-From: ${logEmail}
---------------
-DEVICE SETTINGS:
-Running on: iPhone 13 (iPhone14,5)
-iOS Version: 18.5
-TimeZone: America/Costa_Rica
-Location Services: enabled
-VPN: off
-Local Network access: ENABLED
-iPhone SSID: "Sami-5G"
---------------
-APP SETTINGS:
-User ID: 5FCC2AE4-B5E1-4989-9245-AF146437E6E9
-Sami3 Version: 3.1.5 build 2
-Selected Camera: 7812FFA010C1
-Local Network Access: ENABLED
-selected_camera_name: 7812FFA010C1
-skip_firmware_update: FALSE
-enable_emfit: FALSE
-alarm_enable_switch: ALARM DISABLED
-motion_threshold: 25%
-alert_threshold: 20.0s
-alarm_duration: 600
-sensitivity_boost: 0%
-* max_pause_time: 120
-* border_size: 58
-beep on camera fault: FALSE
-alert_on_app_not_active: FALSE
-alarm_schedule_enabled: FALSE
-disable_time: 07:00
-enable_time: 19:00
-mic_on: FALSE
-alarm_vol: 50%
-alarm_sound: 0
-vibrate_on_alarm: FALSE
-mic_boost: FALSE
-mic_noise_reduction: FALSE
-clock_delay_switch: FALSE
-clock_delay: 60s
-* clock_brightness: 0.01166666
-smart_edge_switch: FALSE
-large_thumbs_switch: FALSE
-enable_transfers: TRUE
-storage_limit: 254.87
-min_rec_length: 15
-icloud: 0
-qc_mode: FALSE
-qc_display_data: FALSE
---------------
-CAMERA SETTINGS:
-* Saved Log:
-Sami camera: 7812FFA010C1
-model: Sami-3c
-camera state: online
-firmwareVersion: 143.20190319
-socketAddress: 192.168.0.2:80
-lastWorkingLanSocket: 192.168.0.2:80
-awsSocket: (null)
-lastWorkingSSID: Sami-5G
-cameraSSID: Sami
-* Camera is Wired
-NightVision Mode: Auto
-IR Illuminator Mode: Auto
-IR Filter Mode: On
-Record Mode: Motion Only
-Record Motion Threshold: 4
-Record Schedule 1: All day, Everyday
-Record Schedule 2: Disabled
-Record Schedule 3: Disabled
-Record Schedule 4: Disabled
-SD Card is Ok
-Dropbox is Disabled
-Internet is Disabled
-Internet Port Status is Unconfigured
-Browser Viewer is Disabled
-Power Light is Enabled
-Power Light Flash is Enabled
-IP is Dynamic`}
-                </pre>
+
+            {/* Send Log form */}
+            <div className="flex-1 bg-app-surface overflow-y-auto px-6 py-6">
+              <div className="max-w-xl mx-auto space-y-6">
+                {/* Contact email (read-only) */}
+                <div>
+                  <label className="block text-app-content-faint text-sm mb-2">Contact email</label>
+                  <div className="w-full px-4 py-3 rounded-lg bg-app-sunken border border-app-line/15 dark:border-[#374151] text-app-content-soft">
+                    {logEmail}
+                  </div>
+                </div>
+
+                {/* Problem description (editable) */}
+                <div>
+                  <label className="block text-app-content-faint text-sm mb-2">Describe your problem</label>
+                  <textarea
+                    value={logProblemDescription}
+                    onChange={(e) => setLogProblemDescription(e.target.value)}
+                    rows={6}
+                    placeholder="Tell us what's happening so we can help…"
+                    className="w-full px-4 py-3 rounded-lg bg-app-card border border-app-line/15 dark:border-[#374151] text-app-content placeholder-app-content-faint focus:outline-none focus:border-[#5A8BBF] resize-none"
+                  />
+                </div>
+
+                {/* Technical info disclaimer */}
+                <p className="text-app-content-faint text-sm">
+                  Sending this report includes technical information about your app and camera. By submitting, you agree to let us use this information to review your issue and respond to you.
+                </p>
               </div>
             </div>
           </div>
