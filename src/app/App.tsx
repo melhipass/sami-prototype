@@ -2568,10 +2568,23 @@ function AppContent({
                     </div>
                     <p className="text-app-content-soft text-base text-center leading-snug">We couldn&apos;t send your report. Please check your connection and try again.</p>
                   </div>
-                  <div className="border-t border-app-line/15 dark:border-[#374151]">
+                  <div className="border-t border-app-line/15 dark:border-[#374151] grid grid-cols-2">
+                    <button
+                      onClick={() => {
+                        // Discard the report and return to the Help screen.
+                        if (logSendTimerRef.current) clearTimeout(logSendTimerRef.current);
+                        setLogSendStatus(null);
+                        setLogSendAttempt(0);
+                        setLogEmail('');
+                        setLogProblemDescription('');
+                      }}
+                      className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-app-content-faint"
+                    >
+                      Cancel
+                    </button>
                     <button
                       onClick={() => runLogSendAttempt(logSendAttempt + 1)}
-                      className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
+                      className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
                     >
                       Retry
                     </button>
