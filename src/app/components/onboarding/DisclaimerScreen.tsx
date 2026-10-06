@@ -142,11 +142,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           <button
             onClick={onAccept}
             disabled={!allAccepted}
-            className={`w-full py-4 rounded-xl text-lg transition-colors disabled:cursor-not-allowed ${
-              allAccepted
-                ? 'bg-app-navy text-white shadow-lg hover:bg-app-navy-700'
-                : 'bg-app-content/10 dark:bg-[#4b5563] text-app-content-faint'
-            }`}
+            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </button>
