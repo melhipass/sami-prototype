@@ -43,17 +43,20 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
 
   const allAccepted = acceptedDisclaimers.every((accepted) => accepted) && agreedToTerms;
 
+  const acceptedCount = acceptedDisclaimers.filter(Boolean).length;
+  const allDisclaimersAccepted = acceptedCount === disclaimers.length;
+
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 pt-[60px] pb-8">
       <div className="flex flex-col items-center max-w-md w-full">
-        <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 border-2 border-app-amber">
+        <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-8 border-2 border-app-amber">
           <AlertTriangle className="w-10 h-10 text-app-amber" />
         </div>
 
         <h1 className="text-3xl mb-3 text-app-content text-center">Important Information</h1>
         <p className="text-xl text-app-content-soft mb-6 text-center">Please review the following disclaimers</p>
 
-        <div className="w-full mb-6 max-h-[200px] overflow-y-auto space-y-4 pr-2">
+        <div className="w-full mb-3 max-h-[270px] overflow-y-auto space-y-4 pr-2 thin-scrollbar">
           {disclaimers.map((disclaimer, index) => (
             <div
               key={index}
@@ -88,6 +91,19 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
             </div>
           ))}
         </div>
+
+        {/* Accepted / remaining counter (disclaimer toggles only) */}
+        <p
+          className={`w-full text-center text-sm mb-6 ${
+            allDisclaimersAccepted
+              ? 'text-app-mint-ink dark:text-[#BFE3D9]'
+              : 'text-app-content-faint'
+          }`}
+        >
+          {allDisclaimersAccepted
+            ? `All ${disclaimers.length} accepted`
+            : `${acceptedCount} of ${disclaimers.length} accepted · ${disclaimers.length - acceptedCount} remaining`}
+        </p>
 
         <div className="space-y-3 w-full">
           <div className="w-full flex items-start gap-3 mb-2">
@@ -126,9 +142,13 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           <button
             onClick={onAccept}
             disabled={!allAccepted}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full py-4 rounded-xl text-lg transition-colors disabled:cursor-not-allowed ${
+              allAccepted
+                ? 'bg-app-navy text-white shadow-lg hover:bg-app-navy-700'
+                : 'bg-app-content/10 dark:bg-[#4b5563] text-app-content-faint'
+            }`}
           >
-            Accept All
+            Continue
           </button>
 
           <button

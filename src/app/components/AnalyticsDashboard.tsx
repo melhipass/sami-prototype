@@ -830,10 +830,10 @@ const EVENT_CATALOG: CatalogSection[] = [
   },
   {
     title: 'Onboarding — Disclaimers',
-    description: 'Lists safety/legal disclaimers as toggles, a Terms & Conditions / Privacy Policy checkbox, and Accept All / Cancel.',
+    description: 'Lists safety/legal disclaimers as toggles, a Terms & Conditions / Privacy Policy checkbox, and Continue / Cancel.',
     events: [
       { event: 'onboarding_disclaimers_viewed', when: 'Disclaimers step is shown', data: '—' },
-      { event: 'onboarding_disclaimers_accepted', when: 'Accept All tapped', data: 'accepted_disclaimers (array of enum — toggles ON at accept, e.g. nocturnal_movement_monitor, no_guarantee_of_effectiveness; full list TBD), terms_agreed (bool)' },
+      { event: 'onboarding_disclaimers_accepted', when: 'Continue tapped', data: 'accepted_disclaimers (array of enum — toggles ON at accept, e.g. nocturnal_movement_monitor, no_guarantee_of_effectiveness; full list TBD), terms_agreed (bool)' },
       { event: 'onboarding_disclaimers_cancelled', when: 'Cancel tapped', data: '—' },
     ],
   },

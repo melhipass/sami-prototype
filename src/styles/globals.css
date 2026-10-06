@@ -7,3 +7,29 @@ body {
 #root {
   height: 100%;
 }
+
+/* Thin, always-visible scrollbar. Uses theme tokens so it adapts to light/dark.
+   Scoped via the .thin-scrollbar class; does not affect scrolling elsewhere.
+   WebKit/Blink (Chrome, the prototype target) uses ::-webkit-scrollbar, which
+   reserves space and stays visible. Setting the standard scrollbar-* props makes
+   Chrome ignore the pseudo and fall back to an auto-hiding overlay, so those are
+   applied only where ::-webkit-scrollbar is unsupported (Firefox). */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--app-content-faint);
+  border-radius: 9999px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .thin-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--app-content-faint) transparent;
+  }
+}
