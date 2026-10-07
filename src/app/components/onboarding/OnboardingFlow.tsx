@@ -353,12 +353,18 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 13 && (
         <WiFiSelection
           title={skipPermissions ? 'Confirm Wi-Fi Network' : 'Select Wi-Fi Network'}
-          onSelect={(ssid, secured) => {
+          onSelect={(ssid, secured, password) => {
             setSelectedWifi(ssid);
             setWifiPasswordAttempt(0);
             // Skip password if open network, or re-pairing with same WiFi
             if (!secured || (skipPermissions && currentWifi && ssid === currentWifi)) {
               setStep(isAndroid ? 3 : 2);
+            } else if (password !== undefined) {
+              // Hidden network: password already typed, skip the password screen
+              // and go straight to Wi-Fi testing (first attempt still fails, retry succeeds).
+              setWifiPassword(password);
+              setWifiShowErrorOnReturn(false);
+              setStep(15);
             } else {
               setStep(14);
             }

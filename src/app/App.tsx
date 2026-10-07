@@ -3504,42 +3504,42 @@ function AppContent({
 
           {/* Border hint text - shown for 15 seconds when border is activated */}
           {showBorderHint && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Drag to adjust Active Monitored area</span>
             </div>
           )}
 
           {/* Border saved hint text - shown for 3 seconds when border is deactivated */}
           {showBorderSavedHint && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Border settings saved!</span>
             </div>
           )}
 
           {/* Motion hint text - shown for 15 seconds when motion is activated */}
           {showMotionHint && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Displaying motion in red...</span>
             </div>
           )}
 
           {/* WiFi search hint text - shown for 10 seconds after clicking OK on wifi popup */}
           {showWifiSearchHint && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Searching for Sami camera on {lastConnectedNetwork}</span>
             </div>
           )}
 
           {/* Hold hint text - shown when hold is activated */}
           {showHoldHint && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Hold for one second to turn alarm off</span>
             </div>
           )}
 
           {/* Alarm disabled hint text - shown when clicking disabled alarm button */}
           {showAlarmDisabledHint && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Alarm Disabled in Settings</span>
             </div>
           )}
@@ -3593,7 +3593,7 @@ function AppContent({
 
           {/* Unlock message - shown after unlocking */}
           {showUnlockMessage && (
-            <div className="absolute bottom-40 z-15 bg-white/40 backdrop-blur-sm px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
+            <div className="absolute bottom-40 z-15 bg-white/70 backdrop-blur-md px-6 py-3 rounded-lg pointer-events-none" style={{ left: 'calc((100% - 7rem) / 2)', transform: 'translateX(-50%)' }}>
               <span className="text-black">Display unlocked</span>
             </div>
           )}

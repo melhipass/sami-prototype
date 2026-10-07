@@ -791,7 +791,7 @@ export function SettingsScreen({
   // Camera WiFi picker (separate from app WiFi in Network section)
   const [cameraWifiNetwork, setCameraWifiNetwork] = useState('Sami-5G');
   const [showCameraWifiPicker, setShowCameraWifiPicker] = useState(false);
-  const [cameraWifiPickerStep, setCameraWifiPickerStep] = useState<'select' | 'password' | 'warning' | 'testing'>('select');
+  const [cameraWifiPickerStep, setCameraWifiPickerStep] = useState<'select' | 'password' | 'warning' | 'testing' | 'hidden'>('select');
   const [cameraWifiPendingSsid, setCameraWifiPendingSsid] = useState('');
   const [cameraWifiPendingPassword, setCameraWifiPendingPassword] = useState('');
   const [cameraWifiPendingIsOpen, setCameraWifiPendingIsOpen] = useState(false);
@@ -813,6 +813,7 @@ export function SettingsScreen({
   const [cwPickerPassword, setCwPickerPassword] = useState('');
   const [cwPickerShowPw, setCwPickerShowPw] = useState(false);
   const [cwPickerPwError, setCwPickerPwError] = useState(false);
+  const [cwHiddenSsid, setCwHiddenSsid] = useState('');
 
   return (
     <div className="absolute inset-0 bg-app-surface z-30 flex flex-col">
@@ -2378,12 +2379,13 @@ export function SettingsScreen({
           {settingsWifiPickerStep === 'select' && (
             <WiFiSelection
               showSubtitle={false}
-              onSelect={(ssid, secured) => {
-                if (!secured) {
-                  setSettingsWifiPendingSsid(ssid);
+              onSelect={(ssid, secured, password) => {
+                setSettingsWifiPendingSsid(ssid);
+                // Open network, or a hidden network whose password was already
+                // typed: skip the password step and go straight to testing.
+                if (!secured || password !== undefined) {
                   setSettingsWifiPickerStep('testing');
                 } else {
-                  setSettingsWifiPendingSsid(ssid);
                   setSettingsWifiPickerStep('password');
                 }
               }}
@@ -3714,6 +3716,22 @@ export function SettingsScreen({
                   );
                 })}
               </div>
+              {/* Hidden network entry — discreet, only when the list is shown */}
+              {!cwPickerIsRefreshing && (
+                <div className="px-4 py-3 border-t border-app-line/15 dark:border-[#374151] text-center">
+                  <button
+                    onClick={() => {
+                      setCwHiddenSsid('');
+                      setCwPickerPassword('');
+                      setCwPickerShowPw(false);
+                      setCwPickerPwError(false);
+                      setCameraWifiPickerStep('hidden');
+                    }}
+                    className="text-sm hover:underline"
+                    style={{ color: SETTINGS_ACCENT_COLOR }}
+                  >Join another network…</button>
+                </div>
+              )}
               <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
                 <button
                   onClick={() => { setShowCameraWifiPicker(false); setCameraWifiPickerStep('select'); }}
@@ -3738,6 +3756,50 @@ export function SettingsScreen({
                   className="flex-1 text-white py-3 rounded-xl hover:opacity-80 transition-colors font-semibold"
                   style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                 >Select</button>
+              </div>
+            </div>
+          )}
+
+          {/* Step: Other network form — mirrors the password step layout */}
+          {cameraWifiPickerStep === 'hidden' && (
+            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl p-8">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <Wifi className="w-6 h-6 text-app-content" />
+                <h2 className="text-xl text-center text-app-content">Other network</h2>
+              </div>
+              <p className="text-sm text-app-content-faint mb-6 text-center">Enter the network name</p>
+              <div className="mb-6">
+                <label className="block text-sm mb-2 text-app-content-faint">Network name</label>
+                <input
+                  type="text"
+                  value={cwHiddenSsid}
+                  onChange={e => setCwHiddenSsid(e.target.value)}
+                  maxLength={32}
+                  autoFocus
+                  placeholder="Enter network name"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface text-app-content placeholder-gray-600 border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]"
+                />
+              </div>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    // Treat it like selecting a normal secured network: hand off to
+                    // the standard password step to enter the password.
+                    setCameraWifiPendingSsid(cwHiddenSsid.trim());
+                    setCameraWifiPendingIsOpen(false);
+                    setCameraWifiPasswordAttempt(0);
+                    setCwPickerPwError(false);
+                    setCwPickerPassword('');
+                    setCameraWifiPickerStep('password');
+                  }}
+                  disabled={cwHiddenSsid.trim().length === 0}
+                  className="w-full text-white py-3 rounded-xl hover:opacity-80 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
+                >Next</button>
+                <button
+                  onClick={() => { setCwHiddenSsid(''); setCameraWifiPickerStep('select'); }}
+                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                >Back</button>
               </div>
             </div>
           )}
