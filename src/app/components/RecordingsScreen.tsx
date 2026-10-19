@@ -894,7 +894,13 @@ export function RecordingsScreen({
                 {showArchivedSection ? 'Trashed Recordings' : 'Recordings'}
               </span>
               <span className="text-app-content-faint text-sm">
-                ({currentRecordings.filter(r => downloadedRecordingIds.has(r.id)).length} of {currentRecordings.length} downloaded)
+                {(() => {
+                  // Count downloads across ALL recordings of this section, independent of
+                  // the active filters (Alarmed, Locked, 20s+, 24hrs) and Edit-mode selection.
+                  const sectionRecordings = allRecordings.filter(r => showArchivedSection ? r.isArchived : !r.isArchived);
+                  const downloaded = sectionRecordings.filter(r => downloadedRecordingIds.has(r.id)).length;
+                  return `(${downloaded} downloaded from ${sectionRecordings.length})`;
+                })()}
               </span>
             </div>
 
