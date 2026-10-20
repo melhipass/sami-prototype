@@ -895,11 +895,16 @@ export function RecordingsScreen({
               </span>
               <span className="text-app-content-faint text-sm">
                 {(() => {
-                  // Count downloads across ALL recordings of this section, independent of
-                  // the active filters (Alarmed, Locked, 20s+, 24hrs) and Edit-mode selection.
-                  const sectionRecordings = allRecordings.filter(r => showArchivedSection ? r.isArchived : !r.isArchived);
-                  const downloaded = sectionRecordings.filter(r => downloadedRecordingIds.has(r.id)).length;
-                  return `(${downloaded} downloaded from ${sectionRecordings.length})`;
+                  // Counters are based on ALL recordings on the camera, independent of the
+                  // active filters (Alarmed, Locked, 20s+, 24hrs) and Edit-mode selection.
+                  // Y (total) is every video on the camera, Trash included, same in both headers.
+                  const totalOnCamera = allRecordings.length;
+                  if (showArchivedSection) {
+                    const trashedCount = allRecordings.filter(r => r.isArchived).length;
+                    return `(${trashedCount} trashed from ${totalOnCamera})`;
+                  }
+                  const downloadedCount = allRecordings.filter(r => downloadedRecordingIds.has(r.id)).length;
+                  return `(${downloadedCount} downloaded from ${totalOnCamera})`;
                 })()}
               </span>
             </div>
