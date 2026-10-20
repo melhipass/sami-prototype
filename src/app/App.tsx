@@ -91,7 +91,6 @@ function AppContent({
   });
   const [collapsedDateGroups, setCollapsedDateGroups] = useState<Set<string>>(new Set());
   const [collapsedMonthGroups, setCollapsedMonthGroups] = useState<Set<string>>(new Set());
-  const [showSendLogDialog, setShowSendLogDialog] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [isSleeping, setIsSleeping] = useState(false);
   const [borderActive, setBorderActive] = useState(false);
@@ -139,6 +138,7 @@ function AppContent({
   // Prototype submit flow for the Send Log report (simulated Zendesk ticket).
   const [logSendStatus, setLogSendStatus] = useState<null | 'sending' | 'error' | 'success'>(null);
   const [logSendAttempt, setLogSendAttempt] = useState(0);
+  const [logTicketNumber, setLogTicketNumber] = useState<number | null>(null);
   const logSendTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Runs one simulated submit attempt: shows the spinner for 4s, then fails on the
@@ -148,7 +148,13 @@ function AppContent({
     setLogSendStatus('sending');
     if (logSendTimerRef.current) clearTimeout(logSendTimerRef.current);
     logSendTimerRef.current = setTimeout(() => {
-      setLogSendStatus(attempt >= 2 ? 'success' : 'error');
+      if (attempt >= 2) {
+        // Generate a fake support ticket number for the success message.
+        setLogTicketNumber(Math.floor(10000 + Math.random() * 90000));
+        setLogSendStatus('success');
+      } else {
+        setLogSendStatus('error');
+      }
     }, 4000);
   };
 
@@ -2258,8 +2264,14 @@ function AppContent({
                 Help [Version 1.0 build 1]
               </span>
               
-              <button 
-                onClick={() => setShowSendLogDialog(true)}
+              <button
+                onClick={() => {
+                  // Open the Send Log screen directly with empty fields.
+                  setLogEmail('');
+                  setLogProblemDescription('');
+                  setEmailError('');
+                  setShowSendLogScreen(true);
+                }}
                 className="mr-6 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
               >
                 Send log
@@ -2300,63 +2312,6 @@ function AppContent({
                 </div>
               </div>
             </div>
-            
-            {/* Send Log Dialog */}
-            {showSendLogDialog && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-40">
-                <div className="bg-app-surface rounded-lg p-8 max-w-md w-full mx-4">
-                  <h2 className="text-app-content text-2xl font-bold mb-4">Send Log</h2>
-                  {emailError ? (
-                    <p className="text-app-alert dark:text-[#F08080] mb-6">{emailError} is not a valid email address. Please re-enter</p>
-                  ) : (
-                    <p className="text-app-content mb-6">Enter an email address for us to contact you:</p>
-                  )}
-                  
-                  <input
-                    type="email"
-                    value={logEmail}
-                    onChange={(e) => {
-                      setLogEmail(e.target.value);
-                      setEmailError(''); // Clear error when user types
-                    }}
-                    placeholder="sami@example.com"
-                    className="w-full px-4 py-3 rounded-lg bg-white text-black placeholder-gray-400 mb-6"
-                  />
-                  
-                  <div className="flex gap-4 justify-end">
-                    <button
-                      onClick={() => {
-                        setShowSendLogDialog(false);
-                        setLogEmail('');
-                        setEmailError('');
-                      }}
-                      className="px-6 py-2 rounded-lg bg-app-content/10 dark:bg-[#4b5563] hover:bg-app-muted text-app-content transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        // Validate email
-                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        const trimmedEmail = logEmail.trim();
-                        
-                        if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
-                          setEmailError(trimmedEmail || '(empty)');
-                        } else {
-                          // Email is valid, show the Send Log screen
-                          setShowSendLogDialog(false);
-                          setEmailError('');
-                          setShowSendLogScreen(true);
-                        }
-                      }}
-                      className="px-6 py-2 rounded-lg bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] text-app-content transition-colors"
-                    >
-                      OK
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -2400,63 +2355,6 @@ function AppContent({
                 </div>
               </div>
             </div>
-
-            {/* Send Log Dialog */}
-            {showSendLogDialog && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div className="bg-app-surface rounded-lg p-8 max-w-md w-full mx-4">
-                  <h2 className="text-app-content text-2xl font-bold mb-4">Send Log</h2>
-                  {emailError ? (
-                    <p className="text-app-alert dark:text-[#F08080] mb-6">{emailError} is not a valid email address. Please re-enter</p>
-                  ) : (
-                    <p className="text-app-content mb-6">Enter an email address for us to contact you:</p>
-                  )}
-
-                  <input
-                    type="email"
-                    value={logEmail}
-                    onChange={(e) => {
-                      setLogEmail(e.target.value);
-                      setEmailError(''); // Clear error when user types
-                    }}
-                    placeholder="sami@example.com"
-                    className="w-full px-4 py-3 rounded-lg bg-white text-black placeholder-gray-400 mb-6"
-                  />
-
-                  <div className="flex gap-4 justify-end">
-                    <button
-                      onClick={() => {
-                        setShowSendLogDialog(false);
-                        setLogEmail('');
-                        setEmailError('');
-                      }}
-                      className="px-6 py-2 rounded-lg bg-app-content/10 dark:bg-[#4b5563] hover:bg-app-muted text-app-content transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        // Validate email
-                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        const trimmedEmail = logEmail.trim();
-
-                        if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
-                          setEmailError(trimmedEmail || '(empty)');
-                        } else {
-                          // Email is valid, show the Send Log screen
-                          setShowSendLogDialog(false);
-                          setEmailError('');
-                          setShowSendLogScreen(true);
-                        }
-                      }}
-                      className="px-6 py-2 rounded-lg bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] text-app-content transition-colors"
-                    >
-                      OK
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -2470,6 +2368,7 @@ function AppContent({
                   setShowSendLogScreen(false);
                   setLogEmail('');
                   setLogProblemDescription('');
+                  setEmailError('');
                 }}
                 className="text-[#5A8BBF] text-lg"
               >
@@ -2482,8 +2381,17 @@ function AppContent({
 
               <button
                 onClick={() => {
-                  // Land back on the Help screen and start the simulated submit flow.
-                  // Email/description are kept until the user taps OK (Retry needs the email).
+                  // Validate the email only when Send is tapped (enablement depends on
+                  // the description length, not the email).
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  const trimmedEmail = logEmail.trim();
+                  if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+                    setEmailError('Please enter a valid email address.');
+                    return;
+                  }
+                  // Valid: keep the trimmed email and start the simulated submit flow.
+                  setEmailError('');
+                  setLogEmail(trimmedEmail);
                   setShowSendLogScreen(false);
                   runLogSendAttempt(1);
                 }}
@@ -2501,12 +2409,26 @@ function AppContent({
             {/* Send Log form */}
             <div className="flex-1 bg-app-surface overflow-y-auto px-6 py-6">
               <div className="max-w-xl mx-auto space-y-6">
-                {/* Contact email (read-only) */}
+                {/* Contact email (editable, validated on Send) */}
                 <div>
                   <label className="block text-app-content-faint text-sm mb-2">Contact email</label>
-                  <div className="w-full px-4 py-3 rounded-lg bg-app-sunken border border-app-line/15 dark:border-[#374151] text-app-content-soft">
-                    {logEmail}
-                  </div>
+                  <input
+                    type="email"
+                    value={logEmail}
+                    onChange={(e) => {
+                      setLogEmail(e.target.value);
+                      setEmailError(''); // Clear error when the user types
+                    }}
+                    placeholder="Your email address"
+                    className={`w-full px-4 py-3 rounded-lg bg-app-card border text-app-content placeholder-app-content-faint focus:outline-none ${
+                      emailError
+                        ? 'border-app-alert dark:border-[#F08080] focus:border-app-alert'
+                        : 'border-app-line/15 dark:border-[#374151] focus:border-[#5A8BBF]'
+                    }`}
+                  />
+                  {emailError && (
+                    <p className="text-app-alert dark:text-[#F08080] text-sm mt-2">{emailError}</p>
+                  )}
                 </div>
 
                 {/* Problem description (editable) */}
@@ -2577,6 +2499,8 @@ function AppContent({
                         setLogSendAttempt(0);
                         setLogEmail('');
                         setLogProblemDescription('');
+                        setEmailError('');
+                        setLogTicketNumber(null);
                       }}
                       className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-app-content-faint"
                     >
@@ -2601,7 +2525,11 @@ function AppContent({
                     <div className="w-16 h-16 bg-app-mint dark:bg-[#BFE3D9] rounded-2xl flex items-center justify-center">
                       <CheckCircle className="w-8 h-8 text-app-mint-ink dark:text-[#2C3B4A]" />
                     </div>
-                    <p className="text-app-content-soft text-base text-center leading-snug">Thanks! Our support team has received your report and will get back to you at {logEmail}.</p>
+                    <p className="text-app-content-soft text-base text-center leading-snug">
+                      Thanks! Our support team has received your report and will get back to you at {logEmail}.
+                      <br />
+                      Your ticket number is #{logTicketNumber}.
+                    </p>
                   </div>
                   <div className="border-t border-app-line/15 dark:border-[#374151]">
                     <button
@@ -2610,6 +2538,7 @@ function AppContent({
                         setLogSendAttempt(0);
                         setLogEmail('');
                         setLogProblemDescription('');
+                        setLogTicketNumber(null);
                       }}
                       className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
                     >

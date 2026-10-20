@@ -1071,7 +1071,7 @@ const EVENT_CATALOG: CatalogSection[] = [
     events: [
       { event: 'help_viewed', when: 'Help screen is shown', data: 'mode (enum: online, offline)' },
       { event: 'help_link_clicked', when: 'A help link is tapped', data: 'link (enum: support, user_manual, installation_instructions)' },
-      { event: 'help_logs_sent', when: 'Send Logs is tapped', data: 'success (bool), error_reason (enum, when success=false — full list TBD)' },
+      { event: 'help_logs_sent', when: 'Send Log report finishes sending (success or fail)', data: 'success (bool), error_reason (enum, when success=false — full list TBD)' },
     ],
   },
 ];
