@@ -9,7 +9,7 @@ const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
 const homeScreenIcon = '/assets/4fcc62f32178f39d03a6f997dc02af74d60bdc02.png';
 const homeScreenWallpaper = '/assets/fa13dc602b6247ed34afd5c7fccebfbdd8fd81e2.png';
 import { MotionDetectionIcon } from '@/app/components/MotionDetectionIcon';
-import { AnimatedWifiIcon } from '@/app/components/AnimatedWifiIcon';
+import { AnimatedWifiIcon, CameraDisconnectedIcon } from '@/app/components/AnimatedWifiIcon';
 import { RecordingIcon } from '@/app/components/RecordingIcon';
 import {
   AlertDialog,
@@ -173,6 +173,10 @@ function AppContent({
   const [baseSensitivityLevel] = useState(45);
   const [micAutoOffTimer, setMicAutoOffTimer] = useState<NodeJS.Timeout | null>(null);
   const [showWifiPopup, setShowWifiPopup] = useState(false);
+  // Prototype: first Wi-Fi icon tap shows the popup, second tap simulates the
+  // camera losing its connection ("Having issues"), later taps do nothing.
+  const [wifiIconTapCount, setWifiIconTapCount] = useState(0);
+  const [cameraHavingIssues, setCameraHavingIssues] = useState(false);
   const [lastConnectedNetwork] = useState('Home_WiFi_5G');
   const [currentNetwork] = useState('Guest_Network');
   const [settingsWifiNetwork, setSettingsWifiNetwork] = useState('Guest_Network');
@@ -3275,6 +3279,12 @@ function AppContent({
                   Please go to Device section on settings and configure one.
                 </p>
               </div>
+            ) : cameraHavingIssues ? (
+              /* Camera lost connection — black screen with disconnected icon */
+              <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-4 select-none">
+                <CameraDisconnectedIcon size={72} cameraColor="#D1D5DB" signColor="#9CA3AF" />
+                <h2 className="text-2xl text-white font-semibold">Streaming not available</h2>
+              </div>
             ) : selectedDevice === 'sami-3c: 7812FFA01839' && (
               /* Actual video image wrapper */
               <div className="relative max-w-full max-h-full select-none" draggable="false">
@@ -3530,17 +3540,31 @@ function AppContent({
           {/* Camera Connection Signal - top right corner */}
           <div className="absolute top-3 right-32 flex items-center gap-4 z-10 px-3 py-2 rounded-lg bg-[#5B6C7F]/80 backdrop-blur-sm select-none">
             {/* REC indicator */}
-            <RecordingIcon />
+            <RecordingIcon forceGray={cameraHavingIssues} />
             
             {/* Wifi icon */}
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
-                setShowWifiPopup(true);
+                // Loop through 3 states on each tap:
+                //   phase 0 → "Device Network Status" popup (streaming available)
+                //   phase 1 → "Streaming not available"
+                //   phase 2 → normal streaming (no popup)
+                const next = wifiIconTapCount + 1;
+                setWifiIconTapCount(next);
+                const phase = (next - 1) % 3;
+                if (phase === 0) {
+                  setCameraHavingIssues(false);
+                  setShowWifiPopup(true);
+                } else if (phase === 1) {
+                  setCameraHavingIssues(true);
+                } else {
+                  setCameraHavingIssues(false);
+                }
               }}
               className="cursor-pointer hover:opacity-80 transition-opacity"
             >
-              <AnimatedWifiIcon />
+              <AnimatedWifiIcon forceDisconnected={cameraHavingIssues} />
             </button>
           </div>
 
