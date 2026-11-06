@@ -6,6 +6,8 @@ import { WifiTestingScreen } from '@/app/components/onboarding/WifiTestingScreen
 
 const SETTINGS_ACCENT_COLOR = 'var(--app-navy)';
 const SETTINGS_BG_COLOR = 'var(--app-surface)';
+// Mobile Data section is hidden for now (we'll use it later). Set to true to show it again.
+const SHOW_MOBILE_DATA_SECTION = false;
 
 export interface SettingsScreenProps {
   // Navigation
@@ -1572,7 +1574,8 @@ export function SettingsScreen({
             </div>
           </div>
 
-          {/* Mobile Data Section */}
+          {/* Mobile Data Section — hidden for now via SHOW_MOBILE_DATA_SECTION */}
+          {SHOW_MOBILE_DATA_SECTION && (
           <div>
             <h3 className="text-app-content text-xl font-bold mb-3 px-4">Mobile Data</h3>
             <div className="bg-app-card rounded-lg overflow-hidden px-4">
@@ -1597,6 +1600,7 @@ export function SettingsScreen({
               </div>
             </div>
           </div>
+          )}
 
           {/* Anonymous Data Analytics Section */}
           <div>
