@@ -1600,12 +1600,12 @@ export function SettingsScreen({
 
           {/* Anonymous Data Analytics Section */}
           <div>
-            <h3 className="text-app-content text-xl font-bold mb-3 px-4">Data Analytics</h3>
+            <h3 className="text-app-content text-xl font-bold mb-3 px-4">Usage Data</h3>
             <div className="bg-app-card rounded-lg overflow-hidden px-4">
               <div className="space-y-0">
                 {/* Unable Sent Data */}
                 <div className="flex items-center justify-between py-4">
-                  <span className="text-app-content">Use my anonymous data</span>
+                  <span className="text-app-content">Use my data for improvements</span>
                   <button
                     onClick={() => setEnableSentData(!enableSentData)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
