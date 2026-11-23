@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { WelcomeScreen } from './WelcomeScreen';
 import { LocationExplainer } from './LocationExplainer';
@@ -14,6 +14,8 @@ import { WiFiSelection } from './WiFiSelection';
 import { NetworkPassword } from './NetworkPassword';
 import { WifiTestingScreen } from './WifiTestingScreen';
 import { OnboardingStepper } from './OnboardingStepper';
+import { CameraConnected } from './CameraConnected';
+import { CameraWifiPicker } from '@/app/components/CameraWifiPicker';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
@@ -34,6 +36,7 @@ interface CameraDevice {
   status: string;
   isNewCamera: boolean;
   hasHint?: boolean;
+  onSamiNetwork?: boolean;
 }
 
 export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, skipPermissions = false, platform = 'ios', currentWifi, savedPasswordHint = '', onPasswordHintSaved, onPasswordSaved }: OnboardingFlowProps) {
@@ -58,6 +61,18 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const [wifiShowErrorOnReturn, setWifiShowErrorOnReturn] = useState(false);
   const [cameraPasswordAttempt, setCameraPasswordAttempt] = useState(0);
   const [cameraShowErrorOnReturn, setCameraShowErrorOnReturn] = useState(false);
+  // Whether the selected camera's device is on a Sami network (demo). Drives the
+  // end-of-onboarding Wi-Fi prompt: only non-Sami networks are offered Wi-Fi setup.
+  const [selectedCameraOnSami, setSelectedCameraOnSami] = useState(false);
+  // End-of-onboarding Wi-Fi flow (iOS only): the "Camera connected" screen (step 17)
+  // offers to open the shared Camera Wi-Fi picker popup on top of it.
+  const [showOnboardingWifiPicker, setShowOnboardingWifiPicker] = useState(false);
+  // Device's current network for the picker (starred/first). Sami camera => Sami-5G.
+  const deviceCurrentNetwork = selectedCameraOnSami ? 'Sami-5G' : 'Home-WiFi-5G';
+  // ConnectivityTest keeps firing onComplete after it finishes; since a non-Sami
+  // success now keeps onboarding mounted (to show the Wi-Fi prompt) instead of
+  // leaving immediately, guard so the success path is handled only once per test.
+  const testCompletionHandled = useRef(false);
 
   const handleLearnMore = () => {
     // Open Sami website or info page
@@ -121,8 +136,9 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
     setStep(8); // Camera Identified (always go here, even if no cameras found)
   };
 
-  const handleCameraConfirm = (isNew: boolean, hasHint: boolean = true) => {
+  const handleCameraConfirm = (isNew: boolean, hasHint: boolean = true, onSamiNetwork: boolean = false) => {
     setIsNewCamera(isNew);
+    setSelectedCameraOnSami(onSamiNetwork);
     // Whether the camera is new (default password) or already has a user-set password
     // determines the next screen, regardless of whether this is first-time onboarding
     // or re-pairing from Settings.
@@ -154,18 +170,29 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       onPasswordSaved(pwd);
     }
 
+    testCompletionHandled.current = false; // Fresh connectivity test
     setStep(11); // Skip password re-entry, go directly to Connectivity Test
   };
 
   const handlePasswordSubmit = (pwd: string) => {
     setPassword(pwd);
     setCameraShowErrorOnReturn(false);
+    testCompletionHandled.current = false; // Fresh connectivity test
     setStep(11); // Connectivity Test
   };
 
   const handleTestComplete = (success: boolean) => {
     if (success) {
-      onComplete(); // Go directly to main app
+      if (testCompletionHandled.current) return; // ConnectivityTest fires repeatedly; act once
+      testCompletionHandled.current = true;
+      // iOS only: if the camera's device is on a non-Sami network, show the
+      // "Camera connected" screen to offer Wi-Fi setup before opening the app.
+      // Sami networks (and Android) go straight in.
+      if (!isAndroid && !selectedCameraOnSami) {
+        setStep(17); // Camera connected screen
+      } else {
+        onComplete(); // Go directly to main app
+      }
     } else {
       setCameraPasswordAttempt(1); // First attempt always fails; retry always succeeds
       setCameraShowErrorOnReturn(true);
@@ -197,7 +224,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
         // Labels: Guide, Permissions, Connect
         if (step === 2 || step === 3) return { labels: ['Guide', 'Permissions', 'Connect'], index: 0 };
         if (step === 4 || step === 5 || step === 6 || step === 16) return { labels: ['Guide', 'Permissions', 'Connect'], index: 1 };
-        if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Guide', 'Permissions', 'Connect'], index: 2 };
+        if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11 || step === 17) return { labels: ['Guide', 'Permissions', 'Connect'], index: 2 };
       }
       return null;
     }
@@ -212,7 +239,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       if (step === 1) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 0 };
       if (step === 2 || step === 3) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 1 };
       if (step === 4 || step === 5 || step === 6 || step === 12 || step === 16) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 2 };
-      if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 3 };
+      if (step === 7 || step === 8 || step === 9 || step === 10 || step === 11 || step === 17) return { labels: ['Disclaimers', 'Guide', 'Permissions', 'Connect'], index: 3 };
     }
     return null; // Hide on welcome screen
   };
@@ -476,6 +503,24 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
           </div>
         </div>
       )}
+
+      {/* iOS only: end-of-onboarding "Camera connected" screen (non-Sami network) */}
+      {step === 17 && (
+        <CameraConnected
+          onSetupWifi={() => setShowOnboardingWifiPicker(true)}
+          onContinueEthernet={onComplete}
+        />
+      )}
+
+      {/* Shared Camera Wi-Fi picker, opened from the Camera connected screen (wired mode).
+          Cancelling anywhere just closes it; the user stays on the Camera connected screen. */}
+      <CameraWifiPicker
+        open={showOnboardingWifiPicker}
+        currentNetwork={deviceCurrentNetwork}
+        isWired={true}
+        onCancel={() => setShowOnboardingWifiPicker(false)}
+        onComplete={() => { setShowOnboardingWifiPicker(false); onComplete(); }}
+      />
     </div>
   );
 }

@@ -9,6 +9,9 @@ interface CameraDevice {
   // Only relevant when isNewCamera is false. Simulates a camera whose password was
   // set previously but with no hint saved, so the "no hint" case can be demoed.
   hasHint?: boolean;
+  // Demo-only: whether the device is currently on a Sami network for this camera.
+  // Drives the end-of-onboarding Wi-Fi prompt (shown only for non-Sami networks).
+  onSamiNetwork?: boolean;
 }
 
 interface NetworkCheckProps {
@@ -48,9 +51,9 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
         if (!isMounted) return;
 
         const mockCameras: CameraDevice[] = isFirstAttempt ? [] : [
-          { id: 'Sami-3c: 7812FFA01839', name: 'Sami-3c: 7812FFA01839', status: 'online', isNewCamera: true },
-          { id: 'Sami-3c: 7812FFA01840', name: 'Sami-3c: 7812FFA01840', status: 'offline', isNewCamera: false, hasHint: true },
-          { id: 'Sami-3c: 7812FFA01841', name: 'Sami-3c: 7812FFA01841', status: 'online', isNewCamera: false, hasHint: false },
+          { id: 'Sami-3c: 7812FFA01839', name: 'Sami-3c: 7812FFA01839', status: 'online', isNewCamera: true, onSamiNetwork: false },
+          { id: 'Sami-3c: 7812FFA01840', name: 'Sami-3c: 7812FFA01840', status: 'offline', isNewCamera: false, hasHint: true, onSamiNetwork: true },
+          { id: 'Sami-3c: 7812FFA01841', name: 'Sami-3c: 7812FFA01841', status: 'online', isNewCamera: false, hasHint: false, onSamiNetwork: false },
         ];
 
         // Simulate finding a camera

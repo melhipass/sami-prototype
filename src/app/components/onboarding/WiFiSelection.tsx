@@ -126,7 +126,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 {showSubtitle && (
                   <>
                     <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
-                    <p className="text-base text-app-amber mt-2">For better use, select a Sami-5G network</p>
+                    <p className="text-base text-app-amber mt-2">For better use, select a Sami network</p>
                   </>
                 )}
               </div>

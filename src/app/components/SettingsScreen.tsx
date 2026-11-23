@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Wifi, Check, Eye, EyeOff, Lock, AlertCircle,
 import { WiFiSelection } from '@/app/components/onboarding/WiFiSelection';
 import { NetworkPassword } from '@/app/components/onboarding/NetworkPassword';
 import { WifiTestingScreen } from '@/app/components/onboarding/WifiTestingScreen';
+import { CameraWifiPicker } from '@/app/components/CameraWifiPicker';
 
 const SETTINGS_ACCENT_COLOR = 'var(--app-navy)';
 const SETTINGS_BG_COLOR = 'var(--app-surface)';
@@ -790,32 +791,13 @@ export function SettingsScreen({
     'Auto': { title: "Infrared Illuminators Auto", message: "The infrared illuminators will automatically switch on when the room is dark and off when lit.", hasCancel: false },
   };
 
-  // Camera WiFi picker (separate from app WiFi in Network section)
+  // Camera WiFi picker (separate from app WiFi in Network section).
+  // The picker flow itself lives in the shared <CameraWifiPicker> component;
+  // Settings only keeps the configured network (for the label) and the open flag.
   const [cameraWifiNetwork, setCameraWifiNetwork] = useState('Sami-5G');
   const [showCameraWifiPicker, setShowCameraWifiPicker] = useState(false);
-  const [cameraWifiPickerStep, setCameraWifiPickerStep] = useState<'select' | 'password' | 'warning' | 'testing' | 'hidden'>('select');
-  const [cameraWifiPendingSsid, setCameraWifiPendingSsid] = useState('');
-  const [cameraWifiPendingPassword, setCameraWifiPendingPassword] = useState('');
-  const [cameraWifiPendingIsOpen, setCameraWifiPendingIsOpen] = useState(false);
-  const [cameraWifiPasswordAttempt, setCameraWifiPasswordAttempt] = useState(0);
-  const [cameraWifiShowErrorOnReturn, setCameraWifiShowErrorOnReturn] = useState(false);
-  const [showCameraWifiSuccess, setShowCameraWifiSuccess] = useState(false);
-  const [cameraWifiSuccessNetwork, setCameraWifiSuccessNetwork] = useState('');
-  // Inline state for camera WiFi picker popup (separate from onboarding flow)
-  const CW_NETWORKS = [
-    { ssid: 'Sami-5G', secured: true, strength: 3 },
-    { ssid: 'Home-WiFi-5G', secured: true, strength: 3 },
-    { ssid: 'Home-WiFi-2.4G', secured: true, strength: 2 },
-    { ssid: 'CoffeeShop_Free', secured: false, strength: 2 },
-    { ssid: 'Guest-Network', secured: true, strength: 2 },
-    { ssid: 'OpenWifi_Lobby', secured: false, strength: 1 },
-  ];
-  const [cwPickerSelectedSsid, setCwPickerSelectedSsid] = useState('Sami-5G');
-  const [cwPickerIsRefreshing, setCwPickerIsRefreshing] = useState(false);
-  const [cwPickerPassword, setCwPickerPassword] = useState('');
-  const [cwPickerShowPw, setCwPickerShowPw] = useState(false);
-  const [cwPickerPwError, setCwPickerPwError] = useState(false);
-  const [cwHiddenSsid, setCwHiddenSsid] = useState('');
+  // Demo value for the device's current network (shown first + starred in the picker).
+  const SETTINGS_DEVICE_NETWORK = 'Home-WiFi-5G';
 
   return (
     <div className="absolute inset-0 bg-app-surface z-30 flex flex-col">
@@ -2190,7 +2172,7 @@ export function SettingsScreen({
                             {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
                           </span>
                         </button>
-                        <button onClick={() => { setCameraWifiPickerStep('select'); setShowCameraWifiPicker(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
+                        <button onClick={() => setShowCameraWifiPicker(true)} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
                       </div>
                     </div>
                   )}
@@ -3677,274 +3659,15 @@ export function SettingsScreen({
         </div>
       )}
 
-      {/* Camera WiFi Picker Overlay — popup style (Camera Settings only; onboarding uses separate full-screen components) */}
-      {showCameraWifiPicker && (
-        <div className="absolute inset-0 bg-black/70 z-40 flex items-center justify-center">
-
-          {/* Step: Select network */}
-          {cameraWifiPickerStep === 'select' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl">
-              <div className="p-6 border-b border-app-line/15 dark:border-[#374151] flex items-start justify-between">
-                <div>
-                  <h2 className="text-2xl text-app-content">Select Camera Wi-Fi</h2>
-                  <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
-                  <p className="text-base text-app-amber mt-2">For better use, select a Sami-5G network</p>
-                </div>
-                <button
-                  onClick={() => { setCwPickerIsRefreshing(true); setTimeout(() => setCwPickerIsRefreshing(false), 1500); }}
-                  disabled={cwPickerIsRefreshing}
-                  className="ml-4 mt-1 p-2 rounded-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-5 h-5 ${cwPickerIsRefreshing ? 'animate-spin' : ''}`} style={{ color: SETTINGS_ACCENT_COLOR }} />
-                </button>
-              </div>
-              <div className="max-h-72 overflow-y-auto">
-                {cwPickerIsRefreshing ? (
-                  <div className="flex flex-col items-center justify-center py-10 gap-3">
-                    <RefreshCw className="w-8 h-8 animate-spin" style={{ color: SETTINGS_ACCENT_COLOR }} />
-                    <p className="text-app-content-faint text-sm">Searching for networks...</p>
-                  </div>
-                ) : CW_NETWORKS.map(network => {
-                  const isSelected = network.ssid === cwPickerSelectedSsid;
-                  return (
-                    <button key={network.ssid} onClick={() => setCwPickerSelectedSsid(network.ssid)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${isSelected ? 'bg-app-sunken' : 'hover:bg-app-sunken'}`}
-                    >
-                      <Wifi className={`w-5 h-5 flex-shrink-0 ${network.strength === 3 ? 'text-app-content' : network.strength === 2 ? 'text-app-content-faint' : 'text-app-content-faint'}`} />
-                      <span className="flex-1 text-left text-base" style={{ color: isSelected ? SETTINGS_ACCENT_COLOR : 'white', fontWeight: isSelected ? 600 : 400 }}>{network.ssid}</span>
-                      {isSelected
-                        ? <Check className="w-5 h-5 flex-shrink-0" style={{ color: SETTINGS_ACCENT_COLOR }} />
-                        : network.secured && <Lock className="w-4 h-4 flex-shrink-0 text-app-content-faint" />
-                      }
-                    </button>
-                  );
-                })}
-              </div>
-              {/* Hidden network entry — discreet, only when the list is shown */}
-              {!cwPickerIsRefreshing && (
-                <div className="px-4 py-3 border-t border-app-line/15 dark:border-[#374151] text-center">
-                  <button
-                    onClick={() => {
-                      setCwHiddenSsid('');
-                      setCwPickerPassword('');
-                      setCwPickerShowPw(false);
-                      setCwPickerPwError(false);
-                      setCameraWifiPickerStep('hidden');
-                    }}
-                    className="text-sm hover:underline"
-                    style={{ color: SETTINGS_ACCENT_COLOR }}
-                  >Join another network…</button>
-                </div>
-              )}
-              <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
-                <button
-                  onClick={() => { setShowCameraWifiPicker(false); setCameraWifiPickerStep('select'); }}
-                  className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
-                >Cancel</button>
-                <button
-                  onClick={() => {
-                    const net = CW_NETWORKS.find(n => n.ssid === cwPickerSelectedSsid);
-                    const secured = net?.secured ?? true;
-                    setCameraWifiPendingSsid(cwPickerSelectedSsid);
-                    setCameraWifiPendingIsOpen(!secured);
-                    if (!secured) {
-                      setCameraWifiPendingPassword('');
-                      setCameraWifiPickerStep('warning');
-                    } else {
-                      setCameraWifiPasswordAttempt(0);
-                      setCwPickerPwError(false);
-                      setCwPickerPassword('');
-                      setCameraWifiPickerStep('password');
-                    }
-                  }}
-                  className="flex-1 text-white py-3 rounded-xl hover:opacity-80 transition-colors font-semibold"
-                  style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                >Select</button>
-              </div>
-            </div>
-          )}
-
-          {/* Step: Other network form — mirrors the password step layout */}
-          {cameraWifiPickerStep === 'hidden' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl p-8">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <Wifi className="w-6 h-6 text-app-content" />
-                <h2 className="text-xl text-center text-app-content">Other network</h2>
-              </div>
-              <p className="text-sm text-app-content-faint mb-6 text-center">Enter the network name</p>
-              <div className="mb-6">
-                <label className="block text-sm mb-2 text-app-content-faint">Network name</label>
-                <input
-                  type="text"
-                  value={cwHiddenSsid}
-                  onChange={e => setCwHiddenSsid(e.target.value)}
-                  maxLength={32}
-                  autoFocus
-                  placeholder="Enter network name"
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface text-app-content placeholder-gray-600 border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]"
-                />
-              </div>
-              <div className="space-y-3">
-                <button
-                  onClick={() => {
-                    // Treat it like selecting a normal secured network: hand off to
-                    // the standard password step to enter the password.
-                    setCameraWifiPendingSsid(cwHiddenSsid.trim());
-                    setCameraWifiPendingIsOpen(false);
-                    setCameraWifiPasswordAttempt(0);
-                    setCwPickerPwError(false);
-                    setCwPickerPassword('');
-                    setCameraWifiPickerStep('password');
-                  }}
-                  disabled={cwHiddenSsid.trim().length === 0}
-                  className="w-full text-white py-3 rounded-xl hover:opacity-80 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                >Next</button>
-                <button
-                  onClick={() => { setCwHiddenSsid(''); setCameraWifiPickerStep('select'); }}
-                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
-                >Back</button>
-              </div>
-            </div>
-          )}
-
-          {/* Step: Password */}
-          {cameraWifiPickerStep === 'password' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl p-8">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <Wifi className="w-6 h-6 text-app-content" />
-                <h2 className="text-xl text-center text-app-content">{cameraWifiPendingSsid}</h2>
-              </div>
-              <p className="text-sm text-app-content-faint mb-6 text-center">Enter the password for this network</p>
-              {cwPickerPwError && (
-                <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl">
-                  <p className="text-app-alert dark:text-[#F08080] text-sm text-center">Incorrect password. Please try again.</p>
-                </div>
-              )}
-              <div className="mb-6">
-                <label className="block text-sm mb-2 text-app-content-faint">Wi-Fi Password</label>
-                <div className="relative">
-                  <input
-                    type={cwPickerShowPw ? 'text' : 'password'}
-                    value={cwPickerPassword}
-                    onChange={e => setCwPickerPassword(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && cwPickerPassword.length > 0) { setCameraWifiPendingPassword(cwPickerPassword); setCameraWifiPickerStep('warning'); } }}
-                    className={`w-full px-4 py-3 border rounded-xl pr-12 focus:outline-none bg-app-surface text-app-content placeholder-gray-600 ${cwPickerPwError ? 'border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]'}`}
-                    placeholder="Enter password"
-                    autoFocus
-                  />
-                  <button onClick={() => setCwPickerShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-app-sunken rounded-lg" type="button">
-                    {cwPickerShowPw ? <EyeOff className="w-5 h-5 text-app-content-faint" /> : <Eye className="w-5 h-5 text-app-content-faint" />}
-                  </button>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <button
-                  onClick={() => { setCameraWifiPendingPassword(cwPickerPassword); setCameraWifiPickerStep('warning'); }}
-                  disabled={cwPickerPassword.length === 0}
-                  className="w-full text-white py-3 rounded-xl disabled:opacity-50 transition-colors font-semibold"
-                  style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
-                >Connect</button>
-                <button onClick={() => { setCwPickerPwError(false); setCameraWifiPickerStep('select'); }}
-                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors">Back</button>
-              </div>
-            </div>
-          )}
-
-          {/* Step: Warning */}
-          {cameraWifiPickerStep === 'warning' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl">
-              <div className="px-8 pt-6 pb-2">
-                <h2 className="text-app-content text-xl font-semibold text-center">Warning</h2>
-              </div>
-              <div className="px-8 py-5">
-                <p className="text-app-content-soft text-base leading-relaxed text-center">
-                  {cameraWifiPendingIsOpen
-                    ? `You are moving the Sami camera to the "${cameraWifiPendingSsid}" network.`
-                    : `You are moving the Sami camera to the "${cameraWifiPendingSsid}" network with the password "${cameraWifiPendingPassword}".`
-                  }{' '}
-                  If this is incorrect you may need to connect the camera to a router with an Ethernet wire to recover.
-                </p>
-              </div>
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-col">
-                <button
-                  onClick={() => {
-                    setCameraWifiPickerStep('testing');
-                    setTimeout(() => {
-                      if (!cameraWifiPendingIsOpen && cameraWifiPasswordAttempt === 0) {
-                        setCameraWifiPasswordAttempt(1);
-                        setCwPickerPwError(true);
-                        setCwPickerPassword('');
-                        setCameraWifiPickerStep('password');
-                      } else {
-                        setCameraWifiNetwork(cameraWifiPendingSsid);
-                        setCameraWifiSuccessNetwork(cameraWifiPendingSsid);
-                        setShowCameraWifiPicker(false);
-                        setCameraWifiPickerStep('select');
-                        setShowCameraWifiSuccess(true);
-                      }
-                    }, 3000);
-                  }}
-                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
-                  style={{ color: SETTINGS_ACCENT_COLOR }}
-                >Continue</button>
-                {!cameraWifiPendingIsOpen && (
-                  <button onClick={() => setCameraWifiPickerStep('password')}
-                    className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
-                    style={{ color: SETTINGS_ACCENT_COLOR }}
-                  >Edit password</button>
-                )}
-                <button
-                  onClick={() => { setShowCameraWifiPicker(false); setCameraWifiPickerStep('select'); }}
-                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B95555]"
-                >Cancel</button>
-              </div>
-            </div>
-          )}
-
-          {/* Step: Connecting (testing) */}
-          {cameraWifiPickerStep === 'testing' && (
-            <div className="bg-app-card rounded-lg w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
-              <div className="px-8 pt-6 pb-4 border-b border-app-line/15 dark:border-[#374151]">
-                <h2 className="text-app-content text-xl font-semibold text-center">Connecting Camera to Wi-Fi</h2>
-              </div>
-              <div className="px-8 py-8 flex flex-col items-center gap-4">
-                <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
-                  <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
-                </div>
-                <p className="text-sm text-app-content-faint">This may take a few seconds</p>
-              </div>
-            </div>
-          )}
-
-        </div>
-      )}
-
-      {/* Camera Wi-Fi Success Popup */}
-      {showCameraWifiSuccess && (
-        <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-app-card rounded-lg w-[520px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
-            <div className="px-8 pt-6 pb-2">
-              <h2 className="text-app-content text-xl font-semibold">Wi-Fi configured.</h2>
-            </div>
-            <div className="px-8 py-5">
-              <p className="text-app-content-soft text-base leading-relaxed">
-                {cameraSignal === 'Wired'
-                  ? `Camera Wi-Fi has been set to use "${cameraWifiSuccessNetwork}". You can disconnect the Ethernet wire now.`
-                  : `Camera Wi-Fi has been set to use "${cameraWifiSuccessNetwork}". Change your device to the same network to reconnect.`
-                }
-              </p>
-            </div>
-            <div className="border-t border-app-line/15 dark:border-[#374151] flex">
-              <button
-                onClick={() => setShowCameraWifiSuccess(false)}
-                className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold"
-                style={{ color: SETTINGS_ACCENT_COLOR }}
-              >Ok</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Shared Camera Wi-Fi picker (select -> password -> warning -> connecting -> success) */}
+      <CameraWifiPicker
+        open={showCameraWifiPicker}
+        currentNetwork={SETTINGS_DEVICE_NETWORK}
+        isWired={cameraSignal === 'Wired'}
+        accentColor={SETTINGS_ACCENT_COLOR}
+        onCancel={() => setShowCameraWifiPicker(false)}
+        onComplete={(ssid) => { setCameraWifiNetwork(ssid); setShowCameraWifiPicker(false); }}
+      />
 
       {/* Edit Camera Password Modal */}
       {showEditPasswordModal && (() => {
