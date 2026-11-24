@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw, RefreshCw, CheckCircle } from 'lucide-react';
+import { Signal, Clock, ScanFace, Activity, Lock, Video, CircleHelp, Settings, Mic, MicOff, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowBigRight, FolderOpen, Calendar, Bell, BellOff, History, Trash2, HardDrive, Eye, EyeOff, Share2, Check, Wifi, Battery, Compass, MessageCircle, Image, Music2, AppWindow, Folder, Camera, Ruler, Search, Star, Guitar, FileText, Lightbulb, Mail, StickyNote, Grid3x3, Filter, X, Archive, Play, Pause, SkipBack, SkipForward, AlertCircle, Loader2, RotateCcw, RefreshCw, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 const splashLogo = '/assets/9c5d45d1fb550fd85085fcd4ca7fbc0d2661c54c.png';
@@ -2174,7 +2174,7 @@ function AppContent({
         {/* Prototype control — sits directly under the Logout control, outside the app design */}
         <button
           onClick={handleOnboardingSkip}
-          className="fixed top-16 left-6 z-[9999] flex items-center gap-2 text-[#9ca3af] hover:text-white transition-colors text-lg"
+          className="fixed top-[6.5rem] left-6 z-[9999] flex items-center gap-2 text-[#9ca3af] hover:text-white transition-colors text-lg"
         >
           <X className="w-5 h-5" />
           Skip
@@ -2224,7 +2224,7 @@ function AppContent({
         {/* Clock Screen Overlay */}
         {showClock && (
           <div
-            className="absolute inset-0 bg-app-surface z-30 flex items-center justify-center cursor-pointer"
+            className="dark absolute inset-0 bg-app-surface z-30 flex items-center justify-center cursor-pointer"
             onClick={() => setShowClock(false)}
           >
             {/* Wifi icon - top right */}
@@ -2284,12 +2284,12 @@ function AppContent({
             
             {/* Content area */}
             <div className="flex-1 bg-app-surface overflow-y-auto flex items-center justify-center p-12">
-              <div className="max-w-2xl text-left p-12 rounded-lg" style={{ backgroundColor: '#1E2938' }}>
+              <div className="max-w-2xl text-left p-12 rounded-lg bg-app-card dark:bg-[#1E2938] border border-app-line/15 dark:border-0">
                 <h1 className="text-app-content text-5xl font-bold mb-8">Looking for help?</h1>
                 
                 <div className="text-app-content text-2xl space-y-6">
                   <p>
-                    Visit <a href="https://support.samialert.com/hc/en-us" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#5A8BBF] hover:underline cursor-pointer text-2xl">support.samialert.com</a> where you can:
+                    Visit <a href="https://support.samialert.com/hc/en-us" target="_blank" rel="noopener noreferrer" className="font-semibold text-app-link dark:text-[#5A8BBF] hover:underline cursor-pointer text-2xl">support.samialert.com</a> where you can:
                   </p>
                   
                   <ul className="list-disc list-inside space-y-3 ml-4">
@@ -2303,8 +2303,8 @@ function AppContent({
                   </p>
                   
                   <ul className="list-disc list-inside space-y-3 ml-4">
-                    <li><a href="https://support.samialert.com/hc/en-us/articles/9207155110925-SAMi-3-Manual-Overview-of-SAMi-App-Settings-Features" target="_blank" rel="noopener noreferrer" className="text-[#5A8BBF] hover:underline cursor-pointer text-2xl">User Manual</a></li>
-                    <li><a href="https://support.samialert.com/hc/en-us/categories/8690414210445-Setup-Guides-User-Manuals" target="_blank" rel="noopener noreferrer" className="text-[#5A8BBF] hover:underline cursor-pointer text-2xl">Installation instructions</a></li>
+                    <li><a href="https://support.samialert.com/hc/en-us/articles/9207155110925-SAMi-3-Manual-Overview-of-SAMi-App-Settings-Features" target="_blank" rel="noopener noreferrer" className="text-app-link dark:text-[#5A8BBF] hover:underline cursor-pointer text-2xl">User Manual</a></li>
+                    <li><a href="https://support.samialert.com/hc/en-us/categories/8690414210445-Setup-Guides-User-Manuals" target="_blank" rel="noopener noreferrer" className="text-app-link dark:text-[#5A8BBF] hover:underline cursor-pointer text-2xl">Installation instructions</a></li>
                   </ul>
                   
                   <p
@@ -2345,7 +2345,7 @@ function AppContent({
 
             {/* Content area */}
             <div className="flex-1 bg-app-surface overflow-y-auto flex items-center justify-center p-12">
-              <div className="max-w-2xl text-center p-12 rounded-lg" style={{ backgroundColor: '#1E2938' }}>
+              <div className="max-w-2xl text-center p-12 rounded-lg bg-app-card dark:bg-[#1E2938] border border-app-line/15 dark:border-0">
                 <h1 className="text-app-content text-5xl font-bold mb-8">Looking for help?</h1>
 
                 <div className="text-app-content text-2xl">
@@ -2353,7 +2353,7 @@ function AppContent({
                     Your Device is Currently Offline.
                     <br /><br />
                     Please switch to a network with internet connectivity or visit{' '}
-                    <span className="font-semibold text-[#5A8BBF]">https://support.samialert.com</span>{' '}
+                    <span className="font-semibold text-app-link dark:text-[#5A8BBF]">https://support.samialert.com</span>{' '}
                     from another device connected to the internet.
                   </p>
                 </div>
@@ -2374,7 +2374,7 @@ function AppContent({
                   setLogProblemDescription('');
                   setEmailError('');
                 }}
-                className="text-[#5A8BBF] text-lg"
+                className="px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
               >
                 Cancel
               </button>
@@ -2400,10 +2400,10 @@ function AppContent({
                   runLogSendAttempt(1);
                 }}
                 disabled={logProblemDescription.trim().length < 10}
-                className={`text-lg font-medium ${
+                className={`px-4 py-2 bg-app-navy dark:bg-app-sunken rounded-lg text-white transition-colors ${
                   logProblemDescription.trim().length < 10
-                    ? 'text-app-content-faint opacity-50 cursor-not-allowed'
-                    : 'text-[#5A8BBF]'
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-app-navy-700 dark:hover:bg-[#4b5563]'
                 }`}
               >
                 Send
@@ -2415,7 +2415,7 @@ function AppContent({
               <div className="max-w-xl mx-auto space-y-6">
                 {/* Contact email (editable, validated on Send) */}
                 <div>
-                  <label className="block text-app-content-faint text-sm mb-2">Contact email</label>
+                  <label className="block text-app-content-faint text-sm font-bold dark:font-normal mb-2">Contact email</label>
                   <input
                     type="email"
                     value={logEmail}
@@ -2437,7 +2437,7 @@ function AppContent({
 
                 {/* Problem description (editable) */}
                 <div>
-                  <label className="block text-app-content-faint text-sm mb-2">Describe your problem</label>
+                  <label className="block text-app-content-faint text-sm font-bold dark:font-normal mb-2">Describe your problem</label>
                   <textarea
                     value={logProblemDescription}
                     onChange={(e) => setLogProblemDescription(e.target.value)}
@@ -2448,16 +2448,16 @@ function AppContent({
                   />
                   <div className="flex justify-between items-center mt-2">
                     {logProblemDescription.trim().length < 10 ? (
-                      <p className="text-app-content-faint text-sm">Minimum 10 characters</p>
+                      <p className="text-app-content-faint text-sm font-bold dark:font-normal">Minimum 10 characters</p>
                     ) : (
                       <span />
                     )}
-                    <p className="text-app-content-faint text-sm text-right">{1000 - logProblemDescription.length} characters left</p>
+                    <p className="text-app-content-faint text-sm font-bold dark:font-normal text-right">{1000 - logProblemDescription.length} characters left</p>
                   </div>
                 </div>
 
                 {/* Technical info disclaimer */}
-                <p className="text-app-content-faint text-sm">
+                <p className="text-app-content-faint text-sm font-bold dark:font-normal">
                   Sending this report includes technical information about your app and camera. By submitting, you agree to let us use this information to review your issue and respond to you.
                 </p>
               </div>
@@ -2913,7 +2913,7 @@ function AppContent({
                     setBeepOnCameraFault(false);
                     toast('Beep on camera fault is disabled');
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151] text-red-500"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-red-500"
                 >
                   Disable Beep
                 </button>
@@ -2976,7 +2976,7 @@ function AppContent({
                   </button>
                   <button
                     onClick={handleArchiveConfirmOk}
-                    className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B85555]"
+                    className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B15548] dark:text-[#B85555]"
                   >
                     OK
                   </button>
@@ -2992,7 +2992,7 @@ function AppContent({
                   </button>
                   <button
                     onClick={handleArchiveConfirmOk}
-                    className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151] text-[#B85555]"
+                    className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
                   >
                     Trash ALL
                   </button>
@@ -3043,7 +3043,7 @@ function AppContent({
                     setShowStoragePopup(false);
                     setShowAutoDeletePopup(true);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-[#374151] text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
                 >
                   Turn on Automatic-Deletion
                 </button>
@@ -3081,7 +3081,7 @@ function AppContent({
                     setShowAutoDeletePopup(false);
                     setShowStorageNotification(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-r border-app-line/15 dark:border-[#374151] text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
                 >
                   OK
                 </button>
@@ -3160,7 +3160,7 @@ function AppContent({
                     }
                     setShowDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
                 >
                   Delete
                 </button>
@@ -3202,7 +3202,7 @@ function AppContent({
                     setTimeout(() => setShowDeletedMessage(false), 3000);
                     setShowBulkDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
                 >
                   Delete
                 </button>
@@ -3241,7 +3241,7 @@ function AppContent({
                     }
                     setShowSingleDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
                 >
                   Delete
                 </button>
@@ -3506,23 +3506,21 @@ function AppContent({
                 />
                 
                 {/* Slider button */}
-                <div 
-                  className="absolute left-0 top-0 bottom-0 h-full rounded-full flex items-center justify-center transition-all duration-100"
-                  style={{ 
+                <div
+                  className="absolute left-0 top-0 bottom-0 h-full rounded-full flex items-center justify-center transition-all duration-100 bg-gradient-to-br from-[#293283] to-[#1B2266] dark:from-[#6BA3D4] dark:to-[#5890c0] shadow-[0_4px_12px_rgba(41,50,131,0.4),0_2px_4px_rgba(0,0,0,0.3)] dark:shadow-[0_4px_12px_rgba(107,163,212,0.4),0_2px_4px_rgba(0,0,0,0.3)]"
+                  style={{
                     width: `${Math.max(25, sliderPosition)}%`,
-                    minWidth: '64px',
-                    background: 'linear-gradient(135deg, #6BA3D4 0%, #5890c0 100%)',
-                    boxShadow: '0 4px 12px rgba(107, 163, 212, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)'
+                    minWidth: '64px'
                   }}
                   onMouseDown={handleSliderStart}
                   onTouchStart={handleSliderStart}
                 >
-                  <ArrowBigRight className="w-14 h-14 text-app-content fill-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
+                  <ArrowBigRight className="w-14 h-14 text-white fill-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
                 </div>
                 
                 {/* Text */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-app-content text-xl font-medium tracking-wide" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                  <span className="text-white dark:text-app-content text-xl font-medium tracking-wide" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                     Slide to unlock
                   </span>
                 </div>
@@ -3577,12 +3575,12 @@ function AppContent({
               onClick={handleVolumePickerInteraction}
             >
               {/* Mic icon at left */}
-              <Mic className="w-6 h-6 text-app-content" style={{ color: micVolume === 0 ? 'var(--app-amber)' : '#BFE3D9' }} />
+              <Mic className="w-6 h-6" style={{ color: '#BFE3D9' }} />
               
               {/* Volume slider */}
               <div className="relative flex flex-row items-center">
                 <div 
-                  className="relative h-3 w-40 bg-[#2E8266] dark:bg-[#2C3B4A] rounded-full cursor-pointer"
+                  className="relative h-3 w-40 bg-[#4D9C81] dark:bg-[#2C3B4A] rounded-full cursor-pointer"
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -3658,7 +3656,7 @@ function AppContent({
               onTouchEnd={enableAlarm && cameraPaired ? handleAlarmPressEnd : undefined}
               className={`w-full px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center h-20 ${
                 !cameraPaired || !enableAlarm
-                  ? 'bg-app-content/10 dark:bg-[#4b5563] text-app-content border-2 border-app-line/15 dark:border dark:border-transparent cursor-not-allowed'
+                  ? 'bg-white dark:bg-[#5B6C7E] text-app-content border-2 border-app-line/25 dark:border dark:border-transparent cursor-not-allowed'
                   : isPaused
                     ? 'bg-[#FCEAAD] text-app-content border-2 border-app-line/15 dark:border dark:border-transparent'
                     : cameraOn
@@ -3668,7 +3666,7 @@ function AppContent({
             >
               {!cameraPaired || !enableAlarm ? (
                 <>
-                  <Bell className="w-8 h-8 mb-1" />
+                  <BellOff className="w-8 h-8 mb-1" />
                   <span className="text-base">Off</span>
                 </>
               ) : isPaused ? (
@@ -3695,10 +3693,10 @@ function AppContent({
             <div className="flex gap-6 items-center justify-center">
               {/* Movement Meter Slider (Green) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/15 dark:border-transparent rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-[#C3C9DE] dark:bg-[#5B6C7E] border border-[#8089B3] dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div 
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#2E8266] dark:bg-[#BFE3D9]"
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#4D9C81] dark:bg-[#BFE3D9]"
                     style={{ height: `${volumeLevel}%` }}
                   />
                 </div>
@@ -3726,10 +3724,10 @@ function AppContent({
 
               {/* Time Detection Slider (Coral Red) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-app-sunken dark:bg-[#5B6C7E] border border-app-line/15 dark:border-transparent rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-[#C3C9DE] dark:bg-[#5B6C7E] border border-[#8089B3] dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#B95555] dark:bg-[#FFC7BD]"
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#B15548] dark:bg-[#FFC7BD]"
                     style={{ height: `${sensitivityLevel}%` }}
                   />
                 </div>
@@ -3784,19 +3782,19 @@ function AppContent({
               disabled={!cameraPaired}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
-                  ? 'bg-[#4b5563] cursor-not-allowed opacity-50 text-white'
-                  : micOn ? 'text-white border-2 border-app-line/15 dark:border dark:border-transparent' : 'bg-app-content/10 dark:bg-[#5B6C7E] text-app-content dark:text-white border-2 border-app-line/15 dark:border dark:border-transparent'
+                  ? 'bg-white dark:bg-[#4b5563] text-app-content dark:text-white border-2 border-app-line/25 dark:border-0 cursor-not-allowed opacity-50'
+                  : micOn ? `text-white border-2 ${micVolume === 0 ? 'border-[#6B7280]' : 'border-app-line/15'} dark:border dark:border-transparent ${micVolume !== 0 ? 'bg-[#4D9C81] dark:bg-[#BFE3D9]' : 'bg-[#FCEAAD]'}` : 'bg-white dark:bg-[#5B6C7E] text-app-content dark:text-white border-2 border-app-line/25 dark:border dark:border-transparent'
               }`}
-              style={cameraPaired && micOn ? { backgroundColor: micVolume === 0 ? '#FCEAAD' : '#BFE3D9' } : {}}
+              style={{}}
             >
               {!cameraPaired ? (
                 <MicOff className="w-8 h-8 mb-1" />
               ) : micOn ? (
-                <Mic className="w-8 h-8 mb-1 text-[#293283] dark:text-[#2C3B4A]" style={micVolume === 0 ? { color: '#FFFFFF' } : {}} />
+                <Mic className={`w-8 h-8 mb-1 ${micVolume === 0 ? 'text-[#2C3B4A]' : 'text-white dark:text-[#2C3B4A]'}`} />
               ) : (
                 <MicOff className="w-8 h-8 mb-1" />
               )}
-              <span className={`text-base ${cameraPaired && micOn && micVolume !== 0 ? 'text-[#293283] dark:text-[#2C3B4A]' : ''}`}>Mic</span>
+              <span className={`text-base ${cameraPaired && micOn ? (micVolume === 0 ? 'text-[#2C3B4A]' : 'text-white dark:text-[#2C3B4A]') : ''}`}>Mic</span>
             </button>
 
             {/* Settings button - triggers bottom panel */}
@@ -3958,9 +3956,34 @@ function PrototypeLogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className="fixed top-6 left-6 z-[9999] text-[#9ca3af] hover:text-white transition-colors text-lg disabled:opacity-60"
+      className="fixed top-16 left-6 z-[9999] text-[#9ca3af] hover:text-white transition-colors text-lg disabled:opacity-60"
     >
       {isLoggingOut ? 'Saliendo...' : 'Logout'}
+    </button>
+  );
+}
+
+// Prototype-only control — restarts the prototype from its first screen.
+// Stays fixed in the top-left corner, above Logout. Does not log the user out.
+function PrototypeRestartButton() {
+  const handleRestart = () => {
+    // Clear the prototype's saved state so it starts fresh from the first screen.
+    try {
+      localStorage.removeItem('samiPasswordHint');
+      localStorage.removeItem('samiCameraPassword');
+    } catch {
+      // Ignore storage errors (e.g. private mode / storage disabled).
+    }
+    // Reload so every piece of React state returns to its initial value.
+    window.location.reload();
+  };
+
+  return (
+    <button
+      onClick={handleRestart}
+      className="fixed top-6 left-6 z-[9999] text-[#9ca3af] hover:text-white transition-colors text-lg"
+    >
+      Restart
     </button>
   );
 }
@@ -3969,6 +3992,7 @@ export default function App() {
   const [showAnalyticsDashboard, setShowAnalyticsDashboard] = useState(false);
   return (
     <>
+      {!showAnalyticsDashboard && <PrototypeRestartButton />}
       {!showAnalyticsDashboard && <PrototypeLogoutButton />}
       <AppContent
         showAnalyticsDashboard={showAnalyticsDashboard}

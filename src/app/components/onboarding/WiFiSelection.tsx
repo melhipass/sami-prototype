@@ -148,7 +148,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 </div>
                 <button
                   onClick={() => setWifiEnabled(v => !v)}
-                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${wifiEnabled ? 'bg-app-navy' : 'bg-app-muted'}`}
+                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${wifiEnabled ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
                 >
                   <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${wifiEnabled ? 'right-1' : 'left-1'}`} />
                 </button>
@@ -160,7 +160,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 </div>
                 <button
                   onClick={() => setLocationEnabled(v => !v)}
-                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${locationEnabled ? 'bg-app-navy' : 'bg-app-muted'}`}
+                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${locationEnabled ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
                 >
                   <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${locationEnabled ? 'right-1' : 'left-1'}`} />
                 </button>

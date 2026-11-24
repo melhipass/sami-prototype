@@ -117,7 +117,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                     >
                       <Wifi className={`w-5 h-5 flex-shrink-0 ${network.strength === 3 ? 'text-app-content' : network.strength === 2 ? 'text-app-content-faint' : 'text-app-content-faint'}`} />
                       <span className="flex-1 flex items-center gap-2 min-w-0 text-left">
-                        <span className="text-base truncate" style={{ color: isSelected ? accentColor : 'white', fontWeight: isSelected ? 600 : 400 }}>{network.ssid}</span>
+                        <span className="text-base truncate" style={{ color: isSelected ? accentColor : 'var(--app-content)', fontWeight: isSelected ? 600 : 400 }}>{network.ssid}</span>
                         {isCurrent && <Star className="w-4 h-4 flex-shrink-0 text-app-amber" aria-label="Current network" />}
                       </span>
                       {isSelected
@@ -226,7 +226,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
               <p className="text-sm text-app-content-faint mb-6 text-center">Enter the password for this network</p>
               {pwError && (
                 <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl">
-                  <p className="text-app-alert dark:text-[#F08080] text-sm text-center">Incorrect password. Please try again.</p>
+                  <p className="text-app-alert dark:text-[#F08080] text-sm font-bold dark:font-normal text-center">Incorrect password. Please try again.</p>
                 </div>
               )}
               <div className="mb-6">
@@ -237,7 +237,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && password.length > 0) { setPendingPassword(password); setStep('warning'); } }}
-                    className={`w-full px-4 py-3 border rounded-xl pr-12 focus:outline-none bg-app-surface text-app-content placeholder-gray-600 ${pwError ? 'border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]'}`}
+                    className={`w-full px-4 py-3 border rounded-xl pr-12 focus:outline-none bg-app-surface text-app-content placeholder-gray-600 ${pwError ? 'border-[#B15548] dark:border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]'}`}
                     placeholder="Enter password"
                     autoFocus
                   />
@@ -301,7 +301,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 )}
                 <button
                   onClick={onCancel}
-                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B95555]"
+                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B15548] dark:text-[#B95555]"
                 >Cancel</button>
               </div>
             </div>

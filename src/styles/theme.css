@@ -69,7 +69,7 @@
      ============================================================ */
 
   /* Semantic — Light */
-  --app-surface: #EEF6FD;       /* page ground */
+  --app-surface: #E8F1FB;       /* page ground */
   --app-card: #FFFFFF;          /* raised card on the ground */
   --app-sunken: #F6F7FB;        /* wells, tracks, inset rows */
   --app-content: #293283;       /* primary text and icons */
@@ -77,9 +77,10 @@
   --app-content-faint: #5E65A2; /* labels, metadata, placeholders */
   --app-line: #293283;          /* borders — opaque; apply opacity at point of use, e.g. border-app-line/15 */
   --app-link: #3D47A0;          /* text links only, never a fill */
-  --app-quiet: #2E8266;         /* low intensity, "all was quiet" */
-  --app-amber: #C99B16;         /* medium intensity */
-  --app-alert: #E26D5C;         /* high intensity */
+  --app-quiet: #4D9C81;         /* low intensity, "all was quiet" */
+  --app-quiet-text: #27755C;    /* green for text only (WCAG AA) */
+  --app-amber: #8C6C0F;         /* medium intensity (deepened for WCAG AA) */
+  --app-alert: #B15548;         /* high intensity (unified red, WCAG AA) */
   --app-notice: #FCEAAD;        /* highlight ground (audio, consent) */
   --app-notice-ink: #756619;    /* text on notice */
   --app-tint-quiet: #F1F8F4;    /* quiet-night ground */
@@ -115,18 +116,18 @@
   --app-motion: #FF4A3A;     /* camera overlay only. Never brand. */
 
   /* Baby Monitor App Color Palette (Normal mode values) */
-  --app-accent-green: #4E9C82; /* Gentle Green family, deepened for text/icon contrast on light bg */
+  --app-accent-green: #4D9C81; /* Gentle Green family, deepened for text/icon contrast on light bg */
   --app-accent-green-dark: #3D7C66;
   --app-accent-green-hover: #356B58;
   --app-accent-yellow: #5B8BBF; /* (name is legacy; this is actually the "paused" blue) */
-  --app-accent-red: #B95555;
+  --app-accent-red: #B15548; /* (unified red, WCAG AA) */
   --app-accent-red-dark: #BD6058;
   --app-accent-blue: #5C87BE;
   --app-accent-blue-hover: #4A72A8;
   --app-accent-cyan: #5B8BBF;
-  --app-accent-teal: #4E9C82;
+  --app-accent-teal: #4D9C81;
   --app-accent-dark-red: #C67373;
-  --app-background-gradient-start: #EEF6FD;
+  --app-background-gradient-start: #E8F1FB;
   --app-background-gradient-end: #FFFFFF;
   --app-gray-inactive: #A9B8D6;
   --app-gray-border: #C9D6EA;
@@ -186,6 +187,7 @@
   --app-line: #ffffff;           /* was --app-line-1/2/3 (border-gray-700/600/800); opacity applied at point of use now approximates the old 3 solid tiers */
   --app-link: #8F9AE8;           /* not previously used in dark mode; new, unused token */
   --app-quiet: #BFE3D9;          /* was --app-status-good (raw Gentle Green, used as-is on dark bg) */
+  --app-quiet-text: #BFE3D9;     /* same as Dark --app-quiet, so Dark Mode does not change */
   --app-amber: #FCEAAD;          /* was --app-status-warning (raw Mellow Yellow, used as-is on dark bg) */
   --app-alert: #FFC7BD;          /* was --app-status-bad (raw Soft Pink, used as-is on dark bg) */
   --app-notice: #3B3216;         /* not previously used in dark mode; new, unused token */
@@ -288,6 +290,7 @@
   --color-app-line: var(--app-line);
   --color-app-link: var(--app-link);
   --color-app-quiet: var(--app-quiet);
+  --color-app-quiet-text: var(--app-quiet-text);
   --color-app-amber: var(--app-amber);
   --color-app-alert: var(--app-alert);
   --color-app-notice: var(--app-notice);

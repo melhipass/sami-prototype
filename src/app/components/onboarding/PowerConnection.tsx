@@ -19,7 +19,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
         </div>
 
         <h1 className="text-3xl mb-3 text-app-content">Verify Camera is Ready</h1>
-        <p className="text-base text-app-content-soft mx-[0px] mt-[0px] mb-[15px]">Confirm the Camera Power Light is green and that you&apos;re on the same Wi-Fi network.</p>
+        <p className="text-base font-bold dark:font-normal text-app-content-soft mx-[0px] mt-[0px] mb-[15px]">Confirm the Camera Power Light is green and that you&apos;re on the same Wi-Fi network.</p>
 
         {/* LED Status Flow */}
         <div className="w-full bg-app-card rounded-xl border border-app-amber/30 px-4 py-3 mb-4">
@@ -30,7 +30,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
             </div>
             <ArrowRight className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-[#B95555] border-2 border-[#B95555] mb-1 shadow-lg shadow-[#B95555]/50"></div>
+              <div className="w-8 h-8 rounded-full bg-[#B15548] dark:bg-[#B95555] border-2 border-[#B15548] dark:border-[#B95555] mb-1 shadow-lg shadow-[#B15548]/50 dark:shadow-[#B95555]/50"></div>
               <span className="text-xs text-app-mint-ink dark:text-app-content-faint">Red</span>
             </div>
             <ArrowRight className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
@@ -42,7 +42,7 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
         </div>
 
         <div className="bg-app-card border border-app-quiet/30 rounded-xl p-6 w-full mx-[0px] mt-[0px] mb-[20px]">
-          <p className="text-base text-app-mint-ink dark:text-app-content-soft leading-relaxed">
+          <p className="text-base font-bold dark:font-normal text-app-mint-ink dark:text-app-content-soft leading-relaxed">
             Pro tip: For better speed and a more reliable connection, leave the camera connected to the Sami Hub or your home Wi-Fi router with an Ethernet cable (LAN port).
           </p>
         </div>

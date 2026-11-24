@@ -35,7 +35,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
 
         {showError && (
           <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl">
-            <p className="text-app-alert dark:text-[#F08080] text-sm text-center">Incorrect password. Please try again.</p>
+            <p className="text-app-alert dark:text-[#F08080] text-sm font-bold dark:font-normal text-center">Incorrect password. Please try again.</p>
           </div>
         )}
 
@@ -52,7 +52,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
                 setShowError(false);
               }}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-600 ${showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5B8BBF]'}`}
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-600 ${showError ? 'border-[#B15548] focus:border-[#B15548] dark:border-[#B85555] dark:focus:border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5B8BBF]'}`}
               placeholder="Enter password"
               autoFocus
             />

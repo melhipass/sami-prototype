@@ -21,8 +21,8 @@ function generateRandomPassword(): string {
 }
 
 function getPasswordStrength(password: string): { label: string; color: string } {
-  if (password.length < 6) return { label: 'Weak', color: 'text-red-500' };
-  if (password.length < 10) return { label: 'Medium', color: 'text-yellow-500' };
+  if (password.length < 6) return { label: 'Weak', color: 'text-[#B15548] dark:text-red-500' };
+  if (password.length < 10) return { label: 'Medium', color: 'text-[#8C6C0F] dark:text-yellow-500' };
   return { label: 'Strong', color: 'text-green-500' };
 }
 
@@ -58,7 +58,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
 
         {showError && (
           <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl w-full">
-            <p className="text-app-alert dark:text-[#F08080] text-sm text-center">Wrong password. Please try again.</p>
+            <p className="text-app-alert dark:text-[#F08080] text-sm font-bold dark:font-normal text-center">Wrong password. Please try again.</p>
           </div>
         )}
 
@@ -69,7 +69,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
               value={password}
               onChange={handlePasswordChange}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-500 ${
-                showError ? 'border-[#B85555] focus:border-[#B85555]' : 'border-app-amber/30 focus:border-app-amber'
+                showError ? 'border-[#B15548] focus:border-[#B15548] dark:border-[#B85555] dark:focus:border-[#B85555]' : 'border-app-amber/30 focus:border-app-amber'
               }`}
               placeholder="Enter password"
             />
@@ -117,7 +117,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
             )}
 
             <div className="bg-app-quiet/10 border border-app-quiet/30 rounded-lg p-4 mb-6">
-              <p className="text-sm text-app-quiet text-center">
+              <p className="text-sm text-app-quiet-text text-center">
                 💡 If you're connected to this camera on another device, you can check the Camera Password in Camera Settings on that device.
               </p>
             </div>

@@ -79,11 +79,11 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
           </div>
 
           <h1 className="text-3xl mb-3 text-app-content">VPN Detected</h1>
-          <p className="text-base text-app-content-faint mb-6">Your VPN may be blocking the camera search</p>
+          <p className="text-base font-bold dark:font-normal text-app-content-faint mb-6">Your VPN may be blocking the camera search</p>
 
           <div className="w-full mb-8 bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-app-alert text-left">
+            <p className="text-sm font-bold dark:font-normal text-app-alert text-left">
               It looks like you are using a VPN. This can prevent the Sami app from having the necessary access to your local network. Please disable your VPN, then press Search Again.
             </p>
           </div>
@@ -116,11 +116,11 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
           </div>
 
           <h1 className="text-3xl mb-3 text-app-content">No Wi-Fi Connection Found</h1>
-          <p className="text-base text-app-content-faint mb-6">Your device isn't connected to a Wi-Fi network</p>
+          <p className="text-base font-bold dark:font-normal text-app-content-faint mb-6">Your device isn't connected to a Wi-Fi network</p>
 
           <div className="w-full mb-8 bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-app-alert text-left">
+            <p className="text-sm font-bold dark:font-normal text-app-alert text-left">
               No Wi-Fi connection found. Connect to your Wi-Fi network and try again
             </p>
           </div>

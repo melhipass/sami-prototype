@@ -90,13 +90,13 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
         </div>
 
         <h1 className="text-3xl mb-3 text-app-content">Create Password</h1>
-        <p className="text-base text-app-content-soft mb-8">
+        <p className="text-base font-bold dark:font-normal text-app-content-soft mb-8">
           Password must contain a capital letter, at least 4 letters and 2 numbers
         </p>
 
         <div className="mb-6 w-full space-y-4">
           <div>
-            <label className="block text-sm mb-2 text-app-content-faint text-left">
+            <label className="block text-sm mb-2 font-bold dark:font-normal text-app-content-faint text-left">
               Password: <span className="text-xs text-app-alert">(required)</span>
             </label>
             <div className="space-y-3">
@@ -127,7 +127,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           </div>
 
           <div>
-            <label className="block text-sm mb-2 text-app-content-faint text-left">
+            <label className="block text-sm mb-2 font-bold dark:font-normal text-app-content-faint text-left">
               Password Hint: <span className="text-xs text-app-content-faint">(optional)</span>
             </label>
             <input
@@ -138,7 +138,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
               className="w-full px-4 py-3 border border-app-amber/30 rounded-xl focus:outline-none focus:border-app-amber bg-app-card text-app-content placeholder-gray-500"
               placeholder="Password hint (e.g., my first pet's name)"
             />
-            <p className="text-xs text-app-content-faint mt-1 text-left">This will help you remember your password ({passwordHint.length}/30)</p>
+            <p className="text-xs font-bold dark:font-normal text-app-content-faint mt-1 text-left">This will help you remember your password ({passwordHint.length}/30)</p>
           </div>
 
           {error && (

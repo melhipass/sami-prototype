@@ -279,7 +279,7 @@ export function RecordingsScreen({
                         const timeStr = `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
                         return (
                           <>
-                            <span className="text-[#B95555]">Trashed</span>: {dateStr} {timeStr}
+                            <span className="text-[#B15548] dark:text-[#B95555]">Trashed</span>: {dateStr} {timeStr}
                           </>
                         );
                       })()
@@ -314,7 +314,7 @@ export function RecordingsScreen({
                            (HPDSAMi3.m:5528) — surfaced there as "Recording no longer
                            available" (HPDPlayerViewController.m:416). */
                         <>
-                          <AlertTriangle className="w-16 h-16 text-[#B95555]" strokeWidth={1.5} />
+                          <AlertTriangle className="w-16 h-16 text-[#B15548] dark:text-[#B95555]" strokeWidth={1.5} />
                           <h2 className="text-2xl text-app-content font-semibold">Recording no longer available</h2>
                         </>
                       ) : isWaitingForCamera ? (
@@ -328,14 +328,14 @@ export function RecordingsScreen({
 
                           <h3 className="text-xl text-app-content-faint">Downloading from Camera</h3>
 
-                          <p className="text-lg text-app-quiet">
+                          <p className="text-lg text-app-quiet-text">
                             {downloadProgress}%
                           </p>
 
                           {/* Progress Bar */}
                           <div className="w-full max-w-xs bg-app-card rounded-full h-3 overflow-hidden border border-[#FCEAAD]/30">
                             <div
-                              className="bg-[#FCEAAD] h-full rounded-full transition-all duration-300"
+                              className="bg-[#8C6C0F] dark:bg-[#FCEAAD] h-full rounded-full transition-all duration-300"
                               style={{ width: `${downloadProgress}%` }}
                             />
                           </div>
@@ -482,7 +482,7 @@ export function RecordingsScreen({
                           setShowUnarchivedMessage(true);
                           setTimeout(() => setShowUnarchivedMessage(false), 3000);
                         }}
-                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#BFE3D9] hover:bg-[#BFE3D9]/90 text-[#2C3B4A]"
+                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#4D9C81] hover:bg-[#4D9C81]/90 text-white dark:bg-[#BFE3D9] dark:hover:bg-[#BFE3D9]/90 dark:text-[#2C3B4A]"
                       >
                         <RotateCcw className="w-4 h-4" />
                         <span className="text-sm font-semibold">Restore</span>
@@ -491,7 +491,7 @@ export function RecordingsScreen({
                         onClick={() => {
                           setShowDeleteConfirmation(true);
                         }}
-                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B85555] hover:bg-[#B85555]/90 text-white"
+                        className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B15548] hover:bg-[#B15548]/90 dark:bg-[#B85555] dark:hover:bg-[#B85555]/90 text-white"
                       >
                         <X className="w-4 h-4" />
                         <span className="text-sm font-semibold">Delete</span>
@@ -523,7 +523,7 @@ export function RecordingsScreen({
                           }, 3000);
                         }
                       }}
-                      className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B95555] hover:bg-[#B95555]/90 text-white"
+                      className="px-4 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 bg-[#B15548] hover:bg-[#B15548]/90 dark:bg-[#B95555] dark:hover:bg-[#B95555]/90 text-white"
                     >
                       <Trash2 className="w-4 h-4" />
                       <span className="text-sm font-semibold">Trash</span>
@@ -533,7 +533,7 @@ export function RecordingsScreen({
 
                 {/* Right side: Tags */}
                 <div className="flex items-center gap-3 mr-5">
-                  <span className="text-app-content-faint text-sm font-medium">Tags:</span>
+                  <span className="text-app-content-faint text-sm font-bold dark:font-medium">Tags:</span>
                   <button
                     onClick={() => {
                       setAllRecordings(prev => prev.map(r =>
@@ -542,8 +542,8 @@ export function RecordingsScreen({
                     }}
                     className={`px-3 py-1.5 rounded-full transition-all backdrop-blur-sm flex items-center gap-1.5 ${
                       selectedRecording.isLocked
-                        ? 'bg-[#FFC7BD]/90 hover:bg-[#FFC7BD] text-gray-900'
-                        : 'bg-white/30 hover:bg-white/40 text-app-content'
+                        ? 'bg-[#FFC7BD]/90 hover:bg-[#FFC7BD] text-gray-900 ring-1 ring-[#6B7280] dark:ring-0'
+                        : 'bg-white hover:bg-[#F6F7FB] ring-1 ring-[#6B7280] dark:ring-0 dark:bg-white/30 dark:hover:bg-white/40 text-app-content'
                     }`}
                   >
                     <Lock className="w-3.5 h-3.5" />
@@ -557,8 +557,8 @@ export function RecordingsScreen({
                     }}
                     className={`px-3 py-1.5 rounded-full transition-all backdrop-blur-sm flex items-center gap-1.5 ${
                       selectedRecording.hasAlarm
-                        ? 'bg-[#FCEAAD]/90 hover:bg-[#FCEAAD] text-[#2C3B4A]'
-                        : 'bg-white/30 hover:bg-white/40 text-app-content'
+                        ? 'bg-[#FCEAAD]/90 hover:bg-[#FCEAAD] text-[#2C3B4A] ring-1 ring-[#6B7280] dark:ring-0'
+                        : 'bg-white hover:bg-[#F6F7FB] ring-1 ring-[#6B7280] dark:ring-0 dark:bg-white/30 dark:hover:bg-white/40 text-app-content'
                     }`}
                   >
                     <Bell className="w-3.5 h-3.5" />
@@ -672,7 +672,7 @@ export function RecordingsScreen({
                                 const timeStr = `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
                                 return (
                                   <>
-                                    <span className="text-orange-500">Archive</span>: {dateStr} {timeStr}
+                                    <span className="text-[#8C6C0F] dark:text-orange-500">Archive</span>: {dateStr} {timeStr}
                                   </>
                                 );
                               })()
@@ -756,7 +756,7 @@ export function RecordingsScreen({
                               <div className="w-0.5 h-full bg-yellow-500/40" />
                               {/* Date label at top */}
                               <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 -translate-y-full">
-                                <div className="bg-yellow-500/20 px-2 py-0.5 rounded text-xs text-yellow-400 whitespace-nowrap border border-yellow-500/30">
+                                <div className="bg-yellow-500/20 px-2 py-0.5 rounded text-xs text-[#8C6C0F] dark:text-yellow-400 whitespace-nowrap border border-yellow-500/30">
                                   {boundaryTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                 </div>
                               </div>
@@ -924,7 +924,7 @@ export function RecordingsScreen({
 
           {/* Archived Confirmation Message */}
           {showArchivedMessage && (
-            <div className="bg-[#B95555] py-3 px-6 flex items-center justify-center border-b border-app-line/8 dark:border-[#1f2937]">
+            <div className="bg-[#B15548] dark:bg-[#B95555] py-3 px-6 flex items-center justify-center border-b border-app-line/8 dark:border-[#1f2937]">
               <span className="text-white text-base font-medium">Video(s) have been Trashed</span>
             </div>
           )}
@@ -936,7 +936,7 @@ export function RecordingsScreen({
           )}
 
           {showDeletedMessage && (
-            <div className="bg-[#B85555] py-3 px-6 flex items-center justify-center border-b border-app-line/8 dark:border-[#1f2937]">
+            <div className="bg-[#B15548] dark:bg-[#B85555] py-3 px-6 flex items-center justify-center border-b border-app-line/8 dark:border-[#1f2937]">
               <span className="text-app-content text-base font-medium">Video(s) have been Deleted</span>
             </div>
           )}
@@ -944,8 +944,8 @@ export function RecordingsScreen({
           {/* Storage Warning Notification */}
           {showStorageNotification && (
             <div className="bg-app-surface py-3 px-6 flex items-center justify-center gap-2 border-b border-app-line/8 dark:border-[#1f2937]">
-              <AlertCircle className="w-5 h-5 text-[#B85555] flex-shrink-0" />
-              <span className="text-[#B85555] text-base font-medium">Out of storage! Trash some recordings, increase the storage limit in settings, or delete other content from your Mobile Device</span>
+              <AlertCircle className="w-5 h-5 text-[#B15548] dark:text-[#B85555] flex-shrink-0" />
+              <span className="text-[#B15548] dark:text-[#B85555] text-base font-medium">Out of storage! Trash some recordings, increase the storage limit in settings, or delete other content from your Mobile Device</span>
             </div>
           )}
 
@@ -958,24 +958,24 @@ export function RecordingsScreen({
                   onClick={() => setActiveFilters({ ...activeFilters, alarmOnly: !activeFilters.alarmOnly })}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.alarmOnly
-                      ? 'bg-[#FCEAAD] text-[#2C3B4A]'
-                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      ? 'bg-[#FCEAAD] text-[#2C3B4A] border border-[#6B7280] dark:border-0'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-[#6B7280] dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >Alarmed<Bell className="w-4 h-4" /></button>
                 <button
                   onClick={() => setActiveFilters({ ...activeFilters, lockedOnly: !activeFilters.lockedOnly })}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.lockedOnly
-                      ? 'bg-[#FFC7BD] text-gray-900'
-                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      ? 'bg-[#FFC7BD] text-gray-900 border border-[#6B7280] dark:border-0'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-[#6B7280] dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >Locked<Lock className="w-4 h-4" /></button>
                 <button
                   onClick={() => setActiveFilters({ ...activeFilters, longVideosOnly: !activeFilters.longVideosOnly })}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.longVideosOnly
-                      ? 'bg-[#BFE3D9] text-[#2C3B4A]'
-                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      ? 'bg-[#BFE3D9] text-[#2C3B4A] border border-[#6B7280] dark:border-0'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-[#6B7280] dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >
                   <HardDrive className="w-4 h-4" />
@@ -985,8 +985,8 @@ export function RecordingsScreen({
                   onClick={() => setActiveFilters({ ...activeFilters, last24Hours: !activeFilters.last24Hours })}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
                     activeFilters.last24Hours
-                      ? 'bg-app-navy text-white'
-                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
+                      ? 'bg-app-navy text-white border border-[#6B7280] dark:border-0'
+                      : 'bg-white dark:bg-app-sunken text-app-content-soft border border-[#6B7280] dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]'
                   }`}
                 >
                   <History className="w-4 h-4" />
@@ -1017,7 +1017,7 @@ export function RecordingsScreen({
                       setCollapsedDateGroups(new Set(allDateLabels));
                     }
                   }}
-                  className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
+                  className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 bg-white dark:bg-app-sunken text-app-content-soft border border-[#6B7280] dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
                 >
                   {(() => {
                     const allMonthLabels = Object.keys(groupedRecordings);
@@ -1050,7 +1050,7 @@ export function RecordingsScreen({
                   setIsEditingRecordings(false);
                   setSelectedRecordingIds([]);
                 }}
-                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ml-3 bg-white dark:bg-app-sunken text-app-content-soft border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
+                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ml-3 bg-white dark:bg-app-sunken text-app-content-soft border border-[#6B7280] dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563]"
               >
                 <Trash2 className="w-4 h-4" />
                 Trashed
@@ -1382,7 +1382,7 @@ export function RecordingsScreen({
 
                                 {/* Restore button behind (left side) — trash view only */}
                                 {!isEditingRecordings && showArchivedSection && (
-                                  <div className="absolute left-0 top-0 bottom-0 w-[120px] flex items-center justify-center bg-[#BFE3D9]">
+                                  <div className="absolute left-0 top-0 bottom-0 w-[120px] flex items-center justify-center bg-[#4D9C81] dark:bg-[#BFE3D9]">
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -1394,7 +1394,7 @@ export function RecordingsScreen({
                                         setShowUnarchivedMessage(true);
                                         setTimeout(() => setShowUnarchivedMessage(false), 3000);
                                       }}
-                                      className="flex flex-col items-center justify-center gap-1 text-[#2C3B4A] font-semibold w-full h-full hover:bg-[#BFE3D9]/90 transition-colors"
+                                      className="flex flex-col items-center justify-center gap-1 text-white dark:text-[#2C3B4A] font-semibold w-full h-full hover:bg-[#4D9C81]/90 dark:hover:bg-[#BFE3D9]/90 transition-colors"
                                     >
                                       <RotateCcw className="w-6 h-6" />
                                       <span className="text-sm">Restore</span>
@@ -1404,7 +1404,7 @@ export function RecordingsScreen({
 
                                 {/* Delete button behind (right side) — trash view only */}
                                 {!isEditingRecordings && showArchivedSection && (
-                                  <div className="absolute right-0 top-0 bottom-0 w-[120px] flex items-center justify-center bg-[#B95555]">
+                                  <div className="absolute right-0 top-0 bottom-0 w-[120px] flex items-center justify-center bg-[#B15548] dark:bg-[#B95555]">
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -1413,7 +1413,7 @@ export function RecordingsScreen({
                                         setTrashedSwipedId(null);
                                         setTrashedSwipeOffset(0);
                                       }}
-                                      className="flex flex-col items-center justify-center gap-1 text-white font-semibold w-full h-full hover:bg-[#B95555]/90 transition-colors"
+                                      className="flex flex-col items-center justify-center gap-1 text-white font-semibold w-full h-full hover:bg-[#B15548]/90 dark:hover:bg-[#B95555]/90 transition-colors"
                                     >
                                       <Trash2 className="w-6 h-6" />
                                       <span className="text-sm">Delete</span>
@@ -1423,7 +1423,7 @@ export function RecordingsScreen({
 
                                 {/* Archive button behind (right side) — regular view only */}
                                 {!isEditingRecordings && !showArchivedSection && (
-                                  <div className="absolute right-0 top-0 bottom-0 w-[120px] flex items-center justify-center bg-[#B95555]">
+                                  <div className="absolute right-0 top-0 bottom-0 w-[120px] flex items-center justify-center bg-[#B15548] dark:bg-[#B95555]">
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -1633,7 +1633,7 @@ export function RecordingsScreen({
                                             <span className="text-xs text-app-content-faint font-medium">Downloading...</span>
                                             <div className="w-full bg-app-card rounded-full h-1.5 overflow-hidden">
                                               <div
-                                                className="bg-[#FCEAAD] h-full rounded-full transition-all duration-300"
+                                                className="bg-[#8C6C0F] dark:bg-[#FCEAAD] h-full rounded-full transition-all duration-300"
                                                 style={{ width: `${downloadingRecordingIds.get(recording.id)}%` }}
                                               />
                                             </div>
@@ -1655,8 +1655,8 @@ export function RecordingsScreen({
                                         }}
                                       />
                                     )}
-                                    {/* Archived overlay for archived section */}
-                                    {showArchivedSection && (
+                                    {/* Archived overlay for archived section — only over a real thumbnail, not the no-thumbnail placeholder, so the placeholder design matches the Recordings list */}
+                                    {showArchivedSection && !(index < 3 && !downloadedRecordingIds.has(recording.id)) && (
                                       <div className="absolute inset-0 bg-black/40" />
                                     )}
                                   </div>
@@ -1679,7 +1679,7 @@ export function RecordingsScreen({
                                     <div className="text-app-content-faint text-sm mt-0.5">{recording.camera}</div>
                                     {/* Duration with watch progress */}
                                     {recording.watchProgress > 0 && (
-                                      <div className="w-28 h-1.5 bg-app-sunken rounded-full overflow-hidden mt-2">
+                                      <div className="w-28 h-1.5 bg-[#C3C9DE] dark:bg-app-sunken rounded-full overflow-hidden mt-2">
                                         <div
                                           className="h-full rounded-full transition-all"
                                           style={{ width: `${recording.watchProgress}%`, backgroundColor: 'var(--app-navy)' }}
@@ -1694,12 +1694,12 @@ export function RecordingsScreen({
                                     {(recording.hasAlarm || recording.isLocked) && (
                                       <div className="flex items-center gap-2">
                                         {recording.hasAlarm && (
-                                          <div className="p-2 bg-[#FCEAAD] rounded-md shadow-lg">
+                                          <div className="p-2 bg-[#FCEAAD] rounded-md shadow-lg ring-1 ring-[#6B7280] dark:ring-0">
                                             <Bell className="w-5 h-5 text-[#2C3B4A]" />
                                           </div>
                                         )}
                                         {recording.isLocked && (
-                                          <div className="p-2 bg-[#FFC7BD] rounded-md shadow-lg">
+                                          <div className="p-2 bg-[#FFC7BD] rounded-md shadow-lg ring-1 ring-[#6B7280] dark:ring-0">
                                             <Lock className="w-5 h-5 text-gray-900" />
                                           </div>
                                         )}
@@ -1792,7 +1792,7 @@ export function RecordingsScreen({
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
                           ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
-                          : 'bg-[#BFE3D9] text-[#2C3B4A] hover:bg-[#BFE3D9]/90'
+                          : 'bg-[#4D9C81] text-white hover:bg-[#4D9C81]/90 dark:bg-[#BFE3D9] dark:text-[#2C3B4A] dark:hover:bg-[#BFE3D9]/90'
                       }`}
                     >
                       <RotateCcw className="w-4 h-4" />
@@ -1808,7 +1808,7 @@ export function RecordingsScreen({
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
                           ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
-                          : 'bg-[#B85555] text-white hover:bg-[#B85555]/90'
+                          : 'bg-[#B15548] text-white hover:bg-[#B15548]/90 dark:bg-[#B85555] dark:hover:bg-[#B85555]/90'
                       }`}
                     >
                       <X className="w-4 h-4" />
@@ -1830,7 +1830,7 @@ export function RecordingsScreen({
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
                           ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
-                          : 'bg-[#FFC7BD] text-gray-900 hover:bg-[#FFC7BD]/90'
+                          : 'bg-[#FFC7BD] text-gray-900 hover:bg-[#FFC7BD]/90 ring-1 ring-[#6B7280] dark:ring-0'
                       }`}
                     >
                       <Lock className="w-4 h-4" />
@@ -1848,7 +1848,7 @@ export function RecordingsScreen({
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
                           ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
-                          : 'bg-[#FCEAAD] text-[#2C3B4A] hover:bg-[#FCEAAD]/90'
+                          : 'bg-[#FCEAAD] text-[#2C3B4A] hover:bg-[#FCEAAD]/90 ring-1 ring-[#6B7280] dark:ring-0'
                       }`}
                     >
                       <Bell className="w-4 h-4" />
@@ -1886,7 +1886,7 @@ export function RecordingsScreen({
                       className={`px-4 py-1.5 rounded text-sm transition-colors flex items-center gap-2 ${
                         selectedRecordingIds.length === 0
                           ? 'bg-app-sunken text-app-content-faint border border-app-line/15 dark:border-transparent cursor-not-allowed'
-                          : 'bg-[#B95555] text-white hover:bg-[#B95555]/90'
+                          : 'bg-[#B15548] text-white hover:bg-[#B15548]/90 dark:bg-[#B95555] dark:hover:bg-[#B95555]/90 ring-1 ring-[#6B7280] dark:ring-0'
                       }`}
                     >
                       <Trash2 className="w-4 h-4" />

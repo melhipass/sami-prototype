@@ -28,7 +28,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
         </div>
 
         <h1 className="text-3xl mb-3 text-app-content">Setup Guide</h1>
-        <p className="text-base text-app-content-soft mx-[0px] mt-[0px] mb-[20px]">
+        <p className="text-base font-bold dark:font-normal text-app-content-soft mx-[0px] mt-[0px] mb-[20px]">
           We recommend reading the setup guide for your connection method before continuing.
         </p>
 

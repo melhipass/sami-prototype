@@ -79,7 +79,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                   id={`disclaimer-${index}`}
                   onClick={() => toggleDisclaimer(index)}
                   className={`mt-1 w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                    acceptedDisclaimers[index] ? 'bg-app-navy' : 'bg-app-content/10 dark:bg-[#4b5563]'
+                    acceptedDisclaimers[index] ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-[#4b5563]'
                   }`}
                 >
                   <div
@@ -95,7 +95,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
 
         {/* Accepted / remaining counter (disclaimer toggles only) */}
         <p
-          className={`w-full text-center text-sm mb-6 ${
+          className={`w-full text-center text-sm mb-6 font-bold dark:font-normal ${
             allDisclaimersAccepted
               ? 'text-app-mint-ink dark:text-[#BFE3D9]'
               : 'text-app-content-faint'

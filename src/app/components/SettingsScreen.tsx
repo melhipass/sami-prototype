@@ -498,7 +498,7 @@ export function SettingsScreen({
       setShowBadPasswordPopup(true);
     }
   };
-  const cameraStatusColor = cameraStatus === 'Online' ? 'var(--app-quiet)'
+  const cameraStatusColor = cameraStatus === 'Online' ? 'var(--app-quiet-text)'
     : cameraStatus === 'Bad Password' || cameraStatus === 'Camera needs power cycling' || cameraStatus === 'Offline' ? 'var(--app-alert)'
     : 'var(--app-amber)'; // Updating..., Connecting, Waiting for camera to start
   // Only Camera Status is shown for every state; Camera Password is also shown for Bad Password/Offline;
@@ -517,6 +517,11 @@ export function SettingsScreen({
   const cameraSignalColor = cameraSignal === 'Excellent' ? 'var(--app-quiet)'
     : cameraSignal === 'Ok' ? 'var(--app-amber)'
     : cameraSignal === 'Wired' ? 'var(--app-quiet)'
+    : 'var(--app-alert)'; // Bad, Poor, NONE
+  // Same as cameraSignalColor but for TEXT: green branches use the darker, WCAG-AA text green.
+  const cameraSignalTextColor = cameraSignal === 'Excellent' ? 'var(--app-quiet-text)'
+    : cameraSignal === 'Ok' ? 'var(--app-amber)'
+    : cameraSignal === 'Wired' ? 'var(--app-quiet-text)'
     : 'var(--app-alert)'; // Bad, Poor, NONE
 
   // Internet Viewing screen
@@ -744,7 +749,7 @@ export function SettingsScreen({
 
   const overallScheduleSummary = (): { text: string; color: string } => {
     if (schedules.every(s => !s.enabled)) return { text: 'Disabled', color: 'var(--app-alert)' };
-    if (schedules.some(s => s.enabled && s.allDay && s.days.every(Boolean))) return { text: 'All day, Everyday', color: 'var(--app-quiet)' };
+    if (schedules.some(s => s.enabled && s.allDay && s.days.every(Boolean))) return { text: 'All day, Everyday', color: 'var(--app-quiet-text)' };
     return { text: 'Custom', color: 'var(--app-amber)' };
   };
 
@@ -920,7 +925,7 @@ export function SettingsScreen({
                 <button
                   onClick={handleEnableAlarmToggle}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    enableAlarm ? '' : 'bg-app-muted'
+                    enableAlarm ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={enableAlarm ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -938,7 +943,7 @@ export function SettingsScreen({
                 <div className="flex items-center gap-3 flex-1 justify-end">
                   <button
                     onClick={() => setMotionThresholdSetting(Math.max(0, motionThresholdSetting - 1))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     −
                   </button>
@@ -966,7 +971,7 @@ export function SettingsScreen({
                   </div>
                   <button
                     onClick={() => setMotionThresholdSetting(Math.min(100, motionThresholdSetting + 1))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     +
                   </button>
@@ -980,7 +985,7 @@ export function SettingsScreen({
                 <div className="flex items-center gap-3 flex-1 justify-end">
                   <button
                     onClick={() => setAlarmThresholdSetting(decrementAlarmThreshold(alarmThresholdSetting))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     −
                   </button>
@@ -1008,7 +1013,7 @@ export function SettingsScreen({
                   </div>
                   <button
                     onClick={() => setAlarmThresholdSetting(incrementAlarmThreshold(alarmThresholdSetting))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     +
                   </button>
@@ -1024,7 +1029,7 @@ export function SettingsScreen({
                 <div className="flex items-center gap-3 flex-1 justify-end">
                   <button
                     onClick={() => setSensitivityBoost(Math.max(0, sensitivityBoost - 1))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     −
                   </button>
@@ -1052,7 +1057,7 @@ export function SettingsScreen({
                   </div>
                   <button
                     onClick={() => setSensitivityBoost(Math.min(100, sensitivityBoost + 1))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     +
                   </button>
@@ -1066,7 +1071,7 @@ export function SettingsScreen({
                 <div className="flex items-center gap-3 flex-1 justify-end">
                   <button
                     onClick={() => setMaxPauseTime(decrementMaxPauseTime(maxPauseTime))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     −
                   </button>
@@ -1094,7 +1099,7 @@ export function SettingsScreen({
                   </div>
                   <button
                     onClick={() => setMaxPauseTime(incrementMaxPauseTime(maxPauseTime))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     +
                   </button>
@@ -1110,7 +1115,7 @@ export function SettingsScreen({
                 <button
                   onClick={handleSmartBorderToggle}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    smartBorder ? '' : 'bg-app-muted'
+                    smartBorder ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={smartBorder ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -1128,7 +1133,7 @@ export function SettingsScreen({
                 <button
                   onClick={() => handleBeepOnCameraFaultToggle(!beepOnCameraFault)}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    beepOnCameraFault ? '' : 'bg-app-muted'
+                    beepOnCameraFault ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={beepOnCameraFault ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -1146,7 +1151,7 @@ export function SettingsScreen({
                 <button
                   onClick={() => handleBeepOnAppNotActiveToggle(!beepOnAppNotActive)}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    beepOnAppNotActive ? '' : 'bg-app-muted'
+                    beepOnAppNotActive ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={beepOnAppNotActive ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -1172,7 +1177,7 @@ export function SettingsScreen({
                   <button
                     onClick={() => setEnableAlarmSchedule(!enableAlarmSchedule)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      enableAlarmSchedule ? '' : 'bg-app-muted'
+                      enableAlarmSchedule ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                     }`}
                     style={enableAlarmSchedule ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
@@ -1222,7 +1227,7 @@ export function SettingsScreen({
                 <div className="flex items-center gap-3 flex-1 justify-end">
                   <button
                     onClick={() => setAlarmVolume(Math.max(0, alarmVolume - 1))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     −
                   </button>
@@ -1250,7 +1255,7 @@ export function SettingsScreen({
                   </div>
                   <button
                     onClick={() => setAlarmVolume(Math.min(100, alarmVolume + 1))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     +
                   </button>
@@ -1289,7 +1294,7 @@ export function SettingsScreen({
                 <div className="flex items-center gap-3 flex-1 justify-end">
                   <button
                     onClick={() => setAlarmDuration(decrementAlarmDuration(alarmDuration))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     −
                   </button>
@@ -1317,7 +1322,7 @@ export function SettingsScreen({
                   </div>
                   <button
                     onClick={() => setAlarmDuration(incrementAlarmDuration(alarmDuration))}
-                    className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                    className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                   >
                     +
                   </button>
@@ -1331,7 +1336,7 @@ export function SettingsScreen({
                 <button
                   onClick={() => setVibrateOnAlarm(!vibrateOnAlarm)}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    vibrateOnAlarm ? '' : 'bg-app-muted'
+                    vibrateOnAlarm ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={vibrateOnAlarm ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -1355,7 +1360,7 @@ export function SettingsScreen({
                     }
                   }}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    microphoneBoost ? '' : 'bg-app-muted'
+                    microphoneBoost ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={microphoneBoost ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -1379,7 +1384,7 @@ export function SettingsScreen({
                     }
                   }}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    microphoneNoiseReduction ? '' : 'bg-app-muted'
+                    microphoneNoiseReduction ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                   }`}
                   style={microphoneNoiseReduction ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
@@ -1405,7 +1410,7 @@ export function SettingsScreen({
                   <button
                     onClick={() => setScreenTimeoutToClock(!screenTimeoutToClock)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      screenTimeoutToClock ? '' : 'bg-app-muted'
+                      screenTimeoutToClock ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                     }`}
                     style={screenTimeoutToClock ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
@@ -1423,7 +1428,7 @@ export function SettingsScreen({
                   <div className="flex items-center gap-3 flex-1 justify-end">
                     <button
                       onClick={() => setTimeoutDelay(decrementTimeoutDelay(timeoutDelay))}
-                      className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                      className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                     >
                       −
                     </button>
@@ -1451,7 +1456,7 @@ export function SettingsScreen({
                     </div>
                     <button
                       onClick={() => setTimeoutDelay(incrementTimeoutDelay(timeoutDelay))}
-                      className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                      className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                     >
                       +
                     </button>
@@ -1474,7 +1479,7 @@ export function SettingsScreen({
                   <button
                     onClick={() => setEnableAutoRecording(!enableAutoRecording)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      enableAutoRecording ? '' : 'bg-app-muted'
+                      enableAutoRecording ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                     }`}
                     style={enableAutoRecording ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
@@ -1492,7 +1497,7 @@ export function SettingsScreen({
                   <div className="flex items-center gap-3 flex-1 justify-end">
                     <button
                       onClick={() => setStorageLimit(Math.max(1, storageLimit - 1))}
-                      className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                      className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                     >
                       −
                     </button>
@@ -1520,7 +1525,7 @@ export function SettingsScreen({
                     </div>
                     <button
                       onClick={() => setStorageLimit(Math.min(500, storageLimit + 1))}
-                      className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                      className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                     >
                       +
                     </button>
@@ -1540,7 +1545,7 @@ export function SettingsScreen({
                       }
                     }}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      autoDeleteOlderVideos ? '' : 'bg-app-muted'
+                      autoDeleteOlderVideos ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                     }`}
                     style={autoDeleteOlderVideos ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
@@ -1568,7 +1573,7 @@ export function SettingsScreen({
                   <button
                     onClick={() => setAlwaysAllowMobileData(!alwaysAllowMobileData)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      alwaysAllowMobileData ? '' : 'bg-app-muted'
+                      alwaysAllowMobileData ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                     }`}
                     style={alwaysAllowMobileData ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
@@ -1595,7 +1600,7 @@ export function SettingsScreen({
                   <button
                     onClick={() => setEnableSentData(!enableSentData)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      enableSentData ? '' : 'bg-app-muted'
+                      enableSentData ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                     }`}
                     style={enableSentData ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
@@ -1622,7 +1627,7 @@ export function SettingsScreen({
                     <button
                       onClick={() => setDisplayData(!displayData)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        displayData ? '' : 'bg-app-muted'
+                        displayData ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                       }`}
                       style={displayData ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
@@ -1640,7 +1645,7 @@ export function SettingsScreen({
                     <button
                       onClick={() => setRapidTestMode(!rapidTestMode)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        rapidTestMode ? '' : 'bg-app-muted'
+                        rapidTestMode ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                       }`}
                       style={rapidTestMode ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
@@ -1658,7 +1663,7 @@ export function SettingsScreen({
                     <button
                       onClick={() => setBurningMode(!burningMode)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        burningMode ? '' : 'bg-app-muted'
+                        burningMode ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                       }`}
                       style={burningMode ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
@@ -1676,7 +1681,7 @@ export function SettingsScreen({
                     <div className="flex items-center gap-3 flex-1 justify-end">
                       <button
                         onClick={() => setMinWifiQuality(Math.max(50, minWifiQuality - 1))}
-                        className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                        className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                       >
                         −
                       </button>
@@ -1704,7 +1709,7 @@ export function SettingsScreen({
                       </div>
                       <button
                         onClick={() => setMinWifiQuality(Math.min(150, minWifiQuality + 1))}
-                        className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
+                        className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content"
                       >
                         +
                       </button>
@@ -1718,7 +1723,7 @@ export function SettingsScreen({
                     <button
                       onClick={() => setDevAWS(!devAWS)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        devAWS ? '' : 'bg-app-muted'
+                        devAWS ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'
                       }`}
                       style={devAWS ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
@@ -1796,7 +1801,7 @@ export function SettingsScreen({
                 </div>
                 <button
                   onClick={handleEraseAllContent}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-500 text-app-content rounded-lg transition-colors whitespace-nowrap font-semibold text-sm"
+                  className="px-4 py-2 bg-[#B15548] hover:bg-[#B15548]/90 dark:bg-red-600 dark:hover:bg-red-500 text-white rounded-lg transition-colors whitespace-nowrap font-semibold text-sm"
                 >
                   Erase All Content
                 </button>
@@ -1837,7 +1842,7 @@ export function SettingsScreen({
             <div className="border-t border-app-line/15 dark:border-[#374151] grid grid-cols-2">
               <button
                 onClick={handleConfirmEraseAllContent}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-red-500"
+                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-red-500"
               >
                 Erase All
               </button>
@@ -1872,7 +1877,7 @@ export function SettingsScreen({
             <div className="border-t border-app-line/15 dark:border-[#374151] grid grid-cols-2">
               <button
                 onClick={handleConfirmResetAllAppSettings}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-red-500"
+                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-red-500"
               >
                 Reset
               </button>
@@ -1980,7 +1985,7 @@ export function SettingsScreen({
             <div className="border-t border-app-line/15 dark:border-[#374151] grid grid-cols-2">
               <button
                 onClick={() => closeSilentSwitchPopup('disable')}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-red-500"
+                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-red-500"
               >
                 Disable
               </button>
@@ -2119,7 +2124,7 @@ export function SettingsScreen({
                       </button>
                       <button
                         onClick={() => setShowRemoveCameraConfirm(true)}
-                        className="px-4 py-2 bg-[#B95555] hover:bg-[#B95555]/80 text-white rounded transition-colors text-sm"
+                        className="px-4 py-2 bg-[#B15548] hover:bg-[#B15548]/80 dark:bg-[#B95555] dark:hover:bg-[#B95555]/80 text-white rounded transition-colors text-sm"
                       >Remove</button>
                     </div>
                   </div>
@@ -2168,7 +2173,7 @@ export function SettingsScreen({
                               <circle cx="12" cy="20" r="1.5" fill={cameraSignalColor} />
                             </svg>
                           )}
-                          <span className="text-sm font-medium" style={{ color: cameraSignalColor }}>
+                          <span className="text-sm font-medium" style={{ color: cameraSignalTextColor }}>
                             {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
                           </span>
                         </button>
@@ -2244,7 +2249,7 @@ export function SettingsScreen({
                         <div className="flex items-center">
                           <span className="text-app-content text-lg w-48">Record Threshold</span>
                           <div className="flex items-center gap-3 flex-1 justify-end">
-                            <button disabled={rtDisabled} onClick={() => { const v = Math.max(0, recordThreshold - 5); setRecordThreshold(v); attemptSaveRecordThreshold(v); }} className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content disabled:cursor-not-allowed">−</button>
+                            <button disabled={rtDisabled} onClick={() => { const v = Math.max(0, recordThreshold - 5); setRecordThreshold(v); attemptSaveRecordThreshold(v); }} className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content disabled:cursor-not-allowed">−</button>
                             <div className="relative w-64">
                               <div className="h-1 bg-app-sunken rounded-full overflow-hidden">
                                 <div className="h-full transition-all duration-200" style={{ width: `${recordThreshold}%`, backgroundColor: 'var(--app-slider-accent)' }} />
@@ -2252,7 +2257,7 @@ export function SettingsScreen({
                               <input type="range" min="0" max="100" step="5" disabled={rtDisabled} value={recordThreshold} onChange={(e) => { setRecordThresholdError(false); setRecordThreshold(Number(e.target.value)); }} onMouseUp={(e) => attemptSaveRecordThreshold(Number((e.target as HTMLInputElement).value))} onTouchEnd={(e) => attemptSaveRecordThreshold(Number((e.target as HTMLInputElement).value))} className={`absolute top-0 left-0 w-full h-1 opacity-0 ${rtDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`} style={{ margin: 0 }} />
                               <div className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full border-2 pointer-events-none shadow-lg" style={{ left: `calc(${recordThreshold}% - 10px)`, borderColor: 'var(--app-slider-accent)' }} />
                             </div>
-                            <button disabled={rtDisabled} onClick={() => { const v = Math.min(100, recordThreshold + 5); setRecordThreshold(v); attemptSaveRecordThreshold(v); }} className="w-8 h-8 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content disabled:cursor-not-allowed">+</button>
+                            <button disabled={rtDisabled} onClick={() => { const v = Math.min(100, recordThreshold + 5); setRecordThreshold(v); attemptSaveRecordThreshold(v); }} className="w-8 h-8 bg-[#EAEBF3] dark:bg-app-sunken hover:bg-[#D9DEEB] dark:hover:bg-[#4b5563] rounded flex items-center justify-center text-app-content disabled:cursor-not-allowed">+</button>
                             <span className="text-app-content w-[80px] text-right">{recordThreshold}%</span>
                           </div>
                         </div>
@@ -2274,7 +2279,7 @@ export function SettingsScreen({
                     <span className="text-app-content text-base">SD Card</span>
                     <div className="flex items-center gap-4">
                       <button onClick={cycleSDStatus} className="hover:opacity-70 transition-opacity" title="Tap to cycle SD states (demo)">
-                        <span className="text-base font-medium" style={{ color: sdStatus === 'Missing!' ? 'var(--app-alert)' : sdStatus === 'Reading...' ? 'var(--app-amber)' : sdStatus === 'Blank' ? 'var(--app-amber)' : 'var(--app-quiet)' }}>{sdStatus}</span>
+                        <span className="text-base font-medium" style={{ color: sdStatus === 'Missing!' ? 'var(--app-alert)' : sdStatus === 'Reading...' ? 'var(--app-amber)' : sdStatus === 'Blank' ? 'var(--app-amber)' : 'var(--app-quiet-text)' }}>{sdStatus}</span>
                       </button>
                       <button onClick={() => setSdPopup('confirm-format')} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Format</button>
                     </div>
@@ -2290,7 +2295,7 @@ export function SettingsScreen({
                   <div className="flex items-center justify-between py-4 border-b border-app-line/15 dark:border-[#374151]">
                     <span className="text-app-content text-base">Internet Viewing</span>
                     <div className="flex items-center gap-4">
-                      <span className="font-medium text-base" style={{ color: internetViewingEnabled ? 'var(--app-quiet)' : 'var(--app-alert)' }}>{internetViewingEnabled ? 'Enabled' : 'Disabled'}</span>
+                      <span className="font-medium text-base" style={{ color: internetViewingEnabled ? 'var(--app-quiet-text)' : 'var(--app-alert)' }}>{internetViewingEnabled ? 'Enabled' : 'Disabled'}</span>
                       <button
                         onClick={openIVScreen}
                         className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90"
@@ -2304,7 +2309,7 @@ export function SettingsScreen({
                     <span className="text-app-content text-base">Power Light Flash on Internet Viewer</span>
                     <button
                       onClick={() => setPowerLightFlash(!powerLightFlash)}
-                      className={`w-14 h-8 rounded-full transition-colors relative ${powerLightFlash ? '' : 'bg-app-muted'}`}
+                      className={`w-14 h-8 rounded-full transition-colors relative ${powerLightFlash ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
                       style={powerLightFlash ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
                       <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${powerLightFlash ? 'right-1' : 'left-1'}`} />
@@ -2320,7 +2325,7 @@ export function SettingsScreen({
                         <button onClick={() => { if (!ipSaveError) { setIpEditorMode(ipMode); setIpEditorConfig({ ...ipConfig }); } setIpSaveError(false); setIpErrors({}); setShowIpEditor(true); }} className="px-4 py-2 text-white rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
                       </div>
                     </div>
-                    {ipRestartMsg && <p className="text-sm mt-2" style={{ color: 'var(--app-quiet)' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
+                    {ipRestartMsg && <p className="text-sm mt-2" style={{ color: 'var(--app-quiet-text)' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
                     {ipSaveError && <p className="text-sm mt-2" style={{ color: 'var(--app-alert)' }}>Couldn't save network settings, camera didn't respond.</p>}
                   </div>
                 </div>
@@ -2781,7 +2786,7 @@ export function SettingsScreen({
                   setShowCameraSettings(false);
                   setShowRemoveCameraConfirm(false);
                 }}
-                className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B95555]"
+                className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B15548] dark:text-[#B95555]"
               >
                 Remove
               </button>
@@ -2889,7 +2894,7 @@ export function SettingsScreen({
                         : [true,true,true,true,true,true,true] as Schedule['days'];
                       setEditingSchedule({ ...editingSchedule, enabled: nowEnabled, days: newDays });
                     }}
-                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.enabled ? '' : 'bg-app-muted'}`}
+                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.enabled ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
                     style={editingSchedule.enabled ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${editingSchedule.enabled ? 'right-1' : 'left-1'}`} />
@@ -2908,7 +2913,7 @@ export function SettingsScreen({
                         endHour: newAllDay ? 12 : 7, endMinute: 0, endPeriod: newAllDay ? 'PM' : 'AM',
                       });
                     }}
-                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.allDay ? '' : 'bg-app-muted'}`}
+                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.allDay ? '' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
                     style={editingSchedule.allDay ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${editingSchedule.allDay ? 'right-1' : 'left-1'}`} />
@@ -3072,7 +3077,7 @@ export function SettingsScreen({
               <button
                 onClick={handleIVToggle}
                 disabled={ivToggleBusy}
-                className={`w-14 h-8 rounded-full transition-colors relative ${ivToggleBusy ? 'opacity-50 cursor-not-allowed' : ''} ${!internetViewingEnabled ? 'bg-app-muted' : ''}`}
+                className={`w-14 h-8 rounded-full transition-colors relative ${ivToggleBusy ? 'opacity-50 cursor-not-allowed' : ''} ${!internetViewingEnabled ? 'bg-[#8089B3] dark:bg-[#9ca3af]' : ''}`}
                 style={internetViewingEnabled ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
               >
                 <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${internetViewingEnabled ? 'right-1' : 'left-1'}`} />
@@ -3097,7 +3102,7 @@ export function SettingsScreen({
                   <span className="text-app-content text-base">Status - touch to check again</span>
                   <div className="flex items-center gap-2">
                     <span className="text-base font-medium" style={{
-                      color: ivStatus === 'Online' ? 'var(--app-quiet)'
+                      color: ivStatus === 'Online' ? 'var(--app-quiet-text)'
                         : ivStatus === 'Checking...' ? 'var(--app-amber)'
                         : ivStatus === '---' ? '#888'
                         : 'var(--app-alert)'
@@ -3853,7 +3858,7 @@ export function SettingsScreen({
                   )}
 
                   <div className="bg-app-quiet/10 border border-app-quiet/30 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-app-quiet text-center">
+                    <p className="text-sm text-app-quiet-text text-center">
                       💡 If you're connected to this camera on another device, you can check the Camera Password in Camera Settings on that device.
                     </p>
                   </div>

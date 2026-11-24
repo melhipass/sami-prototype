@@ -37,7 +37,7 @@ export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestPro
 
         <h2 className="text-2xl mb-4 text-app-content">Testing Camera Connection</h2>
 
-        <p className="text-lg text-app-quiet mb-8">
+        <p className="text-lg text-app-quiet-text mb-8">
           Step {attempt} of {maxAttempts}
         </p>
 

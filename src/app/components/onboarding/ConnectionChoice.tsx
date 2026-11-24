@@ -31,7 +31,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-app-content">Sami Hub</h3>
-                  <span className="text-xs text-app-quiet bg-app-quiet/20 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-app-quiet-text bg-app-quiet/20 px-2 py-0.5 rounded-full">
                     Recommended
                   </span>
                 </div>
