@@ -342,6 +342,10 @@
 /* Dark Mode 2: date chips in the Recordings list use the brand Dark Blue */
 .dark.dark2 .date-chip { background-color: #293283; }
 
+/* Dark Mode 2: Settings toggles use the same OFF colors as the onboarding toggles */
+.dark.dark2 .toggle-off-track { background-color: var(--app-toggle-off); }
+.dark.dark2 .toggle-off-thumb { background-color: #FFFFFF; }
+
 /* Dark Mode 2 only: ink on the active Border/Motion labels (Main View). Kept as a scoped rule so Dark Mode 1 keeps the white/80 label unchanged. */
 .dark.dark2 .main-active-label {
   color: #293283;

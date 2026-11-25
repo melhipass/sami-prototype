@@ -925,13 +925,13 @@ export function SettingsScreen({
                 <button
                   onClick={handleEnableAlarmToggle}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    enableAlarm ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    enableAlarm ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={enableAlarm ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      enableAlarm ? 'right-1' : 'left-1'
+                      enableAlarm ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1115,13 +1115,13 @@ export function SettingsScreen({
                 <button
                   onClick={handleSmartBorderToggle}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    smartBorder ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    smartBorder ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={smartBorder ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      smartBorder ? 'right-1' : 'left-1'
+                      smartBorder ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1133,13 +1133,13 @@ export function SettingsScreen({
                 <button
                   onClick={() => handleBeepOnCameraFaultToggle(!beepOnCameraFault)}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    beepOnCameraFault ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    beepOnCameraFault ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={beepOnCameraFault ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      beepOnCameraFault ? 'right-1' : 'left-1'
+                      beepOnCameraFault ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1151,13 +1151,13 @@ export function SettingsScreen({
                 <button
                   onClick={() => handleBeepOnAppNotActiveToggle(!beepOnAppNotActive)}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    beepOnAppNotActive ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    beepOnAppNotActive ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={beepOnAppNotActive ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      beepOnAppNotActive ? 'right-1' : 'left-1'
+                      beepOnAppNotActive ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1177,13 +1177,13 @@ export function SettingsScreen({
                   <button
                     onClick={() => setEnableAlarmSchedule(!enableAlarmSchedule)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      enableAlarmSchedule ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                      enableAlarmSchedule ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                     }`}
                     style={enableAlarmSchedule ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div
                       className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                        enableAlarmSchedule ? 'right-1' : 'left-1'
+                        enableAlarmSchedule ? 'right-1' : 'left-1 toggle-off-thumb'
                       }`}
                     />
                   </button>
@@ -1336,13 +1336,13 @@ export function SettingsScreen({
                 <button
                   onClick={() => setVibrateOnAlarm(!vibrateOnAlarm)}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    vibrateOnAlarm ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    vibrateOnAlarm ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={vibrateOnAlarm ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      vibrateOnAlarm ? 'right-1' : 'left-1'
+                      vibrateOnAlarm ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1360,13 +1360,13 @@ export function SettingsScreen({
                     }
                   }}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    microphoneBoost ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    microphoneBoost ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={microphoneBoost ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      microphoneBoost ? 'right-1' : 'left-1'
+                      microphoneBoost ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1384,13 +1384,13 @@ export function SettingsScreen({
                     }
                   }}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
-                    microphoneNoiseReduction ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                    microphoneNoiseReduction ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                   }`}
                   style={microphoneNoiseReduction ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                      microphoneNoiseReduction ? 'right-1' : 'left-1'
+                      microphoneNoiseReduction ? 'right-1' : 'left-1 toggle-off-thumb'
                     }`}
                   />
                 </button>
@@ -1410,13 +1410,13 @@ export function SettingsScreen({
                   <button
                     onClick={() => setScreenTimeoutToClock(!screenTimeoutToClock)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      screenTimeoutToClock ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                      screenTimeoutToClock ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                     }`}
                     style={screenTimeoutToClock ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div
                       className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                        screenTimeoutToClock ? 'right-1' : 'left-1'
+                        screenTimeoutToClock ? 'right-1' : 'left-1 toggle-off-thumb'
                       }`}
                     />
                   </button>
@@ -1479,13 +1479,13 @@ export function SettingsScreen({
                   <button
                     onClick={() => setEnableAutoRecording(!enableAutoRecording)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      enableAutoRecording ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                      enableAutoRecording ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                     }`}
                     style={enableAutoRecording ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div
                       className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                        enableAutoRecording ? 'right-1' : 'left-1'
+                        enableAutoRecording ? 'right-1' : 'left-1 toggle-off-thumb'
                       }`}
                     />
                   </button>
@@ -1545,13 +1545,13 @@ export function SettingsScreen({
                       }
                     }}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      autoDeleteOlderVideos ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                      autoDeleteOlderVideos ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                     }`}
                     style={autoDeleteOlderVideos ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div
                       className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                        autoDeleteOlderVideos ? 'right-1' : 'left-1'
+                        autoDeleteOlderVideos ? 'right-1' : 'left-1 toggle-off-thumb'
                       }`}
                     />
                   </button>
@@ -1573,13 +1573,13 @@ export function SettingsScreen({
                   <button
                     onClick={() => setAlwaysAllowMobileData(!alwaysAllowMobileData)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      alwaysAllowMobileData ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                      alwaysAllowMobileData ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                     }`}
                     style={alwaysAllowMobileData ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div
                       className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                        alwaysAllowMobileData ? 'right-1' : 'left-1'
+                        alwaysAllowMobileData ? 'right-1' : 'left-1 toggle-off-thumb'
                       }`}
                     />
                   </button>
@@ -1600,13 +1600,13 @@ export function SettingsScreen({
                   <button
                     onClick={() => setEnableSentData(!enableSentData)}
                     className={`w-14 h-8 rounded-full transition-colors relative ${
-                      enableSentData ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                      enableSentData ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                     }`}
                     style={enableSentData ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
                     <div
                       className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                        enableSentData ? 'right-1' : 'left-1'
+                        enableSentData ? 'right-1' : 'left-1 toggle-off-thumb'
                       }`}
                     />
                   </button>
@@ -1627,13 +1627,13 @@ export function SettingsScreen({
                     <button
                       onClick={() => setDisplayData(!displayData)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        displayData ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                        displayData ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                       }`}
                       style={displayData ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
                       <div
                         className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                          displayData ? 'translate-x-7' : 'translate-x-1'
+                          displayData ? 'translate-x-7' : 'translate-x-1 toggle-off-thumb'
                         }`}
                       />
                     </button>
@@ -1645,13 +1645,13 @@ export function SettingsScreen({
                     <button
                       onClick={() => setRapidTestMode(!rapidTestMode)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        rapidTestMode ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                        rapidTestMode ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                       }`}
                       style={rapidTestMode ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
                       <div
                         className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                          rapidTestMode ? 'translate-x-7' : 'translate-x-1'
+                          rapidTestMode ? 'translate-x-7' : 'translate-x-1 toggle-off-thumb'
                         }`}
                       />
                     </button>
@@ -1663,13 +1663,13 @@ export function SettingsScreen({
                     <button
                       onClick={() => setBurningMode(!burningMode)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        burningMode ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                        burningMode ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                       }`}
                       style={burningMode ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
                       <div
                         className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                          burningMode ? 'translate-x-7' : 'translate-x-1'
+                          burningMode ? 'translate-x-7' : 'translate-x-1 toggle-off-thumb'
                         }`}
                       />
                     </button>
@@ -1723,13 +1723,13 @@ export function SettingsScreen({
                     <button
                       onClick={() => setDevAWS(!devAWS)}
                       className={`w-14 h-8 rounded-full transition-colors relative ${
-                        devAWS ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'
+                        devAWS ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'
                       }`}
                       style={devAWS ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
                       <div
                         className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${
-                          devAWS ? 'translate-x-7' : 'translate-x-1'
+                          devAWS ? 'translate-x-7' : 'translate-x-1 toggle-off-thumb'
                         }`}
                       />
                     </button>
@@ -2309,10 +2309,10 @@ export function SettingsScreen({
                     <span className="text-app-content text-base">Power Light Flash on Internet Viewer</span>
                     <button
                       onClick={() => setPowerLightFlash(!powerLightFlash)}
-                      className={`w-14 h-8 rounded-full transition-colors relative ${powerLightFlash ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'}`}
+                      className={`w-14 h-8 rounded-full transition-colors relative ${powerLightFlash ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'}`}
                       style={powerLightFlash ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                     >
-                      <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${powerLightFlash ? 'right-1' : 'left-1'}`} />
+                      <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${powerLightFlash ? 'right-1' : 'left-1 toggle-off-thumb'}`} />
                     </button>
                   </div>
 
@@ -2894,10 +2894,10 @@ export function SettingsScreen({
                         : [true,true,true,true,true,true,true] as Schedule['days'];
                       setEditingSchedule({ ...editingSchedule, enabled: nowEnabled, days: newDays });
                     }}
-                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.enabled ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'}`}
+                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.enabled ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'}`}
                     style={editingSchedule.enabled ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
-                    <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${editingSchedule.enabled ? 'right-1' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${editingSchedule.enabled ? 'right-1' : 'left-1 toggle-off-thumb'}`} />
                   </button>
                 </div>
 
@@ -2913,10 +2913,10 @@ export function SettingsScreen({
                         endHour: newAllDay ? 12 : 7, endMinute: 0, endPeriod: newAllDay ? 'PM' : 'AM',
                       });
                     }}
-                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.allDay ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint'}`}
+                    className={`w-14 h-8 rounded-full transition-colors relative ${editingSchedule.allDay ? '' : 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track'}`}
                     style={editingSchedule.allDay ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
                   >
-                    <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${editingSchedule.allDay ? 'right-1' : 'left-1'}`} />
+                    <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${editingSchedule.allDay ? 'right-1' : 'left-1 toggle-off-thumb'}`} />
                   </button>
                 </div>
 
@@ -3077,10 +3077,10 @@ export function SettingsScreen({
               <button
                 onClick={handleIVToggle}
                 disabled={ivToggleBusy}
-                className={`w-14 h-8 rounded-full transition-colors relative ${ivToggleBusy ? 'opacity-50 cursor-not-allowed' : ''} ${!internetViewingEnabled ? 'bg-[#8089B3] dark:bg-app-dk-faint' : ''}`}
+                className={`w-14 h-8 rounded-full transition-colors relative ${ivToggleBusy ? 'opacity-50 cursor-not-allowed' : ''} ${!internetViewingEnabled ? 'bg-[#8089B3] dark:bg-app-dk-faint toggle-off-track' : ''}`}
                 style={internetViewingEnabled ? { backgroundColor: SETTINGS_ACCENT_COLOR } : {}}
               >
-                <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${internetViewingEnabled ? 'right-1' : 'left-1'}`} />
+                <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${internetViewingEnabled ? 'right-1' : 'left-1 toggle-off-thumb'}`} />
               </button>
             </div>
 
