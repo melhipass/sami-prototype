@@ -50,7 +50,7 @@ export function CompletionState({ success, onRetry, onDone }: CompletionStatePro
           </>
         ) : (
           <>
-            <div className="w-20 h-20 bg-[#B6594C] dark:bg-red-500 rounded-full flex items-center justify-center mb-6">
+            <div className="w-20 h-20 bg-[#B6594C] dark:bg-red-500 dark2-red-bg rounded-full flex items-center justify-center mb-6">
               <XCircle className="w-10 h-10 text-white" />
             </div>
 

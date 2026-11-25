@@ -1801,7 +1801,7 @@ export function SettingsScreen({
                 </div>
                 <button
                   onClick={handleEraseAllContent}
-                  className="px-4 py-2 bg-[#B6594C] hover:bg-[#B6594C]/90 dark:bg-red-600 dark:hover:bg-red-500 text-white rounded-lg transition-colors whitespace-nowrap font-semibold text-base"
+                  className="px-4 py-2 bg-[#B6594C] hover:bg-[#B6594C]/90 dark:bg-red-600 dark:hover:bg-red-500 dark2-red-bg dark2-red-bg-hover text-white rounded-lg transition-colors whitespace-nowrap font-semibold text-base"
                 >
                   Erase All Content
                 </button>
@@ -1842,7 +1842,7 @@ export function SettingsScreen({
             <div className="border-t border-app-line/15 dark:border-app-dk-sunken grid grid-cols-2">
               <button
                 onClick={handleConfirmEraseAllContent}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500"
+                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500 dark2-red-text"
               >
                 Erase All
               </button>
@@ -1877,7 +1877,7 @@ export function SettingsScreen({
             <div className="border-t border-app-line/15 dark:border-app-dk-sunken grid grid-cols-2">
               <button
                 onClick={handleConfirmResetAllAppSettings}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500"
+                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500 dark2-red-text"
               >
                 Reset
               </button>
@@ -1985,7 +1985,7 @@ export function SettingsScreen({
             <div className="border-t border-app-line/15 dark:border-app-dk-sunken grid grid-cols-2">
               <button
                 onClick={() => closeSilentSwitchPopup('disable')}
-                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500"
+                className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500 dark2-red-text"
               >
                 Disable
               </button>

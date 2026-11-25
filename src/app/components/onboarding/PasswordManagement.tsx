@@ -21,7 +21,7 @@ function generateRandomPassword(): string {
 }
 
 function getPasswordStrength(password: string): { label: string; color: string } {
-  if (password.length < 6) return { label: 'Weak', color: 'text-[#B6594C] dark:text-red-500' };
+  if (password.length < 6) return { label: 'Weak', color: 'text-[#B6594C] dark:text-red-500 dark2-red-text' };
   if (password.length < 10) return { label: 'Medium', color: 'text-[#8C6C0F] dark:text-yellow-500' };
   return { label: 'Strong', color: 'text-green-500' };
 }

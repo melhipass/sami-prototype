@@ -2936,7 +2936,7 @@ function AppContent({
                     setBeepOnCameraFault(false);
                     toast('Beep on camera fault is disabled');
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500 dark2-red-text"
                 >
                   Disable Beep
                 </button>
