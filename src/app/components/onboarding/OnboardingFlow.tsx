@@ -442,8 +442,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 12 && (
         <div className="flex items-center justify-center h-full bg-app-surface px-6 py-8">
           <div className="flex flex-col items-center max-w-md w-full text-center">
-            <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
-              <AlertCircle className="w-16 h-16 text-app-alert" />
+            <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 border-2 border-app-alert">
+              <AlertCircle className="w-10 h-10 text-app-alert" />
             </div>
 
             <h1 className="text-3xl mb-4 text-app-content">Permissions Required</h1>
@@ -475,8 +475,8 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
       {step === 16 && (
         <div className="flex items-center justify-center h-full bg-app-surface px-6 py-8">
           <div className="flex flex-col items-center max-w-md w-full text-center">
-            <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-6 border-2 border-app-alert">
-              <AlertCircle className="w-16 h-16 text-app-alert" />
+            <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 border-2 border-app-alert">
+              <AlertCircle className="w-10 h-10 text-app-alert" />
             </div>
 
             <h1 className="text-3xl mb-4 text-app-content">Permissions Required</h1>

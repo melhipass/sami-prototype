@@ -21,9 +21,10 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
-      <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center border-2 border-app-amber mt-16 mb-4">
+    <div className="h-full flex flex-col overflow-hidden bg-app-surface pt-[88px]">
+      <div className="flex-1 min-h-0 overflow-y-auto thin-scrollbar px-6 pb-8">
+        <div className="flex flex-col items-center max-w-md w-full mx-auto text-center">
+        <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center border-2 border-app-amber mt-8 mb-4">
           <BookOpen className="w-10 h-10 text-app-amber" />
         </div>
 
@@ -42,7 +43,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-app-content mb-1">Sami Complete Kit</h3>
-              <p className="text-sm text-app-content-faint">Setup your all-in-one Sami Complete Kit</p>
+              <p className="text-base text-app-content-faint">Setup your all-in-one Sami Complete Kit</p>
             </div>
             <ExternalLink className="w-5 h-5 text-app-alert flex-shrink-0" />
           </button>
@@ -61,7 +62,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-app-content mb-1">Sami Camera + Sami Hub Guide</h3>
-              <p className="text-sm text-app-content-faint">Setup your Sami Camera using the Sami Hub</p>
+              <p className="text-base text-app-content-faint">Setup your Sami Camera using the Sami Hub</p>
             </div>
             <ExternalLink className="w-5 h-5 text-app-amber flex-shrink-0" />
           </button>
@@ -75,7 +76,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-app-content mb-1">Sami Camera Only Guide</h3>
-              <p className="text-sm text-app-content-faint">Setup your Sami Camera with your home network</p>
+              <p className="text-base text-app-content-faint">Setup your Sami Camera with your home network</p>
             </div>
             <ExternalLink className="w-5 h-5 text-app-quiet flex-shrink-0" />
           </button>
@@ -95,6 +96,7 @@ export function SetupGuide({ connectionType, onContinue, onCancel, cancelLabel =
           >
             {cancelLabel}
           </button>
+        </div>
         </div>
       </div>
     </div>

@@ -2018,7 +2018,7 @@ function AppContent({
           {/* Analytics Dashboard CTA */}
           <button
             onClick={() => setShowAnalyticsDashboard(true)}
-            className="mt-12 flex items-center gap-2 text-app-content-faint hover:text-app-link dark:hover:text-[#22C7E8] transition-colors text-sm underline underline-offset-4"
+            className="mt-12 flex items-center gap-2 text-app-content-faint hover:text-app-link dark:hover:text-[#22C7E8] transition-colors text-base underline underline-offset-4"
             style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}
           >
             View Analytics Dashboard →
@@ -2044,7 +2044,7 @@ function AppContent({
                   role="radio"
                   aria-checked={selected}
                   onClick={() => setThemeMode(opt.value)}
-                  className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-1.5 rounded-full text-base transition-colors ${
                     selected
                       ? 'bg-app-card text-app-content font-semibold shadow'
                       : 'text-app-content-faint hover:text-app-content'
@@ -2072,7 +2072,7 @@ function AppContent({
           />
           
           {/* Status Bar */}
-          <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 text-white text-sm z-10">
+          <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-between px-6 text-white text-base z-10">
             <div className="font-semibold">9:41 AM</div>
             <div className="flex items-center gap-2">
               <Wifi className="w-4 h-4" />
@@ -2438,7 +2438,7 @@ function AppContent({
               <div className="max-w-xl mx-auto space-y-6">
                 {/* Contact email (editable, validated on Send) */}
                 <div>
-                  <label className="block text-app-content-faint text-sm font-bold dark:font-normal mb-2">Contact email</label>
+                  <label className="block text-app-content-faint text-base font-bold dark:font-normal mb-2">Contact email</label>
                   <input
                     type="email"
                     value={logEmail}
@@ -2454,13 +2454,13 @@ function AppContent({
                     }`}
                   />
                   {emailError && (
-                    <p className="text-app-alert dark:text-[#F08080] text-sm mt-2">{emailError}</p>
+                    <p className="text-app-alert dark:text-[#F08080] text-base mt-2">{emailError}</p>
                   )}
                 </div>
 
                 {/* Problem description (editable) */}
                 <div>
-                  <label className="block text-app-content-faint text-sm font-bold dark:font-normal mb-2">Describe your problem</label>
+                  <label className="block text-app-content-faint text-base font-bold dark:font-normal mb-2">Describe your problem</label>
                   <textarea
                     value={logProblemDescription}
                     onChange={(e) => setLogProblemDescription(e.target.value)}
@@ -2471,16 +2471,16 @@ function AppContent({
                   />
                   <div className="flex justify-between items-center mt-2">
                     {logProblemDescription.trim().length < 10 ? (
-                      <p className="text-app-content-faint text-sm font-bold dark:font-normal">Minimum 10 characters</p>
+                      <p className="text-app-content-faint text-base font-bold dark:font-normal">Minimum 10 characters</p>
                     ) : (
                       <span />
                     )}
-                    <p className="text-app-content-faint text-sm font-bold dark:font-normal text-right">{1000 - logProblemDescription.length} characters left</p>
+                    <p className="text-app-content-faint text-base font-bold dark:font-normal text-right">{1000 - logProblemDescription.length} characters left</p>
                   </div>
                 </div>
 
                 {/* Technical info disclaimer */}
-                <p className="text-app-content-faint text-sm font-bold dark:font-normal">
+                <p className="text-app-content-faint text-base font-bold dark:font-normal">
                   Sending this report includes technical information about your app and camera. By submitting, you agree to let us use this information to review your issue and respond to you.
                 </p>
               </div>
@@ -2850,7 +2850,7 @@ function AppContent({
                 <div className="text-app-content font-semibold text-base mb-1">
                   Sami 3
                 </div>
-                <div className="text-app-content-soft text-sm">
+                <div className="text-app-content-soft text-base">
                   Sami is no longer Active.
                 </div>
               </div>
@@ -3603,7 +3603,7 @@ function AppContent({
               {/* Volume slider */}
               <div className="relative flex flex-row items-center">
                 <div 
-                  className="relative h-3 w-40 bg-[#4D9C81] dark:bg-app-dk-panel rounded-full cursor-pointer"
+                  className="relative h-3 w-40 bg-[#4D9C81] dark:bg-app-dk-panel rounded-full cursor-pointer mic-volume-track"
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -3648,7 +3648,7 @@ function AppContent({
               </div>
               
               {/* Volume percentage label */}
-              <span className="text-[#BFE3D9] dark:text-white text-sm font-medium w-12 text-right">{Math.round(micVolume)}%</span>
+              <span className="text-[#BFE3D9] dark:text-white text-base font-medium w-12 text-right">{Math.round(micVolume)}%</span>
             </div>
           )}
 
@@ -3846,7 +3846,7 @@ function AppContent({
                     className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Clock className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Clock</span>
+                    <span className="text-base text-app-baby/70 dark:text-white/80">Clock</span>
                   </button>
 
                   <button
@@ -3878,7 +3878,7 @@ function AppContent({
                     }`}
                   >
                     <ScanFace className={`w-10 h-10 text-app-baby ${cameraPaired && borderActive ? 'dark:text-app-active-ink' : 'dark:text-white'}`} />
-                    <span className={`text-sm text-app-baby/70 dark:text-white/80 ${cameraPaired && borderActive ? 'main-active-label' : ''}`}>Border</span>
+                    <span className={`text-base text-app-baby/70 dark:text-white/80 ${cameraPaired && borderActive ? 'main-active-label' : ''}`}>Border</span>
                   </button>
 
                   <button
@@ -3896,7 +3896,7 @@ function AppContent({
                     }`}
                   >
                     <MotionDetectionIcon className={`w-10 h-10 text-app-baby ${cameraPaired && motionActive ? 'dark:text-app-active-ink' : 'dark:text-white'}`} />
-                    <span className={`text-sm text-app-baby/70 dark:text-white/80 ${cameraPaired && motionActive ? 'main-active-label' : ''}`}>Motion</span>
+                    <span className={`text-base text-app-baby/70 dark:text-white/80 ${cameraPaired && motionActive ? 'main-active-label' : ''}`}>Motion</span>
                   </button>
 
                   <button 
@@ -3904,7 +3904,7 @@ function AppContent({
                     className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Lock className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Lock</span>
+                    <span className="text-base text-app-baby/70 dark:text-white/80">Lock</span>
                   </button>
 
                   <button 
@@ -3912,7 +3912,7 @@ function AppContent({
                     className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Video className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Recordings</span>
+                    <span className="text-base text-app-baby/70 dark:text-white/80">Recordings</span>
                   </button>
 
                   <button 
@@ -3920,7 +3920,7 @@ function AppContent({
                     className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <CircleHelp className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Help</span>
+                    <span className="text-base text-app-baby/70 dark:text-white/80">Help</span>
                   </button>
 
                   <button 
@@ -3930,7 +3930,7 @@ function AppContent({
                     className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Settings className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Settings</span>
+                    <span className="text-base text-app-baby/70 dark:text-white/80">Settings</span>
                   </button>
                 </div>
               </motion.div>

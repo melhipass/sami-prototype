@@ -12,7 +12,7 @@ export function FinalConfirmation({ onContinue, onCancel }: FinalConfirmationPro
         <div className="flex flex-col items-center text-center">
           <AlertCircle className="w-12 h-12 text-[#8C6C0F] dark:text-orange-500 mb-4" />
           <h2 className="text-lg mb-3 text-gray-900">Important Notice</h2>
-          <p className="text-sm text-gray-700 mb-6 leading-relaxed">
+          <p className="text-base text-gray-700 mb-6 leading-relaxed">
             Your camera will disconnect from this device while switching to the Wi-Fi network.
             If the connection fails, you can recover by using an Ethernet cable.
           </p>

@@ -24,8 +24,8 @@ export function CompletionState({ success, onRetry, onDone }: CompletionStatePro
       <div className="flex flex-col items-center max-w-md text-center">
         {success ? (
           <>
-            <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center mb-6">
-              <CheckCircle className="w-20 h-20 text-white" />
+            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
+              <CheckCircle className="w-10 h-10 text-white" />
             </div>
 
             <h1 className="text-3xl mb-3 text-[#293283]">Setup Complete!</h1>
@@ -35,7 +35,7 @@ export function CompletionState({ success, onRetry, onDone }: CompletionStatePro
 
             <div className="bg-[#293283]/10 border border-[#293283]/30 rounded-xl p-4 mb-8 flex items-start gap-3">
               <Unplug className="w-6 h-6 text-[#293283] flex-shrink-0 mt-1" />
-              <p className="text-sm text-[#293283] text-left">
+              <p className="text-base text-[#293283] text-left">
                 You can now safely unplug the Ethernet cable from your camera.
                 Your camera is connected via Wi-Fi.
               </p>
@@ -50,8 +50,8 @@ export function CompletionState({ success, onRetry, onDone }: CompletionStatePro
           </>
         ) : (
           <>
-            <div className="w-32 h-32 bg-[#B6594C] dark:bg-red-500 rounded-full flex items-center justify-center mb-6">
-              <XCircle className="w-20 h-20 text-white" />
+            <div className="w-20 h-20 bg-[#B6594C] dark:bg-red-500 rounded-full flex items-center justify-center mb-6">
+              <XCircle className="w-10 h-10 text-white" />
             </div>
 
             <h1 className="text-3xl mb-3 text-[#293283]">Connection Failed</h1>

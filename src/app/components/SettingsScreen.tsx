@@ -853,14 +853,14 @@ export function SettingsScreen({
                     </div>
                     <div className="flex-1">
                       <div className="leading-tight">Sami-3c: 7812FFA01839</div>
-                      <div className="text-sm text-app-content-faint mt-0.5">offline</div>
+                      <div className="text-base text-app-content-faint mt-0.5">offline</div>
                     </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowCameraSettings(true);
                       }}
-                      className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90"
+                      className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90"
                       style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                     >
                       Camera Settings
@@ -904,7 +904,7 @@ export function SettingsScreen({
                   <Wifi className="w-5 h-5 text-app-content-faint" />
                   <div className="text-left">
                     <span className="text-app-content block">Wi-Fi Network</span>
-                    <span className="text-app-content-faint text-sm">{settingsWifiNetwork}</span>
+                    <span className="text-app-content-faint text-base">{settingsWifiNetwork}</span>
                   </div>
                 </div>
                 <ChevronRight className="w-10 h-10 text-app-content" />
@@ -1111,7 +1111,7 @@ export function SettingsScreen({
 
               {/* Smart Border */}
               <div className="flex items-center justify-between py-4 border-b border-app-line/15 dark:border-app-dk-sunken">
-                <span className="text-app-content">Smart Border <span className="text-sm italic">(Smart Edge)</span></span>
+                <span className="text-app-content">Smart Border <span className="text-base italic">(Smart Edge)</span></span>
                 <button
                   onClick={handleSmartBorderToggle}
                   className={`w-14 h-8 rounded-full transition-colors relative ${
@@ -1271,7 +1271,7 @@ export function SettingsScreen({
                     <button
                       key={sound}
                       onClick={() => setAlarmSound(sound)}
-                      className={`px-4 py-2 transition-colors text-sm ${
+                      className={`px-4 py-2 transition-colors text-base ${
                         alarmSound === sound
                           ? 'text-white dark:text-app-on-navy'
                           : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'
@@ -1771,7 +1771,7 @@ export function SettingsScreen({
                 </div>
                 <button
                   onClick={handleResetUserSettings}
-                  className="px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong text-app-content rounded-lg transition-colors whitespace-nowrap font-semibold text-sm"
+                  className="px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong text-app-content rounded-lg transition-colors whitespace-nowrap font-semibold text-base"
                 >
                   Reset User Settings
                 </button>
@@ -1786,7 +1786,7 @@ export function SettingsScreen({
                 </div>
                 <button
                   onClick={handleResetAllAppSettings}
-                  className="px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong text-app-content rounded-lg transition-colors whitespace-nowrap font-semibold text-sm"
+                  className="px-4 py-2 bg-app-sunken hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong text-app-content rounded-lg transition-colors whitespace-nowrap font-semibold text-base"
                 >
                   Reset App Settings
                 </button>
@@ -1801,7 +1801,7 @@ export function SettingsScreen({
                 </div>
                 <button
                   onClick={handleEraseAllContent}
-                  className="px-4 py-2 bg-[#B6594C] hover:bg-[#B6594C]/90 dark:bg-red-600 dark:hover:bg-red-500 text-white rounded-lg transition-colors whitespace-nowrap font-semibold text-sm"
+                  className="px-4 py-2 bg-[#B6594C] hover:bg-[#B6594C]/90 dark:bg-red-600 dark:hover:bg-red-500 text-white rounded-lg transition-colors whitespace-nowrap font-semibold text-base"
                 >
                   Erase All Content
                 </button>
@@ -2124,7 +2124,7 @@ export function SettingsScreen({
                       </button>
                       <button
                         onClick={() => setShowRemoveCameraConfirm(true)}
-                        className="px-4 py-2 bg-[#B6594C] hover:bg-[#B6594C]/80 dark:bg-[#B95555] dark:hover:bg-[#B95555]/80 text-white rounded transition-colors text-sm"
+                        className="px-4 py-2 bg-[#B6594C] hover:bg-[#B6594C]/80 dark:bg-[#B95555] dark:hover:bg-[#B95555]/80 text-white rounded transition-colors text-base"
                       >Remove</button>
                     </div>
                   </div>
@@ -2152,7 +2152,7 @@ export function SettingsScreen({
                             setShowPassword(false);
                             setShowEditPasswordModal(true);
                           }}
-                          className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90"
+                          className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90"
                           style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                         >Edit</button>
                       </div>
@@ -2173,11 +2173,11 @@ export function SettingsScreen({
                               <circle cx="12" cy="20" r="1.5" fill={cameraSignalColor} />
                             </svg>
                           )}
-                          <span className="text-sm font-medium" style={{ color: cameraSignalTextColor }}>
+                          <span className="text-base font-medium" style={{ color: cameraSignalTextColor }}>
                             {cameraSignal === 'Excellent' ? 'Signal is Excellent' : cameraSignal === 'Ok' ? 'Signal is Ok' : cameraSignal === 'Bad' ? 'Signal is Bad' : cameraSignal === 'Poor' ? 'Signal is Poor' : cameraSignal}
                           </span>
                         </button>
-                        <button onClick={() => setShowCameraWifiPicker(true)} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
+                        <button onClick={() => setShowCameraWifiPicker(true)} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Change</button>
                       </div>
                     </div>
                   )}
@@ -2198,7 +2198,7 @@ export function SettingsScreen({
                         <button
                           key={mode}
                           onClick={() => { if (mode === nightVisionMode) return; setNvPopup({ mode, ...nvMessages[mode] }); }}
-                          className={`px-4 py-2 transition-colors text-sm ${nightVisionMode === mode ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'} ${index === 0 ? 'rounded-l' : ''} ${index === 3 ? 'rounded-r' : 'border-r border-app-line/15 dark:border-app-dk-sunken'}`}
+                          className={`px-4 py-2 transition-colors text-base ${nightVisionMode === mode ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'} ${index === 0 ? 'rounded-l' : ''} ${index === 3 ? 'rounded-r' : 'border-r border-app-line/15 dark:border-app-dk-sunken'}`}
                           style={nightVisionMode === mode ? { backgroundColor: 'var(--app-slider-accent)' } : {}}
                         >{mode}</button>
                       ))}
@@ -2213,7 +2213,7 @@ export function SettingsScreen({
                         <button
                           key={mode}
                           onClick={() => { if (mode === irIlluminatorMode) return; setIrPopup({ mode, ...irMessages[mode] }); }}
-                          className={`px-4 py-2 transition-colors text-sm ${irIlluminatorMode === mode ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'} ${index === 0 ? 'rounded-l' : ''} ${index === 2 ? 'rounded-r' : 'border-r border-app-line/15 dark:border-app-dk-sunken'}`}
+                          className={`px-4 py-2 transition-colors text-base ${irIlluminatorMode === mode ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'} ${index === 0 ? 'rounded-l' : ''} ${index === 2 ? 'rounded-r' : 'border-r border-app-line/15 dark:border-app-dk-sunken'}`}
                           style={irIlluminatorMode === mode ? { backgroundColor: 'var(--app-slider-accent)' } : {}}
                         >{mode}</button>
                       ))}
@@ -2234,7 +2234,7 @@ export function SettingsScreen({
                         <button
                           key={mode}
                           onClick={() => { if (mode === recordMode) return; setRmPopup({ mode, ...rmMessages[mode] }); }}
-                          className={`px-4 py-2 transition-colors text-sm ${recordMode === mode ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'} ${index === 0 ? 'rounded-l' : ''} ${index === 2 ? 'rounded-r' : 'border-r border-app-line/15 dark:border-app-dk-sunken'}`}
+                          className={`px-4 py-2 transition-colors text-base ${recordMode === mode ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'} ${index === 0 ? 'rounded-l' : ''} ${index === 2 ? 'rounded-r' : 'border-r border-app-line/15 dark:border-app-dk-sunken'}`}
                           style={recordMode === mode ? { backgroundColor: 'var(--app-slider-accent)' } : {}}
                         >{mode}</button>
                       ))}
@@ -2270,7 +2270,7 @@ export function SettingsScreen({
                     <span className="text-app-content text-base">Record Schedule</span>
                     <div className="flex items-center gap-4">
                       {(() => { const s = overallScheduleSummary(); return <span className="text-base font-medium" style={{ color: s.color }}>{s.text}</span>; })()}
-                      <button onClick={() => { setEditingScheduleIdx(0); setEditingSchedule({ ...schedules[0], days: [...schedules[0].days] as Schedule['days'] }); setShowScheduleList(true); }} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
+                      <button onClick={() => { setEditingScheduleIdx(0); setEditingSchedule({ ...schedules[0], days: [...schedules[0].days] as Schedule['days'] }); setShowScheduleList(true); }} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
                     </div>
                   </div>
 
@@ -2281,7 +2281,7 @@ export function SettingsScreen({
                       <button onClick={cycleSDStatus} className="hover:opacity-70 transition-opacity" title="Tap to cycle SD states (demo)">
                         <span className="text-base font-medium" style={{ color: sdStatus === 'Missing!' ? 'var(--app-alert)' : sdStatus === 'Reading...' ? 'var(--app-amber)' : sdStatus === 'Blank' ? 'var(--app-amber)' : 'var(--app-quiet-text)' }}>{sdStatus}</span>
                       </button>
-                      <button onClick={() => setSdPopup('confirm-format')} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Format</button>
+                      <button onClick={() => setSdPopup('confirm-format')} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Format</button>
                     </div>
                   </div>
                 </div>
@@ -2298,7 +2298,7 @@ export function SettingsScreen({
                       <span className="font-medium text-base" style={{ color: internetViewingEnabled ? 'var(--app-quiet-text)' : 'var(--app-alert)' }}>{internetViewingEnabled ? 'Enabled' : 'Disabled'}</span>
                       <button
                         onClick={openIVScreen}
-                        className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90"
+                        className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90"
                         style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                       >{internetViewingEnabled ? 'Edit' : 'Enable'}</button>
                     </div>
@@ -2322,11 +2322,11 @@ export function SettingsScreen({
                       <span className="text-app-content text-base">IP Address</span>
                       <div className="flex items-center gap-4">
                         <span className="text-app-content-soft text-base">{ipMode === 'automatic' ? 'Automatic' : 'Manual'}</span>
-                        <button onClick={() => { if (!ipSaveError) { setIpEditorMode(ipMode); setIpEditorConfig({ ...ipConfig }); } setIpSaveError(false); setIpErrors({}); setShowIpEditor(true); }} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
+                        <button onClick={() => { if (!ipSaveError) { setIpEditorMode(ipMode); setIpEditorConfig({ ...ipConfig }); } setIpSaveError(false); setIpErrors({}); setShowIpEditor(true); }} className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90" style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}>Edit</button>
                       </div>
                     </div>
-                    {ipRestartMsg && <p className="text-sm mt-2" style={{ color: 'var(--app-quiet-text)' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
-                    {ipSaveError && <p className="text-sm mt-2" style={{ color: 'var(--app-alert)' }}>Couldn't save network settings, camera didn't respond.</p>}
+                    {ipRestartMsg && <p className="text-base mt-2" style={{ color: 'var(--app-quiet-text)' }}>The camera is now restarting and should reconnect within 60 seconds.</p>}
+                    {ipSaveError && <p className="text-base mt-2" style={{ color: 'var(--app-alert)' }}>Couldn't save network settings, camera didn't respond.</p>}
                   </div>
                 </div>
               </div>
@@ -2340,7 +2340,7 @@ export function SettingsScreen({
                     <span className="text-app-content text-base">Restart Camera</span>
                     <button
                       onClick={() => setRebootPopup('confirm')}
-                      className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90"
+                      className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90"
                       style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                     >Reboot</button>
                   </div>
@@ -2350,7 +2350,7 @@ export function SettingsScreen({
                     <span className="text-app-content text-base">Factory Reset</span>
                     <button
                       onClick={() => setFactoryResetPopup('confirm')}
-                      className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-sm hover:opacity-90"
+                      className="px-4 py-2 text-white dark:text-app-on-navy rounded transition-colors text-base hover:opacity-90"
                       style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                     >Reset</button>
                   </div>
@@ -2962,7 +2962,7 @@ export function SettingsScreen({
                             setEditingSchedule(prev => prev ? { ...prev, enabled: true, days: [...prev.days].map((d, idx) => idx === i ? true : d) as Schedule['days'] } : prev);
                           }
                         }}
-                        className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${editingSchedule.days[i] ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'}`}
+                        className={`flex-1 py-2 rounded text-base font-medium transition-colors ${editingSchedule.days[i] ? 'text-white dark:text-app-on-navy' : 'bg-app-content/10 dark:bg-app-dk-border-strong text-app-content hover:bg-app-muted'}`}
                         style={editingSchedule.days[i] ? { backgroundColor: 'var(--app-slider-accent)' } : {}}
                       >
                         {day}
@@ -3067,7 +3067,7 @@ export function SettingsScreen({
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-6" style={{ backgroundColor: SETTINGS_BG_COLOR }}>
             {/* Instructional text */}
-            <p className="text-app-content-faint text-sm leading-relaxed py-4 border-b border-app-line/15 dark:border-app-dk-sunken">
+            <p className="text-app-content-faint text-base leading-relaxed py-4 border-b border-app-line/15 dark:border-app-dk-sunken">
               When enabled you can connect to the camera with the Sami app over the internet. For security be sure you have set up a good camera password. We recommend a mix of upper and lower case, numbers, and symbols.
             </p>
 
@@ -3129,7 +3129,7 @@ export function SettingsScreen({
                             }
                           }
                         }}
-                        className="px-4 py-2 text-sm font-medium transition-colors"
+                        className="px-4 py-2 text-base font-medium transition-colors"
                         style={ivRouterMode === m ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: 'var(--app-on-navy, #ffffff)' } : { backgroundColor: '#1a1a1a', color: '#888' }}
                       >
                         {m === 'automatic' ? 'Automatic' : 'Manual'}
@@ -3159,7 +3159,7 @@ export function SettingsScreen({
                         <>
                           <button
                             onClick={() => { setIvPortNumber(ivSavedPortNumber); setIvPortEditing(false); }}
-                            className="px-4 py-2 rounded-lg text-sm text-app-content-soft bg-app-sunken hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
+                            className="px-4 py-2 rounded-lg text-base text-app-content-soft bg-app-sunken hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
                           >Cancel</button>
                           <button
                             onClick={() => {
@@ -3175,7 +3175,7 @@ export function SettingsScreen({
                                 ivRunEnable(next, 'manual');
                               }
                             }}
-                            className="px-4 py-2 rounded-lg text-sm text-white dark:text-app-on-navy hover:opacity-90 transition-colors"
+                            className="px-4 py-2 rounded-lg text-base text-white dark:text-app-on-navy hover:opacity-90 transition-colors"
                             style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
                           >Done</button>
                         </>
@@ -3279,7 +3279,7 @@ export function SettingsScreen({
             <span className="text-app-content text-lg font-medium">IP Address</span>
             <button
               onClick={handleIpSave}
-              className="mr-6 px-4 py-2 rounded-lg text-sm font-semibold text-white dark:text-app-on-navy hover:opacity-90 transition-colors"
+              className="mr-6 px-4 py-2 rounded-lg text-base font-semibold text-white dark:text-app-on-navy hover:opacity-90 transition-colors"
               style={{ backgroundColor: SETTINGS_ACCENT_COLOR }}
             >
               Save
@@ -3296,7 +3296,7 @@ export function SettingsScreen({
                   <button
                     key={m}
                     onClick={() => { setIpEditorMode(m); setIpErrors({}); }}
-                    className="px-4 py-2 text-sm font-medium transition-colors"
+                    className="px-4 py-2 text-base font-medium transition-colors"
                     style={ipEditorMode === m ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: 'var(--app-on-navy, #ffffff)' } : { backgroundColor: '#1a1a1a', color: '#888' }}
                   >
                     {m === 'automatic' ? 'Automatic' : 'Manual'}
@@ -3323,7 +3323,7 @@ export function SettingsScreen({
                     }}
                     className={`w-full px-4 py-3 rounded-lg bg-app-surface text-app-content border focus:outline-none text-base ${ipErrors[key] ? 'border-app-alert' : 'border-app-line/20 dark:border-app-dk-border-strong focus:border-app-blue-accent'}`}
                   />
-                  {ipErrors[key] && <p className="text-sm mt-1" style={{ color: 'var(--app-alert)' }}>{ipErrors[key]}</p>}
+                  {ipErrors[key] && <p className="text-base mt-1" style={{ color: 'var(--app-alert)' }}>{ipErrors[key]}</p>}
                 </div>
               );
               return (
@@ -3340,7 +3340,7 @@ export function SettingsScreen({
                         <button
                           key={p}
                           onClick={() => setIpEditorConfig(c => ({ ...c, dnsProto: p }))}
-                          className="px-4 py-2 text-sm font-medium transition-colors"
+                          className="px-4 py-2 text-base font-medium transition-colors"
                           style={ipEditorConfig.dnsProto === p ? { backgroundColor: SETTINGS_ACCENT_COLOR, color: 'var(--app-on-navy, #ffffff)' } : { backgroundColor: '#1a1a1a', color: '#888' }}
                         >
                           {p === 'automatic' ? 'Automatic' : 'Manual'}
@@ -3713,14 +3713,14 @@ export function SettingsScreen({
                   <Lock className="w-8 h-8 text-app-amber" />
                 </div>
                 <h2 className="text-app-content text-xl font-semibold text-center mb-2">Edit Camera Password</h2>
-                <p className="text-app-content-faint text-sm text-center">Password must contain a capital letter, at least 4 letters and 2 numbers</p>
+                <p className="text-app-content-faint text-base text-center">Password must contain a capital letter, at least 4 letters and 2 numbers</p>
               </div>
 
               {/* Fields */}
               <div className="px-8 py-5 space-y-4">
                 <div>
-                  <label className="block text-sm mb-2 text-app-content-faint text-left">
-                    Password: <span className="text-xs text-app-alert">(required)</span>
+                  <label className="block text-base mb-2 text-app-content-faint text-left">
+                    Password: <span className="text-sm text-app-alert">(required)</span>
                   </label>
                   <div className="space-y-3">
                     <input
@@ -3741,8 +3741,8 @@ export function SettingsScreen({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2 text-app-content-faint text-left">
-                    Password Hint: <span className="text-xs text-app-content-faint">(optional)</span>
+                  <label className="block text-base mb-2 text-app-content-faint text-left">
+                    Password Hint: <span className="text-sm text-app-content-faint">(optional)</span>
                   </label>
                   <input
                     type="text"
@@ -3752,10 +3752,10 @@ export function SettingsScreen({
                     className="w-full px-4 py-3 border border-app-amber/30 rounded-xl focus:outline-none focus:border-app-amber bg-app-surface text-app-content placeholder-gray-500"
                     placeholder="Password hint (e.g., my first pet's name)"
                   />
-                  <p className="text-xs text-app-content-faint mt-1 text-left">This will help you remember your password ({editedPasswordHint.length}/30)</p>
+                  <p className="text-sm text-app-content-faint mt-1 text-left">This will help you remember your password ({editedPasswordHint.length}/30)</p>
                 </div>
                 {editPasswordError && (
-                  <p className="text-sm text-app-alert">{editPasswordError}</p>
+                  <p className="text-base text-app-alert">{editPasswordError}</p>
                 )}
               </div>
 
@@ -3799,7 +3799,7 @@ export function SettingsScreen({
                 <Lock className="w-8 h-8 text-app-amber" />
               </div>
               <h2 className="text-app-content text-xl font-semibold text-center mb-2">Camera Password</h2>
-              <p className="text-app-content-faint text-sm text-center">Enter camera password</p>
+              <p className="text-app-content-faint text-base text-center">Enter camera password</p>
             </div>
 
             <div className="px-8 py-5">
@@ -3813,7 +3813,7 @@ export function SettingsScreen({
               />
               <button
                 onClick={() => setShowCameraPasswordForgot(true)}
-                className="mt-2 text-sm underline w-full text-center"
+                className="mt-2 text-base underline w-full text-center"
                 style={{ color: SETTINGS_ACCENT_COLOR }}
               >
                 Forgot password?
@@ -3850,7 +3850,7 @@ export function SettingsScreen({
 
                   {savedCameraPasswordHint && (
                     <div className="mb-4">
-                      <label className="block text-sm mb-2 text-app-content-faint text-left">Password Hint:</label>
+                      <label className="block text-base mb-2 text-app-content-faint text-left">Password Hint:</label>
                       <div className="bg-app-sunken rounded-lg p-4">
                         <p className="text-app-content text-lg text-center">{savedCameraPasswordHint}</p>
                       </div>
@@ -3858,7 +3858,7 @@ export function SettingsScreen({
                   )}
 
                   <div className="bg-app-quiet/10 border border-app-quiet/30 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-app-quiet-text text-center">
+                    <p className="text-base text-app-quiet-text text-center">
                       💡 If you're connected to this camera on another device, you can check the Camera Password in Camera Settings on that device.
                     </p>
                   </div>

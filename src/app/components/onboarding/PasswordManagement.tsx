@@ -47,8 +47,8 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-6 border-2 border-app-amber">
-          <Lock className="w-16 h-16 text-app-amber" />
+        <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-6 border-2 border-app-amber">
+          <Lock className="w-10 h-10 text-app-amber" />
         </div>
 
         <h1 className="text-3xl mb-3 text-app-content">Camera Password</h1>
@@ -58,7 +58,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
 
         {showError && (
           <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl w-full">
-            <p className="text-app-alert dark:text-[#F08080] text-sm font-bold dark:font-normal text-center">Wrong password. Please try again.</p>
+            <p className="text-app-alert dark:text-[#F08080] text-base font-bold dark:font-normal text-center">Wrong password. Please try again.</p>
           </div>
         )}
 
@@ -77,7 +77,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
 
           <button
             onClick={() => setShowForgotPasswordDialog(true)}
-            className="mt-2 text-sm text-app-link dark:text-app-blue-accent-b underline hover:text-app-link/80 dark:hover:text-app-blue-accent-b/80"
+            className="mt-2 text-base text-app-link dark:text-app-blue-accent-b underline hover:text-app-link/80 dark:hover:text-app-blue-accent-b/80"
           >
             Forgot password?
           </button>
@@ -109,7 +109,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
 
             {passwordHint && (
               <div className="mb-4">
-                <label className="block text-sm mb-2 text-app-mint-ink dark:text-app-content-faint text-left">Password Hint:</label>
+                <label className="block text-base mb-2 text-app-mint-ink dark:text-app-content-faint text-left">Password Hint:</label>
                 <div className="bg-app-sunken rounded-lg p-4">
                   <p className="text-app-content text-lg text-center">{passwordHint}</p>
                 </div>
@@ -117,12 +117,12 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
             )}
 
             <div className="bg-app-quiet/10 border border-app-quiet/30 rounded-lg p-4 mb-6">
-              <p className="text-sm text-app-quiet-text text-center">
+              <p className="text-base text-app-quiet-text text-center">
                 💡 If you're connected to this camera on another device, you can check the Camera Password in Camera Settings on that device.
               </p>
             </div>
 
-            <p className="text-sm text-app-content-faint mb-6 text-center">
+            <p className="text-base text-app-content-faint mb-6 text-center">
               Still can't remember? Contact customer service for help by clicking below or by going to www.samialert.com.
             </p>
 

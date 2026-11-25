@@ -84,12 +84,12 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
               <h2 className="text-xl text-center text-app-content">Other network</h2>
             </div>
 
-            <p className="text-sm text-app-content-faint mb-6 text-center">
+            <p className="text-base text-app-content-faint mb-6 text-center">
               Enter the network name
             </p>
 
             <div className="mb-6">
-              <label className="block text-sm mb-2 text-app-content-faint">Network name</label>
+              <label className="block text-base mb-2 text-app-content-faint">Network name</label>
               <input
                 type="text"
                 value={hiddenSsid}
@@ -125,7 +125,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 <h2 className="text-2xl text-app-content">{title}</h2>
                 {showSubtitle && (
                   <>
-                    <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
+                    <p className="text-base text-app-content-faint mt-1">Choose the network for your camera</p>
                     <p className="text-base text-app-amber mt-2">For better use, select a Sami network</p>
                   </>
                 )}
@@ -172,14 +172,14 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
               {!canScan ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-2 px-6 text-center">
                   <Wifi className="w-8 h-8 text-app-content-faint" />
-                  <p className="text-app-content-faint text-sm">
+                  <p className="text-app-content-faint text-base">
                     Turn on {!wifiEnabled && !locationEnabled ? 'Wi-Fi and Location' : !wifiEnabled ? 'Wi-Fi' : 'Location'} to see available networks
                   </p>
                 </div>
               ) : isRefreshing ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
                   <RefreshCw className="w-8 h-8 text-app-blue-accent-b animate-spin" />
-                  <p className="text-app-content-faint text-sm">Searching for networks...</p>
+                  <p className="text-app-content-faint text-base">Searching for networks...</p>
                 </div>
               ) : (
                 <>
@@ -195,7 +195,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
               <div className="px-4 py-3 border-t border-app-line/15 dark:border-app-dk-sunken text-center">
                 <button
                   onClick={() => setShowHiddenForm(true)}
-                  className="text-sm text-app-blue-accent-b hover:underline"
+                  className="text-base text-app-blue-accent-b hover:underline"
                 >
                   Join another network…
                 </button>

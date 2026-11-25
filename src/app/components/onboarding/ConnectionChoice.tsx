@@ -42,7 +42,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
                 </div>
               )}
             </div>
-            <p className="text-sm text-app-content-faint ml-15">
+            <p className="text-base text-app-content-faint ml-15">
               Dedicated, always-on connection. Most reliable for overnight monitoring.
             </p>
           </button>
@@ -71,7 +71,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
                 </div>
               )}
             </div>
-            <p className="text-sm text-app-content-faint ml-15">
+            <p className="text-base text-app-content-faint ml-15">
               Connect the camera directly to your home network. 2.4 GHz only.
             </p>
           </button>

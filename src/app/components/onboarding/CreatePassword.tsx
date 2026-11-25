@@ -96,7 +96,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
 
         <div className="mb-6 w-full space-y-4">
           <div>
-            <label className="block text-sm mb-2 font-bold dark:font-normal text-app-content-faint text-left">
+            <label className="block text-base mb-2 font-bold dark:font-normal text-app-content-faint text-left">
               Password: <span className="text-xs text-app-alert">(required)</span>
             </label>
             <div className="space-y-3">
@@ -127,7 +127,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           </div>
 
           <div>
-            <label className="block text-sm mb-2 font-bold dark:font-normal text-app-content-faint text-left">
+            <label className="block text-base mb-2 font-bold dark:font-normal text-app-content-faint text-left">
               Password Hint: <span className="text-xs text-app-content-faint">(optional)</span>
             </label>
             <input
@@ -142,7 +142,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           </div>
 
           {error && (
-            <p className="text-sm text-app-alert text-left">{error}</p>
+            <p className="text-base text-app-alert text-left">{error}</p>
           )}
         </div>
 

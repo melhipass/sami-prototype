@@ -29,18 +29,18 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
           <h2 className="text-xl text-center text-app-content">{ssid}</h2>
         </div>
 
-        <p className="text-sm text-app-content-faint mb-6 text-center">
+        <p className="text-base text-app-content-faint mb-6 text-center">
           Enter the password for this network
         </p>
 
         {showError && (
           <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl">
-            <p className="text-app-alert dark:text-[#F08080] text-sm font-bold dark:font-normal text-center">Incorrect password. Please try again.</p>
+            <p className="text-app-alert dark:text-[#F08080] text-base font-bold dark:font-normal text-center">Incorrect password. Please try again.</p>
           </div>
         )}
 
         <div className="mb-6">
-          <label className="block text-sm mb-2 text-app-content-faint">
+          <label className="block text-base mb-2 text-app-content-faint">
             Wi-Fi Password
           </label>
           <div className="relative">

@@ -336,6 +336,12 @@
 /* Dark Mode 2: Clock digits use a darker palette blue (Clock background is black) */
 .dark.dark2 .clock-scope { --app-blue-accent: #99A1C0; }
 
+/* Dark Mode 2: Microphone volume track uses the palette dark green */
+.dark.dark2 .mic-volume-track { background-color: #3D7C66; }
+
+/* Dark Mode 2: date chips in the Recordings list use the brand Dark Blue */
+.dark.dark2 .date-chip { background-color: #293283; }
+
 /* Dark Mode 2 only: ink on the active Border/Motion labels (Main View). Kept as a scoped rule so Dark Mode 1 keeps the white/80 label unchanged. */
 .dark.dark2 .main-active-label {
   color: #293283;

@@ -83,7 +83,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
 
           <div className="w-full mb-8 bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
-            <p className="text-sm font-bold dark:font-normal text-app-alert text-left">
+            <p className="text-base font-bold dark:font-normal text-app-alert text-left">
               It looks like you are using a VPN. This can prevent the Sami app from having the necessary access to your local network. Please disable your VPN, then press Search Again.
             </p>
           </div>
@@ -120,7 +120,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
 
           <div className="w-full mb-8 bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
-            <p className="text-sm font-bold dark:font-normal text-app-alert text-left">
+            <p className="text-base font-bold dark:font-normal text-app-alert text-left">
               No Wi-Fi connection found. Connect to your Wi-Fi network and try again
             </p>
           </div>
@@ -157,8 +157,8 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md w-full text-center">
-        <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
-          <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
+        <div className="w-20 h-20 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
+          <RefreshCw className="w-10 h-10 text-app-quiet animate-spin" />
         </div>
 
         <h2 className="text-2xl mb-4 text-app-content">

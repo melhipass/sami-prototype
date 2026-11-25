@@ -31,8 +31,8 @@ export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestPro
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
-          <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
+        <div className="w-20 h-20 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
+          <RefreshCw className="w-10 h-10 text-app-quiet animate-spin" />
         </div>
 
         <h2 className="text-2xl mb-4 text-app-content">Testing Camera Connection</h2>
@@ -49,7 +49,7 @@ export function ConnectivityTest({ onComplete, shouldFail }: ConnectivityTestPro
           />
         </div>
 
-        <p className="text-sm text-app-content-faint mt-6">
+        <p className="text-base text-app-content-faint mt-6">
           This may take up to a minute
         </p>
       </div>

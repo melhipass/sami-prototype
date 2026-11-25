@@ -71,7 +71,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                   >
                     {disclaimer.title}
                   </label>
-                  <p className="text-sm text-app-content-soft dark:text-app-content-faint">
+                  <p className="text-base text-app-content-soft dark:text-app-content-faint">
                     {disclaimer.description}
                   </p>
                 </div>
@@ -95,7 +95,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
 
         {/* Accepted / remaining counter (disclaimer toggles only) */}
         <p
-          className={`w-full text-center text-sm mb-6 font-bold dark:font-normal ${
+          className={`w-full text-center text-base mb-6 font-bold dark:font-normal ${
             allDisclaimersAccepted
               ? 'text-app-mint-ink dark:text-[#BFE3D9]'
               : 'text-app-content-faint'
@@ -116,7 +116,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
               className="mt-1 w-5 h-5 rounded border-2 border-app-line/20 dark:border-app-dk-border-strong bg-app-card checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
               style={{ accentColor: '#293283' }}
             />
-            <label htmlFor="terms-agreement" className="text-sm text-app-content-soft text-left cursor-pointer">
+            <label htmlFor="terms-agreement" className="text-base text-app-content-soft text-left cursor-pointer">
               I have read and agree to Sami's{' '}
               <a
                 href="https://www.samialert.com/policies/terms-of-service"

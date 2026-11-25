@@ -74,7 +74,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
           ) : (
             <div className="w-full bg-app-card rounded-xl p-6 border border-app-alert/30 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-app-alert flex-shrink-0 mt-0.5" />
-              <p className="text-sm font-bold dark:font-normal text-app-alert text-left">
+              <p className="text-base font-bold dark:font-normal text-app-alert text-left">
                 <span className="font-bold dark:font-normal">Confirm the Camera Power Light is green and that you're on the same Wi-Fi network.</span>
                 <br /><br />
                 Pro Tip! Many users prefer to use a wired connection by connecting the camera via Ethernet cable (or their home network) by using a LAN port. This helps with connectivity and speed.

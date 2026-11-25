@@ -73,7 +73,7 @@ export default function LoginPage() {
             autoFocus
             required
             placeholder="Usuario"
-            className="w-full rounded-xl bg-[#EAF3FC] px-4 py-3 text-sm text-[#283891] outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-[#283891]/30"
+            className="w-full rounded-xl bg-[#EAF3FC] px-4 py-3 text-base text-[#283891] outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-[#283891]/30"
           />
           <div className="relative">
             <input
@@ -84,7 +84,7 @@ export default function LoginPage() {
               autoComplete="current-password"
               required
               placeholder="Contraseña"
-              className="w-full rounded-xl bg-[#EAF3FC] px-4 py-3 pr-11 text-sm text-[#283891] outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-[#283891]/30"
+              className="w-full rounded-xl bg-[#EAF3FC] px-4 py-3 pr-11 text-base text-[#283891] outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-[#283891]/30"
             />
             <button
               type="button"
@@ -97,12 +97,12 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-base text-red-500">{error}</p>}
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-full bg-[#283891] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1f2c73] disabled:opacity-60"
+          className="w-full rounded-full bg-[#283891] py-3 text-base font-semibold text-white transition-colors hover:bg-[#1f2c73] disabled:opacity-60"
         >
           {isLoading ? 'Ingresando...' : 'Sign in'}
         </button>

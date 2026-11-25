@@ -33,7 +33,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                   )}
                 </div>
                 <span
-                  className={`text-[14px] mt-1 font-medium whitespace-nowrap ${
+                  className={`text-base mt-1 font-medium whitespace-nowrap ${
                     isActive ? 'text-app-blue-accent-b stepper-active-label' : isCompleted ? 'text-app-quiet-text' : 'text-app-content-faint'
                   }`}
                 >

@@ -500,7 +500,7 @@ function Answers({ children }: { children: ReactNode }) {
       <span className="shrink-0 inline-block text-[11px] font-semibold tracking-wide text-[#2F6FEB] bg-[#EAF1FE] rounded px-2 py-1 uppercase">
         Answers:
       </span>
-      <p className="text-sm text-gray-600 leading-snug">{children}</p>
+      <p className="text-base text-gray-600 leading-snug">{children}</p>
     </div>
   );
 }
@@ -571,7 +571,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub?: st
 function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | number)[][] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-base">
         <thead>
           <tr className="border-b border-[#E5E9F2]">
             {columns.map((c) => (
@@ -681,7 +681,7 @@ function InfoTooltip({ text }: { text: string }) {
 function CatalogTable({ rows }: { rows: { category: string; event: string; when: string; data: string; reference?: string; isProposed?: boolean; badgeText?: string }[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm border-collapse">
+      <table className="w-full text-base border-collapse">
         <thead>
           <tr className="border-b border-[#E5E9F2]">
             <th className="text-left font-semibold text-[#111827] py-2 pr-4 align-top w-[160px]">Category</th>
@@ -727,13 +727,13 @@ function Dropdown({
   onChange: (v: string) => void;
 }) {
   return (
-    <label className="flex items-center gap-2 text-sm text-gray-600">
+    <label className="flex items-center gap-2 text-base text-gray-600">
       <span className="text-gray-400">{label}</span>
       <div className="relative">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="appearance-none bg-white border border-[#E5E9F2] rounded-lg pl-3 pr-7 py-1.5 text-sm text-[#111827] focus:outline-none focus:border-[#2F6FEB] cursor-pointer"
+          className="appearance-none bg-white border border-[#E5E9F2] rounded-lg pl-3 pr-7 py-1.5 text-base text-[#111827] focus:outline-none focus:border-[#2F6FEB] cursor-pointer"
         >
           {options.map((o) => (
             <option key={o} value={o}>{o}</option>
@@ -1446,7 +1446,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
         <div className="h-16 flex items-center gap-2 px-4 border-b border-[#E5E9F2]">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#2F6FEB] transition-colors"
+            className="flex items-center gap-1.5 text-base text-gray-500 hover:text-[#2F6FEB] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -1461,7 +1461,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 mt-1 transition-colors ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-base mb-0.5 mt-1 transition-colors ${
                   active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
                 }`}
               >
@@ -1481,7 +1481,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-colors ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-base mb-0.5 transition-colors ${
                   active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
                 }`}
               >
@@ -1501,7 +1501,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm mb-0.5 transition-colors ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-base mb-0.5 transition-colors ${
                   active ? 'bg-[#EAF1FE] text-[#2F6FEB] font-medium' : 'text-gray-600 hover:bg-[#F7F8FB]'
                 }`}
               >
@@ -2042,7 +2042,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                       value={catalogSearch}
                       onChange={(e) => setCatalogSearch(e.target.value)}
                       placeholder="Search events..."
-                      className="bg-white border border-[#E5E9F2] rounded-lg pl-8 pr-3 py-1.5 text-sm text-[#111827] placeholder:text-gray-400 focus:outline-none focus:border-[#2F6FEB] w-56"
+                      className="bg-white border border-[#E5E9F2] rounded-lg pl-8 pr-3 py-1.5 text-base text-[#111827] placeholder:text-gray-400 focus:outline-none focus:border-[#2F6FEB] w-56"
                     />
                   </div>
                   <span className="text-xs text-gray-400">
@@ -2050,7 +2050,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   </span>
                 </div>
                 {selectedChart && selectedChart.events.length === 0 ? (
-                  <p className="text-sm text-gray-500 py-6 text-center">
+                  <p className="text-base text-gray-500 py-6 text-center">
                     &quot;{selectedChart.title}&quot; ({selectedChart.id}) isn&apos;t built from a specific catalog event — it&apos;s derived from a property attached to every event (auto-captured by Amplitude, or one we send ourselves), not a dedicated event.
                   </p>
                 ) : (
@@ -2059,7 +2059,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </ChartCard>
 
               <ChartCard title="Category Descriptions">
-                <div className="space-y-3 text-sm">
+                <div className="space-y-3 text-base">
                   {EVENT_CATALOG.filter((section) => section.description).map((section) => (
                     <p key={section.title}>
                       <span className="font-medium text-[#111827]">{section.title}</span>
@@ -2078,7 +2078,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </div>
 
               <ChartCard title="Assumptions & Limitations">
-                <ul className="list-disc pl-5 space-y-2 text-sm text-app-gray-card mb-5">
+                <ul className="list-disc pl-5 space-y-2 text-base text-app-gray-card mb-5">
                   {CATALOG_ASSUMPTIONS.map((c, i) => (
                     <li key={i}>
                       {c.isNew && (
@@ -2091,7 +2091,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
                   ))}
                 </ul>
                 <div className="pt-4 border-t border-[#EEF1F6]">
-                  <p className="text-sm font-medium text-[#111827] mb-1">Who actually sends this data?</p>
+                  <p className="text-base font-medium text-[#111827] mb-1">Who actually sends this data?</p>
                   <p className="text-xs text-gray-500 mb-3">
                     The camera itself never talks to Amplitude. Every event in this catalog is logged by the mobile app, based on what it observes from or does with the camera — the camera has no analytics SDK of its own.
                   </p>
@@ -2108,7 +2108,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </div>
 
               <ChartCard title="Conventions">
-                <ul className="list-disc pl-5 space-y-1.5 text-sm text-app-gray-card">
+                <ul className="list-disc pl-5 space-y-1.5 text-base text-app-gray-card">
                   {CATALOG_CONVENTIONS.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}

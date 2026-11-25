@@ -91,7 +91,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
               <div className="p-6 border-b border-app-line/15 dark:border-app-dk-sunken flex items-start justify-between">
                 <div>
                   <h2 className="text-2xl text-app-content">Select Camera Wi-Fi</h2>
-                  <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
+                  <p className="text-base text-app-content-faint mt-1">Choose the network for your camera</p>
                   <p className="text-base text-app-amber mt-2">For better use, select a Sami network</p>
                 </div>
                 <button
@@ -106,7 +106,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 {isRefreshing ? (
                   <div className="flex flex-col items-center justify-center py-10 gap-3">
                     <RefreshCw className="w-8 h-8 animate-spin" style={{ color: accentColor }} />
-                    <p className="text-app-content-faint text-sm">Searching for networks...</p>
+                    <p className="text-app-content-faint text-base">Searching for networks...</p>
                   </div>
                 ) : orderedNetworks.map(network => {
                   const isSelected = network.ssid === selectedSsid;
@@ -139,7 +139,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                       setPwError(false);
                       setStep('hidden');
                     }}
-                    className="text-sm hover:underline"
+                    className="text-base hover:underline"
                     style={{ color: accentColor }}
                   >Join another network…</button>
                 </div>
@@ -179,9 +179,9 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 <Wifi className="w-6 h-6 text-app-content" />
                 <h2 className="text-xl text-center text-app-content">Other network</h2>
               </div>
-              <p className="text-sm text-app-content-faint mb-6 text-center">Enter the network name</p>
+              <p className="text-base text-app-content-faint mb-6 text-center">Enter the network name</p>
               <div className="mb-6">
-                <label className="block text-sm mb-2 text-app-content-faint">Network name</label>
+                <label className="block text-base mb-2 text-app-content-faint">Network name</label>
                 <input
                   type="text"
                   value={hiddenSsid}
@@ -223,14 +223,14 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 <Wifi className="w-6 h-6 text-app-content" />
                 <h2 className="text-xl text-center text-app-content">{pendingSsid}</h2>
               </div>
-              <p className="text-sm text-app-content-faint mb-6 text-center">Enter the password for this network</p>
+              <p className="text-base text-app-content-faint mb-6 text-center">Enter the password for this network</p>
               {pwError && (
                 <div className="mb-4 px-4 py-3 bg-app-card dark:bg-[#B85555]/20 border border-app-alert/50 dark:border-[#B85555]/50 rounded-xl">
-                  <p className="text-app-alert dark:text-[#F08080] text-sm font-bold dark:font-normal text-center">Incorrect password. Please try again.</p>
+                  <p className="text-app-alert dark:text-[#F08080] text-base font-bold dark:font-normal text-center">Incorrect password. Please try again.</p>
                 </div>
               )}
               <div className="mb-6">
-                <label className="block text-sm mb-2 text-app-content-faint">Wi-Fi Password</label>
+                <label className="block text-base mb-2 text-app-content-faint">Wi-Fi Password</label>
                 <div className="relative">
                   <input
                     type={showPw ? 'text' : 'password'}
@@ -317,7 +317,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center border-2 border-app-quiet">
                   <RefreshCw className="w-12 h-12 text-app-quiet animate-spin" />
                 </div>
-                <p className="text-sm text-app-content-faint">This may take a few seconds</p>
+                <p className="text-base text-app-content-faint">This may take a few seconds</p>
               </div>
             </div>
           )}

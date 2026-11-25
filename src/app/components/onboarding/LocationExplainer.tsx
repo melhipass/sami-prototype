@@ -9,8 +9,8 @@ export function LocationExplainer({ onContinue, onCancel }: LocationExplainerPro
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-24 h-24 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
-          <Shield className="w-12 h-12 text-app-quiet" />
+        <div className="w-20 h-20 bg-app-card rounded-full flex items-center justify-center mb-8 border-2 border-app-quiet">
+          <Shield className="w-10 h-10 text-app-quiet" />
         </div>
 
         <h1 className="text-3xl mb-4 text-app-content">Access Permissions</h1>
