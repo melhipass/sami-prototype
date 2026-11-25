@@ -247,7 +247,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
   const stepperConfig = getStepperConfig();
 
   return (
-    <div className="absolute inset-0 z-50">
+    <div className="absolute inset-0 z-50 onboarding-scope">
       {stepperConfig && (
         <OnboardingStepper
           currentIndex={stepperConfig.index}
@@ -294,19 +294,19 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <div className="space-y-3">
               <button
                 onClick={handleLocationPermission}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Allow Once
               </button>
               <button
                 onClick={handleLocationPermission}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Allow While Using App
               </button>
               <button
                 onClick={() => setStep(12)}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Do Not Allow
               </button>
@@ -321,13 +321,13 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
             <div className="space-y-3">
               <button
                 onClick={handleLocalNetworkPermission}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Allow
               </button>
               <button
                 onClick={() => setStep(12)}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Do Not Allow
               </button>
@@ -456,7 +456,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
               <button
                 onClick={() => setStep(5)}
                 title="Opens the device's Settings app (native app only)"
-                className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+                className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
               >
                 Go to Settings
               </button>
@@ -488,7 +488,7 @@ export function OnboardingFlow({ onComplete, onSkip, onCancel, initialStep = 0, 
               <button
                 onClick={() => setStep(5)}
                 title="Opens the device's Settings app (native app only)"
-                className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+                className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
               >
                 Go to Settings
               </button>

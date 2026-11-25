@@ -583,7 +583,7 @@ function SimpleTable({ columns, rows }: { columns: string[]; rows: (string | num
           {rows.map((row, i) => (
             <tr key={i} className="border-b border-[#F3F5F9] last:border-0">
               {row.map((cell, j) => (
-                <td key={j} className="py-2 pr-4 text-[#1F2937] whitespace-nowrap">{cell}</td>
+                <td key={j} className="py-2 pr-4 text-app-gray-card whitespace-nowrap">{cell}</td>
               ))}
             </tr>
           ))}
@@ -620,8 +620,8 @@ function DataFlowDiagram() {
       {/* Mobile App */}
       <rect x="245" y="30" width="150" height="80" rx="10" fill={COLORS.primaryLight} stroke={COLORS.primary} strokeWidth="1.5" />
       <text x="320" y="65" textAnchor="middle" fontSize="13" fontWeight="600" fill="#111827">Mobile App</text>
-      <text x="320" y="82" textAnchor="middle" fontSize="10" fill="#1F2937">Logs every event</text>
-      <text x="320" y="95" textAnchor="middle" fontSize="10" fill="#1F2937">(camera_status, taps, etc.)</text>
+      <text x="320" y="82" textAnchor="middle" fontSize="10" fill="var(--app-gray-card)">Logs every event</text>
+      <text x="320" y="95" textAnchor="middle" fontSize="10" fill="var(--app-gray-card)">(camera_status, taps, etc.)</text>
 
       {/* App -> Amplitude */}
       <line x1="400" y1="70" x2="475" y2="70" stroke={COLORS.primary} strokeWidth="2" markerEnd="url(#flowArrow)" />
@@ -705,7 +705,7 @@ function CatalogTable({ rows }: { rows: { category: string; event: string; when:
                   {r.reference && <InfoTooltip text={r.reference} />}
                 </span>
               </td>
-              <td className="py-2.5 pr-4 text-[#1F2937]">{r.when}</td>
+              <td className="py-2.5 pr-4 text-app-gray-card">{r.when}</td>
               <td className="py-2.5 text-gray-600">{r.data}</td>
             </tr>
           ))}
@@ -2078,7 +2078,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </div>
 
               <ChartCard title="Assumptions & Limitations">
-                <ul className="list-disc pl-5 space-y-2 text-sm text-[#1F2937] mb-5">
+                <ul className="list-disc pl-5 space-y-2 text-sm text-app-gray-card mb-5">
                   {CATALOG_ASSUMPTIONS.map((c, i) => (
                     <li key={i}>
                       {c.isNew && (
@@ -2108,7 +2108,7 @@ export function AnalyticsDashboard({ onBack }: { onBack: () => void }) {
               </div>
 
               <ChartCard title="Conventions">
-                <ul className="list-disc pl-5 space-y-1.5 text-sm text-[#1F2937]">
+                <ul className="list-disc pl-5 space-y-1.5 text-sm text-app-gray-card">
                   {CATALOG_CONVENTIONS.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}

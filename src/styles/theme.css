@@ -80,7 +80,7 @@
   --app-quiet: #4D9C81;         /* low intensity, "all was quiet" */
   --app-quiet-text: #27755C;    /* green for text only (WCAG AA) */
   --app-amber: #8C6C0F;         /* medium intensity (deepened for WCAG AA) */
-  --app-alert: #B15548;         /* high intensity (unified red, WCAG AA) */
+  --app-alert: #B6594C;         /* high intensity (unified red, WCAG AA) */
   --app-notice: #FCEAAD;        /* highlight ground (audio, consent) */
   --app-notice-ink: #756619;    /* text on notice */
   --app-tint-quiet: #F1F8F4;    /* quiet-night ground */
@@ -92,6 +92,10 @@
   /* Settings slider/selection accent — Light uses brand Dark Blue; Dark keeps the
      original medium-blue (#6BA3D4) so Dark Mode stays unchanged. */
   --app-slider-accent: #293283;
+  --app-blue-accent-b: #5B8BBF; /* Medium blue used for text and borders (the #5B8BBF literals). */
+  --app-border-overlay: rgba(91, 139, 191, 0.5);
+  --app-unlock-from: #6BA3D4;
+  --app-unlock-to: #5890c0;
 
   /* Fixed palette — one value in both themes */
   --app-navy: #293283;
@@ -120,17 +124,23 @@
   --app-accent-green-dark: #3D7C66;
   --app-accent-green-hover: #356B58;
   --app-accent-yellow: #5B8BBF; /* (name is legacy; this is actually the "paused" blue) */
-  --app-accent-red: #B15548; /* (unified red, WCAG AA) */
+  --app-accent-red: #B6594C; /* (unified red, WCAG AA) */
   --app-accent-red-dark: #BD6058;
   --app-accent-blue: #5C87BE;
   --app-accent-blue-hover: #4A72A8;
   --app-accent-cyan: #5B8BBF;
+  /* Blue used for links, focus borders and dialog actions. Same value in Light and Dark Mode 1 as the hard-coded #5A8BBF it replaces; Dark Mode 2 uses #C9D9F2. */
+  --app-blue-accent: #5A8BBF;
   --app-accent-teal: #4D9C81;
   --app-accent-dark-red: #C67373;
   --app-background-gradient-start: #E8F1FB;
   --app-background-gradient-end: #FFFFFF;
   --app-gray-inactive: #A9B8D6;
   --app-gray-border: #C9D6EA;
+  /* Gray ink/surface used in both modes; Dark Mode 2 overrides them */
+  --app-gray-panel: #2C3B4A;
+  --app-gray-faint: #9ca3af;
+  --app-gray-card: #1F2937;
   --app-night-vision-overlay: rgba(4, 192, 127, 0.08);
 
 }
@@ -204,9 +214,15 @@
      here instead of inheriting the spec's single navy value. */
   --app-navy: #5B8BBF;            /* was --app-cta (dark) — unchanged medium-blue accent */
   --app-navy-700: rgba(91, 139, 191, 0.8); /* reproduces the old hover:bg-app-cta/80 */
+  --app-on-navy: #ffffff; /* Ink (text, icons, toggle thumbs) on top of the main blue --app-navy in Dark Mode. White in Dark Mode 1; Dark Mode 2 overrides it. */
+  --app-toggle-off: #4b5563; /* Off track of the onboarding disclaimer toggles */
 
   /* Settings slider/selection accent — keep the original #6BA3D4 in Dark Mode. */
   --app-slider-accent: #6BA3D4;
+  --app-blue-accent-b: #5B8BBF; /* Medium blue used for text and borders (the #5B8BBF literals). */
+  --app-border-overlay: rgba(91, 139, 191, 0.5);
+  --app-unlock-from: #6BA3D4;
+  --app-unlock-to: #5890c0;
 
   /* Same exception for the onboarding info-box color: "green" is meant to
      be fixed in both themes per COLOR_SYSTEM.md, but the onboarding boxes'
@@ -230,6 +246,8 @@
   --app-accent-blue: #C4D9F1; /* Light Blue for left motion bar - from recordings palette */
   --app-accent-blue-hover: #a8c4e5; /* Darker light blue for hover */
   --app-accent-cyan: #5A8BBF; /* Darker blue for active states - improved contrast */
+  --app-blue-accent: #5A8BBF; /* links, focus borders, dialog actions (same as the hard-coded #5A8BBF; Dark Mode 2 overrides) */
+  --app-active-ink: #ffffff; /* Icon/label color on the active Border and Motion buttons (Main View). White in Dark Mode 1; Dark Mode 2 overrides it. */
   --app-accent-teal: #BFE3D9; /* Darker green for alarm "on" state - improved contrast */
   --app-accent-dark-red: #E59999; /* Coral red for hidden recordings */
   --app-background-gradient-start: #1e293b; /* Modern slate gradient */
@@ -238,6 +256,89 @@
   --app-gray-border: #475569; /* Slate border */
   --app-night-vision-overlay: rgba(4, 192, 127, 0.08); /* Subtle teal green overlay */
 
+  /* Dark-only grays, tokenized so Dark Mode 2 can override them */
+  --app-dk-card: #1f2937;
+  --app-dk-card-alt: #1E2938;
+  --app-dk-panel: #2C3B4A;
+  --app-dk-sunken: #374151;
+  --app-dk-border-strong: #4b5563;
+  --app-dk-track: #5B6C7E;
+  --app-dk-faint: #9ca3af;
+  --app-dk-border-dim: #1f2937;
+  /* Gray ink/surface used in both modes; Dark Mode 2 overrides them */
+  --app-gray-panel: #2C3B4A;
+  --app-gray-faint: #9ca3af;
+  --app-gray-card: #1F2937;
+}
+
+/* Dark Mode 2: second Dark variant. Body has BOTH classes "dark dark2", so this selector is more specific than .dark and its overrides win. Intentionally empty for now: Dark Mode 2 is identical to Dark Mode 1 until I define its colors. */
+.dark.dark2 {
+  /* Surfaces */
+  --app-surface: #0D1237;
+  --app-navy: #C9D9F2;        /* main blue (buttons, toggle tracks, sliders) */
+  --app-navy-700: rgba(201, 217, 242, 0.8); /* hover, same 80% logic as Dark */
+  --app-on-navy: #293283;     /* ink on top of the main blue */
+  --app-toggle-off: #5D6891;  /* off track of the onboarding disclaimer toggles */
+  --app-slider-accent: #C9D9F2; /* slider fills/thumbs + selected segmented options */
+  --app-blue-accent-b: #C9D9F2; /* the #5B8BBF text/border literals */
+  --app-border-overlay: rgba(201, 217, 242, 0.5); /* border overlay mask over video */
+  --app-unlock-from: #C9D9F2; /* slide-to-unlock thumb gradient */
+  --app-unlock-to: #C9D9F2;
+  --app-accent-cyan: #C9D9F2; /* active Border/Motion buttons (Main View) */
+  --app-blue-accent: #C9D9F2; /* links, focus borders, dialog actions */
+  --app-accent-yellow: #C9D9F2; /* unused today; set for consistency */
+  --app-active-ink: #293283;  /* icon/label on those active buttons */
+  --app-card: #1E2656;
+  --app-mint: #1E2656;
+  --app-sunken: #343D68;
+  --app-background-gradient-start: #1E2656;
+  --app-background-gradient-end: #0D1237;
+
+  /* Dark-only gray tokens */
+  --app-dk-card: #1E2656;
+  --app-dk-card-alt: #1E2656;
+  --app-dk-border-dim: #1E2656;
+  --app-dk-panel: #293283; /* exact brand Dark Blue: live view side panel, bottom bar, volume track, button ink */
+  --app-dk-sunken: #343D68;
+  --app-dk-border-strong: #48527A;
+  --app-dk-track: #5D6891;
+  --app-dk-faint: #CED4E7;
+
+  /* Gray tokens from PART A */
+  --app-gray-panel: #293283;
+  --app-gray-faint: #CED4E7;
+  --app-gray-card: #1E2656;
+
+  /* Text and grays */
+  --app-content-soft: #CED4E7;
+  --app-content-faint: #CED4E7;
+  --app-muted: #CED4E7;
+  --app-gray-inactive: #98A0BF;
+  --app-gray-border: #47517A;
+}
+
+/* Dark Mode 2, onboarding only: background = brand Dark Blue #293283, cards #1E2656. Secondary buttons/chips/stepper use --app-sunken #48527A for contrast on the #293283 background. Applies to every element inside the onboarding root (.onboarding-scope). */
+.dark.dark2 .onboarding-scope {
+  --app-surface: #293283;
+  --app-card: #1E2656;
+  --app-mint: #1E2656;
+  --app-dk-card: #1E2656;
+  --app-dk-card-alt: #1E2656;
+  --app-dk-border-dim: #1E2656;
+  --app-gray-card: #1E2656;
+  --app-sunken: #48527A;
+}
+
+/* Dark Mode 2: active onboarding step uses the brand pink */
+.dark.dark2 .stepper-active-circle { background-color: #FFC7BD; color: #293283; }
+.dark.dark2 .stepper-active-label { color: #FFC7BD; }
+
+/* Dark Mode 2: Clock digits use a darker palette blue (Clock background is black) */
+.dark.dark2 .clock-scope { --app-blue-accent: #99A1C0; }
+
+/* Dark Mode 2 only: ink on the active Border/Motion labels (Main View). Kept as a scoped rule so Dark Mode 1 keeps the white/80 label unchanged. */
+.dark.dark2 .main-active-label {
+  color: #293283;
 }
 
 @theme inline {
@@ -290,6 +391,24 @@
   --color-app-line: var(--app-line);
   --color-app-link: var(--app-link);
   --color-app-quiet: var(--app-quiet);
+  --color-app-dk-card: var(--app-dk-card);
+  --color-app-active-ink: var(--app-active-ink);
+  --color-app-blue-accent: var(--app-blue-accent);
+  --color-app-blue-accent-b: var(--app-blue-accent-b);
+  --color-app-toggle-off: var(--app-toggle-off);
+  --color-app-unlock-from: var(--app-unlock-from);
+  --color-app-unlock-to: var(--app-unlock-to);
+  --color-app-on-navy: var(--app-on-navy);
+  --color-app-dk-card-alt: var(--app-dk-card-alt);
+  --color-app-dk-panel: var(--app-dk-panel);
+  --color-app-dk-sunken: var(--app-dk-sunken);
+  --color-app-dk-border-strong: var(--app-dk-border-strong);
+  --color-app-dk-track: var(--app-dk-track);
+  --color-app-dk-faint: var(--app-dk-faint);
+  --color-app-dk-border-dim: var(--app-dk-border-dim);
+  --color-app-gray-panel: var(--app-gray-panel);
+  --color-app-gray-faint: var(--app-gray-faint);
+  --color-app-gray-card: var(--app-gray-card);
   --color-app-quiet-text: var(--app-quiet-text);
   --color-app-amber: var(--app-amber);
   --color-app-alert: var(--app-alert);
@@ -324,7 +443,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   }
 
   body {
@@ -400,7 +519,7 @@
     opacity: 0;
   }
   100% {
-    color: #5A8BBF; /* Darker blue - improved contrast */
+    color: var(--app-blue-accent); /* Darker blue - improved contrast */
     opacity: 1;
   }
 }

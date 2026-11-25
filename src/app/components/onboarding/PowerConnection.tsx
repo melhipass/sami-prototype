@@ -25,12 +25,12 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
         <div className="w-full bg-app-card rounded-xl border border-app-amber/30 px-4 py-3 mb-4">
           <div className="flex items-center justify-center gap-4">
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-app-content/10 dark:bg-[#4b5563] border-2 border-gray-500 mb-1"></div>
+              <div className="w-8 h-8 rounded-full bg-app-content/10 dark:bg-app-dk-border-strong border-2 border-gray-500 mb-1"></div>
               <span className="text-xs text-app-mint-ink dark:text-app-content-faint">Off</span>
             </div>
             <ArrowRight className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-[#B15548] dark:bg-[#B95555] border-2 border-[#B15548] dark:border-[#B95555] mb-1 shadow-lg shadow-[#B15548]/50 dark:shadow-[#B95555]/50"></div>
+              <div className="w-8 h-8 rounded-full bg-[#B6594C] dark:bg-[#B95555] border-2 border-[#B6594C] dark:border-[#B95555] mb-1 shadow-lg shadow-[#B6594C]/50 dark:shadow-[#B95555]/50"></div>
               <span className="text-xs text-app-mint-ink dark:text-app-content-faint">Red</span>
             </div>
             <ArrowRight className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
@@ -50,14 +50,14 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
         <div className="space-y-3 w-full">
           <button
             onClick={onLightIsGreen}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
           >
             Light is green
           </button>
 
           <button
             onClick={isAndroid ? onGoBack : onLightIsNotGreen}
-            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
           >
             {isAndroid ? 'Go Back' : 'Having trouble'}
           </button>
@@ -67,10 +67,10 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
       {/* Trouble popup — Android only */}
       {showTroublePopup && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-6">
-          <div className="bg-app-card rounded-2xl w-full max-w-md overflow-hidden border border-app-line/15 dark:border-[#374151]">
+          <div className="bg-app-card rounded-2xl w-full max-w-md overflow-hidden border border-app-line/15 dark:border-app-dk-sunken">
             <div className="flex items-center justify-between px-6 pt-6 pb-4">
               <h2 className="text-app-mint-ink text-xl font-semibold">Having Trouble?</h2>
-              <button onClick={() => setShowTroublePopup(false)} className="p-1 hover:bg-app-content/10 dark:hover:bg-[#374151] rounded-lg transition-colors">
+              <button onClick={() => setShowTroublePopup(false)} className="p-1 hover:bg-app-content/10 dark:hover:bg-app-dk-sunken rounded-lg transition-colors">
                 <X className="w-5 h-5 text-app-mint-ink dark:text-app-content-faint" />
               </button>
             </div>
@@ -79,10 +79,10 @@ export function PowerConnection({ onLightIsGreen, onLightIsNotGreen, onGoBack, i
                 If you are having trouble please check the instructions included on the Sami Package or contact support.
               </p>
             </div>
-            <div className="border-t border-app-line/15 dark:border-[#374151]">
+            <div className="border-t border-app-line/15 dark:border-app-dk-sunken">
               <button
                 onClick={() => setShowTroublePopup(false)}
-                className="w-full py-4 text-lg font-semibold transition-colors hover:bg-app-content/10 dark:hover:bg-[#374151]"
+                className="w-full py-4 text-lg font-semibold transition-colors hover:bg-app-content/10 dark:hover:bg-app-dk-sunken"
                 style={{ color: 'var(--app-navy)' }}
               >
                 OK

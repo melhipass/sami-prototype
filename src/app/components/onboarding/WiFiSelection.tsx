@@ -60,12 +60,12 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
     return (
       <button
         onClick={() => setSelectedSsid(network.ssid)}
-        className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${isSelected ? 'bg-app-sunken' : 'hover:bg-app-sunken active:bg-app-content/10 dark:active:bg-[#4b5563]'}`}
+        className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${isSelected ? 'bg-app-sunken' : 'hover:bg-app-sunken active:bg-app-content/10 dark:active:bg-app-dk-border-strong'}`}
       >
         <Wifi className={`w-5 h-5 ${network.strength === 3 ? 'text-app-content' : network.strength === 2 ? 'text-app-content-faint' : 'text-app-content-faint'}`} />
-        <span className={`flex-1 text-left text-base ${isSelected ? 'text-[#5B8BBF] font-semibold' : 'text-app-content'}`}>{network.ssid}</span>
+        <span className={`flex-1 text-left text-base ${isSelected ? 'text-app-blue-accent-b font-semibold' : 'text-app-content'}`}>{network.ssid}</span>
         {isSelected ? (
-          <Check className="w-5 h-5 text-[#5B8BBF]" />
+          <Check className="w-5 h-5 text-app-blue-accent-b" />
         ) : (
           network.secured && <Lock className="w-4 h-4 text-app-content-faint" />
         )}
@@ -75,7 +75,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6 py-8">
-      <div className="bg-app-card rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-app-line/15 dark:border-[#374151]">
+      <div className="bg-app-card rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-app-line/15 dark:border-app-dk-sunken">
         {showHiddenForm ? (
           /* Other network form — mirrors the NetworkPassword popup layout */
           <div className="p-8">
@@ -97,7 +97,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 maxLength={32}
                 autoFocus
                 placeholder="Enter network name"
-                className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-600 border-app-line/20 dark:border-[#4b5563] focus:border-[#5B8BBF]"
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-600 border-app-line/20 dark:border-app-dk-border-strong focus:border-app-blue-accent-b"
               />
             </div>
 
@@ -105,13 +105,13 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
               <button
                 onClick={() => onSelect(hiddenSsid.trim(), true)}
                 disabled={hiddenSsid.trim().length === 0}
-                className="w-full bg-app-navy text-white py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-app-navy-700 transition-colors"
+                className="w-full bg-app-navy text-white dark:text-app-on-navy py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-app-navy-700 transition-colors"
               >
                 Next
               </button>
               <button
                 onClick={closeHiddenForm}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Back
               </button>
@@ -120,7 +120,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
         ) : (
           <>
             {/* Header */}
-            <div className="p-6 border-b border-app-line/15 dark:border-[#374151] flex items-start justify-between">
+            <div className="p-6 border-b border-app-line/15 dark:border-app-dk-sunken flex items-start justify-between">
               <div>
                 <h2 className="text-2xl text-app-content">{title}</h2>
                 {showSubtitle && (
@@ -133,14 +133,14 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing || !canScan}
-                className="ml-4 mt-1 p-2 rounded-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors disabled:opacity-50"
+                className="ml-4 mt-1 p-2 rounded-lg hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors disabled:opacity-50"
               >
-                <RefreshCw className={`w-5 h-5 text-[#5B8BBF] ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-5 h-5 text-app-blue-accent-b ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
             {/* Wi-Fi / Location toggles */}
-            <div className="px-4 py-2 border-b border-app-line/15 dark:border-[#374151]">
+            <div className="px-4 py-2 border-b border-app-line/15 dark:border-app-dk-sunken">
               <div className="flex items-center justify-between py-2">
                 <div>
                   <span className="text-app-content">Wi-Fi</span>
@@ -148,9 +148,9 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 </div>
                 <button
                   onClick={() => setWifiEnabled(v => !v)}
-                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${wifiEnabled ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
+                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${wifiEnabled ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-app-dk-faint'}`}
                 >
-                  <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${wifiEnabled ? 'right-1' : 'left-1'}`} />
+                  <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${wifiEnabled ? 'right-1' : 'left-1'}`} />
                 </button>
               </div>
               <div className="flex items-center justify-between py-2">
@@ -160,9 +160,9 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 </div>
                 <button
                   onClick={() => setLocationEnabled(v => !v)}
-                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${locationEnabled ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-[#9ca3af]'}`}
+                  className={`w-14 h-8 rounded-full transition-colors relative shrink-0 ml-4 ${locationEnabled ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-app-dk-faint'}`}
                 >
-                  <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${locationEnabled ? 'right-1' : 'left-1'}`} />
+                  <div className={`absolute top-1 w-6 h-6 bg-white dark:bg-app-on-navy rounded-full transition-transform ${locationEnabled ? 'right-1' : 'left-1'}`} />
                 </button>
               </div>
             </div>
@@ -178,7 +178,7 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
                 </div>
               ) : isRefreshing ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
-                  <RefreshCw className="w-8 h-8 text-[#5B8BBF] animate-spin" />
+                  <RefreshCw className="w-8 h-8 text-app-blue-accent-b animate-spin" />
                   <p className="text-app-content-faint text-sm">Searching for networks...</p>
                 </div>
               ) : (
@@ -192,10 +192,10 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
 
             {/* Hidden network entry — discreet, only when the list is shown */}
             {canScan && !isRefreshing && (
-              <div className="px-4 py-3 border-t border-app-line/15 dark:border-[#374151] text-center">
+              <div className="px-4 py-3 border-t border-app-line/15 dark:border-app-dk-sunken text-center">
                 <button
                   onClick={() => setShowHiddenForm(true)}
-                  className="text-sm text-[#5B8BBF] hover:underline"
+                  className="text-sm text-app-blue-accent-b hover:underline"
                 >
                   Join another network…
                 </button>
@@ -203,17 +203,17 @@ export function WiFiSelection({ onSelect, onCancel, title = 'Select Wi-Fi Networ
             )}
 
             {/* Footer buttons */}
-            <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
+            <div className="p-4 border-t border-app-line/15 dark:border-app-dk-sunken flex gap-3">
               <button
                 onClick={onCancel}
-                className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => onSelect(selectedSsid, selectedNetwork?.secured ?? true)}
                 disabled={!canScan}
-                className="flex-1 bg-app-navy text-white py-3 rounded-xl hover:bg-app-navy-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-app-navy"
+                className="flex-1 bg-app-navy text-white dark:text-app-on-navy py-3 rounded-xl hover:bg-app-navy-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-app-navy"
               >
                 Select
               </button>

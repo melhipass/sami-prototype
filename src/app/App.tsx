@@ -20,7 +20,6 @@ import {
   AlertDialogTitle,
 } from '@/app/components/ui/alert-dialog';
 import { Toaster } from '@/app/components/ui/sonner';
-import { Switch } from '@/app/components/ui/switch';
 import { OnboardingFlow } from '@/app/components/onboarding/OnboardingFlow';
 import { RecordingsScreen } from '@/app/components/RecordingsScreen';
 import { SettingsScreen } from '@/app/components/SettingsScreen';
@@ -39,9 +38,10 @@ function AppContent({
   setShowAnalyticsDashboard: (v: boolean) => void;
 }) {
   const [selectedOS, setSelectedOS] = useState<'ios' | 'android' | null>(null);
-  // Prototype-only skin toggle: 'dark' = Dark Mode (today's look), 'light' = Light Mode (brand palette).
-  // Defaults to 'dark' so existing behavior is unchanged unless the user flips the switch.
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
+  // Prototype-only skin toggle: 'light' = Light Mode, 'dark1' = Dark Mode 1 (today's Dark look),
+  // 'dark2' = Dark Mode 2 (second Dark variant, to be defined later — identical to Dark Mode 1 for now).
+  // Not persisted: the prototype always opens in Dark Mode 1.
+  const [themeMode, setThemeMode] = useState<'light' | 'dark1' | 'dark2'>('dark1');
   const [showHomeScreen, setShowHomeScreen] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -480,7 +480,8 @@ function AppContent({
   // always open in Dark Mode by default, since that's the design devs are
   // currently working from, regardless of what was toggled in a prior session.
   useEffect(() => {
-    document.body.classList.toggle('dark', themeMode === 'dark');
+    document.body.classList.toggle('dark', themeMode !== 'light');
+    document.body.classList.toggle('dark2', themeMode === 'dark2');
   }, [themeMode]);
 
   // Show storage popup the first time user enters Recordings view
@@ -1981,11 +1982,11 @@ function AppContent({
           {/* Logo */}
           <div className="flex flex-col items-center gap-3 mb-16">
             <img src={splashLogo} alt="Sami" className="w-24 h-24 object-contain" />
-            <span className="text-app-content text-3xl font-semibold tracking-wide" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Sami</span>
+            <span className="text-app-content text-3xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}>Sami</span>
           </div>
 
           {/* Question */}
-          <p className="text-app-content-soft text-lg mb-10" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
+          <p className="text-app-content-soft text-lg mb-10" style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}>
             Choose a device?
           </p>
 
@@ -1993,24 +1994,24 @@ function AppContent({
           <div className="flex gap-8">
             <button
               onClick={() => setSelectedOS('ios')}
-              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 dark:border-[#4b5563] hover:border-app-link dark:hover:border-[#22C7E8] transition-all group bg-app-content/5"
+              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 dark:border-app-dk-border-strong hover:border-app-link dark:hover:border-[#22C7E8] transition-all group bg-app-content/5"
             >
               {/* Apple logo SVG */}
               <svg className="w-14 h-14 text-app-content group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
               </svg>
-              <span className="text-app-content text-xl font-semibold group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>iOS</span>
+              <span className="text-app-content text-xl font-semibold group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}>iOS</span>
             </button>
 
             <button
               onClick={() => setSelectedOS('android')}
-              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 dark:border-[#4b5563] hover:border-app-link dark:hover:border-[#22C7E8] transition-all group bg-app-content/5"
+              className="flex flex-col items-center gap-4 px-12 py-8 rounded-2xl border-2 border-app-line/15 dark:border-app-dk-border-strong hover:border-app-link dark:hover:border-[#22C7E8] transition-all group bg-app-content/5"
             >
               {/* Android logo SVG */}
               <svg className="w-14 h-14 text-app-content group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.523 15.341a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m-9.546 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0M2.976 8.25h18.048v8.625c0 .621-.504 1.125-1.125 1.125H4.1a1.125 1.125 0 0 1-1.125-1.125V8.25zM8.358 3.102l-1.56-2.7a.375.375 0 0 1 .65-.376l1.58 2.737A9.77 9.77 0 0 1 12 2.25c1.12 0 2.196.188 3.196.537l1.558-2.699a.375.375 0 0 1 .65.376l-1.56 2.7A9.754 9.754 0 0 1 21.024 8.25H2.976a9.754 9.754 0 0 1 5.382-5.148z"/>
               </svg>
-              <span className="text-app-content text-xl font-semibold group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>Android</span>
+              <span className="text-app-content text-xl font-semibold group-hover:text-app-link dark:group-hover:text-[#22C7E8] transition-colors" style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}>Android</span>
             </button>
           </div>
 
@@ -2018,19 +2019,41 @@ function AppContent({
           <button
             onClick={() => setShowAnalyticsDashboard(true)}
             className="mt-12 flex items-center gap-2 text-app-content-faint hover:text-app-link dark:hover:text-[#22C7E8] transition-colors text-sm underline underline-offset-4"
-            style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}
+            style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}
           >
             View Analytics Dashboard →
           </button>
 
-          {/* Normal / Night skin toggle (prototype-only control) */}
-          <div className="mt-6 flex items-center gap-3" style={{ fontFamily: 'SF Pro, system-ui, sans-serif' }}>
-            <span className="text-app-content-faint text-sm">Light Mode</span>
-            <Switch
-              checked={themeMode === 'dark'}
-              onCheckedChange={(checked) => setThemeMode(checked ? 'dark' : 'light')}
-            />
-            <span className="text-app-content-faint text-sm">Dark Mode</span>
+          {/* Theme mode selector (prototype-only control) */}
+          <div
+            role="radiogroup"
+            aria-label="App mode"
+            className="mt-6 flex rounded-full p-1 bg-app-sunken"
+            style={{ fontFamily: 'var(--font-inter), Inter, system-ui, sans-serif' }}
+          >
+            {([
+              { value: 'light', label: 'Light Mode' },
+              { value: 'dark1', label: 'Dark Mode 1' },
+              { value: 'dark2', label: 'Dark Mode 2' },
+            ] as const).map((opt) => {
+              const selected = themeMode === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setThemeMode(opt.value)}
+                  className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+                    selected
+                      ? 'bg-app-card text-app-content font-semibold shadow'
+                      : 'text-app-content-faint hover:text-app-content'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -2174,7 +2197,7 @@ function AppContent({
         {/* Prototype control — sits directly under the Logout control, outside the app design */}
         <button
           onClick={handleOnboardingSkip}
-          className="fixed top-[6.5rem] left-6 z-[9999] flex items-center gap-2 text-[#9ca3af] hover:text-white transition-colors text-lg"
+          className="fixed top-[6.5rem] left-6 z-[9999] flex items-center gap-2 text-app-gray-faint hover:text-white transition-colors text-lg"
         >
           <X className="w-5 h-5" />
           Skip
@@ -2224,7 +2247,7 @@ function AppContent({
         {/* Clock Screen Overlay */}
         {showClock && (
           <div
-            className="dark absolute inset-0 bg-app-surface z-30 flex items-center justify-center cursor-pointer"
+            className={`${themeMode === 'dark2' ? 'dark dark2 bg-black' : 'dark bg-app-surface'} clock-scope absolute inset-0 z-30 flex items-center justify-center cursor-pointer`}
             onClick={() => setShowClock(false)}
           >
             {/* Wifi icon - top right */}
@@ -2258,7 +2281,7 @@ function AppContent({
             <div className="bg-app-surface py-4 flex items-center justify-between">
               <button 
                 onClick={() => setShowHelp(false)}
-                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
+                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-app-dk-border-strong rounded-lg text-white transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
@@ -2276,7 +2299,7 @@ function AppContent({
                   setEmailError('');
                   setShowSendLogScreen(true);
                 }}
-                className="mr-6 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
+                className="mr-6 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-app-dk-border-strong rounded-lg text-white transition-colors"
               >
                 Send log
               </button>
@@ -2284,12 +2307,12 @@ function AppContent({
             
             {/* Content area */}
             <div className="flex-1 bg-app-surface overflow-y-auto flex items-center justify-center p-12">
-              <div className="max-w-2xl text-left p-12 rounded-lg bg-app-card dark:bg-[#1E2938] border border-app-line/15 dark:border-0">
+              <div className="max-w-2xl text-left p-12 rounded-lg bg-app-card dark:bg-app-dk-card-alt border border-app-line/15 dark:border-0">
                 <h1 className="text-app-content text-5xl font-bold mb-8">Looking for help?</h1>
                 
                 <div className="text-app-content text-2xl space-y-6">
                   <p>
-                    Visit <a href="https://support.samialert.com/hc/en-us" target="_blank" rel="noopener noreferrer" className="font-semibold text-app-link dark:text-[#5A8BBF] hover:underline cursor-pointer text-2xl">support.samialert.com</a> where you can:
+                    Visit <a href="https://support.samialert.com/hc/en-us" target="_blank" rel="noopener noreferrer" className="font-semibold text-app-link dark:text-app-blue-accent hover:underline cursor-pointer text-2xl">support.samialert.com</a> where you can:
                   </p>
                   
                   <ul className="list-disc list-inside space-y-3 ml-4">
@@ -2303,8 +2326,8 @@ function AppContent({
                   </p>
                   
                   <ul className="list-disc list-inside space-y-3 ml-4">
-                    <li><a href="https://support.samialert.com/hc/en-us/articles/9207155110925-SAMi-3-Manual-Overview-of-SAMi-App-Settings-Features" target="_blank" rel="noopener noreferrer" className="text-app-link dark:text-[#5A8BBF] hover:underline cursor-pointer text-2xl">User Manual</a></li>
-                    <li><a href="https://support.samialert.com/hc/en-us/categories/8690414210445-Setup-Guides-User-Manuals" target="_blank" rel="noopener noreferrer" className="text-app-link dark:text-[#5A8BBF] hover:underline cursor-pointer text-2xl">Installation instructions</a></li>
+                    <li><a href="https://support.samialert.com/hc/en-us/articles/9207155110925-SAMi-3-Manual-Overview-of-SAMi-App-Settings-Features" target="_blank" rel="noopener noreferrer" className="text-app-link dark:text-app-blue-accent hover:underline cursor-pointer text-2xl">User Manual</a></li>
+                    <li><a href="https://support.samialert.com/hc/en-us/categories/8690414210445-Setup-Guides-User-Manuals" target="_blank" rel="noopener noreferrer" className="text-app-link dark:text-app-blue-accent hover:underline cursor-pointer text-2xl">Installation instructions</a></li>
                   </ul>
                   
                   <p
@@ -2326,7 +2349,7 @@ function AppContent({
             <div className="bg-app-surface py-4 flex items-center justify-between">
               <button
                 onClick={() => setShowOfflineHelp(false)}
-                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
+                className="ml-6 flex items-center gap-2 px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-app-dk-border-strong rounded-lg text-white transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span>Back</span>
@@ -2345,7 +2368,7 @@ function AppContent({
 
             {/* Content area */}
             <div className="flex-1 bg-app-surface overflow-y-auto flex items-center justify-center p-12">
-              <div className="max-w-2xl text-center p-12 rounded-lg bg-app-card dark:bg-[#1E2938] border border-app-line/15 dark:border-0">
+              <div className="max-w-2xl text-center p-12 rounded-lg bg-app-card dark:bg-app-dk-card-alt border border-app-line/15 dark:border-0">
                 <h1 className="text-app-content text-5xl font-bold mb-8">Looking for help?</h1>
 
                 <div className="text-app-content text-2xl">
@@ -2353,7 +2376,7 @@ function AppContent({
                     Your Device is Currently Offline.
                     <br /><br />
                     Please switch to a network with internet connectivity or visit{' '}
-                    <span className="font-semibold text-app-link dark:text-[#5A8BBF]">https://support.samialert.com</span>{' '}
+                    <span className="font-semibold text-app-link dark:text-app-blue-accent">https://support.samialert.com</span>{' '}
                     from another device connected to the internet.
                   </p>
                 </div>
@@ -2366,7 +2389,7 @@ function AppContent({
         {showSendLogScreen && (
           <div className="absolute inset-0 bg-app-surface z-50 flex flex-col">
             {/* Top bar */}
-            <div className="bg-app-surface py-4 px-6 flex items-center justify-between border-b border-app-line/15 dark:border-[#374151]">
+            <div className="bg-app-surface py-4 px-6 flex items-center justify-between border-b border-app-line/15 dark:border-app-dk-sunken">
               <button
                 onClick={() => {
                   setShowSendLogScreen(false);
@@ -2374,7 +2397,7 @@ function AppContent({
                   setLogProblemDescription('');
                   setEmailError('');
                 }}
-                className="px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-[#4b5563] rounded-lg text-white transition-colors"
+                className="px-4 py-2 bg-app-navy dark:bg-app-sunken hover:bg-app-navy-700 dark:hover:bg-app-dk-border-strong rounded-lg text-white transition-colors"
               >
                 Cancel
               </button>
@@ -2403,7 +2426,7 @@ function AppContent({
                 className={`px-4 py-2 bg-app-navy dark:bg-app-sunken rounded-lg text-white transition-colors ${
                   logProblemDescription.trim().length < 10
                     ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-app-navy-700 dark:hover:bg-[#4b5563]'
+                    : 'hover:bg-app-navy-700 dark:hover:bg-app-dk-border-strong'
                 }`}
               >
                 Send
@@ -2427,7 +2450,7 @@ function AppContent({
                     className={`w-full px-4 py-3 rounded-lg bg-app-card border text-app-content placeholder-app-content-faint focus:outline-none ${
                       emailError
                         ? 'border-app-alert dark:border-[#F08080] focus:border-app-alert'
-                        : 'border-app-line/15 dark:border-[#374151] focus:border-[#5A8BBF]'
+                        : 'border-app-line/15 dark:border-app-dk-sunken focus:border-app-blue-accent'
                     }`}
                   />
                   {emailError && (
@@ -2444,7 +2467,7 @@ function AppContent({
                     rows={6}
                     maxLength={1000}
                     placeholder="Tell us what's happening so we can help…"
-                    className="w-full px-4 py-3 rounded-lg bg-app-card border border-app-line/15 dark:border-[#374151] text-app-content placeholder-app-content-faint focus:outline-none focus:border-[#5A8BBF] resize-none"
+                    className="w-full px-4 py-3 rounded-lg bg-app-card border border-app-line/15 dark:border-app-dk-sunken text-app-content placeholder-app-content-faint focus:outline-none focus:border-app-blue-accent resize-none"
                   />
                   <div className="flex justify-between items-center mt-2">
                     {logProblemDescription.trim().length < 10 ? (
@@ -2468,7 +2491,7 @@ function AppContent({
         {/* Send Log submit flow popup (shown over the Help screen) */}
         {logSendStatus && (
           <div className="absolute inset-0 bg-black/70 z-[60] flex items-center justify-center">
-            <div className="bg-app-card rounded-lg w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
+            <div className="bg-app-card rounded-lg w-[480px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken">
               {logSendStatus === 'sending' && (
                 <>
                   <div className="px-8 pt-6 pb-2">
@@ -2494,7 +2517,7 @@ function AppContent({
                     </div>
                     <p className="text-app-content-soft text-base text-center leading-snug">We couldn&apos;t send your report. Please check your connection and try again.</p>
                   </div>
-                  <div className="border-t border-app-line/15 dark:border-[#374151] grid grid-cols-2">
+                  <div className="border-t border-app-line/15 dark:border-app-dk-sunken grid grid-cols-2">
                     <button
                       onClick={() => {
                         // Discard the report and return to the Help screen.
@@ -2506,13 +2529,13 @@ function AppContent({
                         setEmailError('');
                         setLogTicketNumber(null);
                       }}
-                      className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151] text-app-content-faint"
+                      className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken text-app-content-faint"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => runLogSendAttempt(logSendAttempt + 1)}
-                      className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
+                      className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-app-blue-accent"
                     >
                       Retry
                     </button>
@@ -2527,7 +2550,7 @@ function AppContent({
                   </div>
                   <div className="px-8 py-6 flex flex-col items-center gap-4">
                     <div className="w-16 h-16 bg-app-mint dark:bg-[#BFE3D9] rounded-2xl flex items-center justify-center">
-                      <CheckCircle className="w-8 h-8 text-app-mint-ink dark:text-[#2C3B4A]" />
+                      <CheckCircle className="w-8 h-8 text-app-mint-ink dark:text-app-dk-panel" />
                     </div>
                     <p className="text-app-content-soft text-base text-center leading-snug">
                       Thanks! Our support team has received your report and will get back to you at {logEmail}.
@@ -2535,7 +2558,7 @@ function AppContent({
                       Your ticket number is #{logTicketNumber}.
                     </p>
                   </div>
-                  <div className="border-t border-app-line/15 dark:border-[#374151]">
+                  <div className="border-t border-app-line/15 dark:border-app-dk-sunken">
                     <button
                       onClick={() => {
                         setLogSendStatus(null);
@@ -2544,7 +2567,7 @@ function AppContent({
                         setLogProblemDescription('');
                         setLogTicketNumber(null);
                       }}
-                      className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#5A8BBF]"
+                      className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-app-blue-accent"
                     >
                       OK
                     </button>
@@ -2841,7 +2864,7 @@ function AppContent({
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
             <div className="bg-app-card rounded-lg w-[500px] overflow-hidden">
               {/* Title */}
-              <div className="text-app-content text-xl font-semibold text-center py-4 border-b border-app-line/15 dark:border-[#374151]">
+              <div className="text-app-content text-xl font-semibold text-center py-4 border-b border-app-line/15 dark:border-app-dk-sunken">
                 Initial Setup
               </div>
 
@@ -2853,7 +2876,7 @@ function AppContent({
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-col">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex flex-col">
                 <button
                   onClick={() => {
                     setShowSamiNetworkBanner(false);
@@ -2861,7 +2884,7 @@ function AppContent({
                     setOnboardingSkipPermissions(true);
                     setShowOnboarding(true);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Continue
@@ -2894,7 +2917,7 @@ function AppContent({
           <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
             <div className="bg-app-card rounded-lg w-[500px] overflow-hidden">
               {/* Title */}
-              <div className="text-app-content text-xl font-semibold text-center py-4 border-b border-app-line/15 dark:border-[#374151]">
+              <div className="text-app-content text-xl font-semibold text-center py-4 border-b border-app-line/15 dark:border-app-dk-sunken">
                 Alarm Volume Off
               </div>
 
@@ -2906,14 +2929,14 @@ function AppContent({
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-col">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex flex-col">
                 <button
                   onClick={() => {
                     setShowVolumeWarningPopup(false);
                     setBeepOnCameraFault(false);
                     toast('Beep on camera fault is disabled');
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-red-500"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-red-500"
                 >
                   Disable Beep
                 </button>
@@ -2922,7 +2945,7 @@ function AppContent({
                     setShowVolumeWarningPopup(false);
                     setIgnoreCameraFaultWarning(true);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Ignore
@@ -2966,33 +2989,33 @@ function AppContent({
 
               {/* Buttons */}
               {archiveIsSingleLocked ? (
-                <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-row">
+                <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex flex-row">
                   <button
                     onClick={handleArchiveConfirmCancel}
-                    className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-[#374151]"
+                    className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-r border-app-line/15 dark:border-app-dk-sunken"
                     style={{ color: SETTINGS_ACCENT_COLOR }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleArchiveConfirmOk}
-                    className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B15548] dark:text-[#B85555]"
+                    className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B6594C] dark:text-[#B85555]"
                   >
                     OK
                   </button>
                 </div>
               ) : (
-                <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-col">
+                <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex flex-col">
                   <button
                     onClick={handleArchiveUnlockedOnly}
-                    className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
+                    className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken"
                     style={{ color: SETTINGS_ACCENT_COLOR }}
                   >
                     Trash unlocked only
                   </button>
                   <button
                     onClick={handleArchiveConfirmOk}
-                    className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
+                    className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-[#B85555]"
                   >
                     Trash ALL
                   </button>
@@ -3026,14 +3049,14 @@ function AppContent({
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-col">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex flex-col">
                 <button
                   onClick={() => {
                     setShowStoragePopup(false);
                     setShowSettings(true);
                     setShowRecordings(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-[#374151]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-app-dk-sunken"
                   style={{ color: SETTINGS_ACCENT_COLOR }}
                 >
                   Go to Settings
@@ -3043,7 +3066,7 @@ function AppContent({
                     setShowStoragePopup(false);
                     setShowAutoDeletePopup(true);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-b border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-[#B85555]"
                 >
                   Turn on Automatic-Deletion
                 </button>
@@ -3074,14 +3097,14 @@ function AppContent({
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex">
                 <button
                   onClick={() => {
                     setAutoDeleteOlderVideos(true);
                     setShowAutoDeletePopup(false);
                     setShowStorageNotification(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-full border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-[#B85555]"
                 >
                   OK
                 </button>
@@ -3114,7 +3137,7 @@ function AppContent({
               </div>
 
               {/* Button */}
-              <div className="border-t border-app-line/15 dark:border-[#374151]">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken">
                 <button
                   onClick={() => {
                     setShowWifiPopup(false);
@@ -3147,7 +3170,7 @@ function AppContent({
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex">
                 <button
                   onClick={() => {
                     const selectedRecording = allRecordings.find(r => r.id === selectedRecordingIndex);
@@ -3160,7 +3183,7 @@ function AppContent({
                     }
                     setShowDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-[#B85555]"
                 >
                   Delete
                 </button>
@@ -3193,7 +3216,7 @@ function AppContent({
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex">
                 <button
                   onClick={() => {
                     setAllRecordings(prev => prev.filter(r => !selectedRecordingIds.includes(r.id)));
@@ -3202,7 +3225,7 @@ function AppContent({
                     setTimeout(() => setShowDeletedMessage(false), 3000);
                     setShowBulkDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-[#B85555]"
                 >
                   Delete
                 </button>
@@ -3230,7 +3253,7 @@ function AppContent({
                   Are you sure you want to permanently delete this recording? This action cannot be undone.
                 </p>
               </div>
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex">
                 <button
                   onClick={() => {
                     if (singleDeleteRecordingId !== null) {
@@ -3241,7 +3264,7 @@ function AppContent({
                     }
                     setShowSingleDeleteConfirmation(false);
                   }}
-                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-[#374151] text-[#B15548] dark:text-[#B85555]"
+                  className="text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold w-1/2 border-r border-app-line/15 dark:border-app-dk-sunken text-[#B6594C] dark:text-[#B85555]"
                 >
                   Delete
                 </button>
@@ -3275,14 +3298,14 @@ function AppContent({
                 <h2 className="text-2xl text-white mb-3 font-semibold">
                   No camera paired
                 </h2>
-                <p className="text-base text-[#9ca3af] leading-relaxed">
+                <p className="text-base text-app-gray-faint leading-relaxed">
                   Please go to Device section on settings and configure one.
                 </p>
               </div>
             ) : cameraHavingIssues ? (
               /* Camera lost connection — black screen with disconnected icon */
               <div className="absolute inset-0 bg-black flex flex-col items-center justify-center gap-4 select-none">
-                <CameraDisconnectedIcon size={72} cameraColor="#D1D5DB" signColor="#9CA3AF" />
+                <CameraDisconnectedIcon size={72} cameraColor="#D1D5DB" signColor="var(--app-gray-faint)" />
                 <h2 className="text-2xl text-white font-semibold">Streaming not available</h2>
               </div>
             ) : selectedDevice === 'sami-3c: 7812FFA01839' && (
@@ -3359,7 +3382,7 @@ function AppContent({
                       y="0" 
                       width="100%" 
                       height="100%" 
-                      fill="rgba(91, 139, 191, 0.5)" 
+                      fill="var(--app-border-overlay)"
                       mask="url(#border-mask)"
                     />
                   </svg>
@@ -3507,7 +3530,7 @@ function AppContent({
                 
                 {/* Slider button */}
                 <div
-                  className="absolute left-0 top-0 bottom-0 h-full rounded-full flex items-center justify-center transition-all duration-100 bg-gradient-to-br from-[#293283] to-[#1B2266] dark:from-[#6BA3D4] dark:to-[#5890c0] shadow-[0_4px_12px_rgba(41,50,131,0.4),0_2px_4px_rgba(0,0,0,0.3)] dark:shadow-[0_4px_12px_rgba(107,163,212,0.4),0_2px_4px_rgba(0,0,0,0.3)]"
+                  className="absolute left-0 top-0 bottom-0 h-full rounded-full flex items-center justify-center transition-all duration-100 bg-gradient-to-br from-[#293283] to-[#1B2266] dark:from-app-unlock-from dark:to-app-unlock-to shadow-[0_4px_12px_rgba(41,50,131,0.4),0_2px_4px_rgba(0,0,0,0.3)] dark:shadow-[0_4px_12px_rgba(107,163,212,0.4),0_2px_4px_rgba(0,0,0,0.3)]"
                   style={{
                     width: `${Math.max(25, sliderPosition)}%`,
                     minWidth: '64px'
@@ -3515,7 +3538,7 @@ function AppContent({
                   onMouseDown={handleSliderStart}
                   onTouchStart={handleSliderStart}
                 >
-                  <ArrowBigRight className="w-14 h-14 text-white fill-white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
+                  <ArrowBigRight className="w-14 h-14 text-white fill-white dark:text-app-on-navy dark:fill-app-on-navy" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
                 </div>
                 
                 {/* Text */}
@@ -3580,7 +3603,7 @@ function AppContent({
               {/* Volume slider */}
               <div className="relative flex flex-row items-center">
                 <div 
-                  className="relative h-3 w-40 bg-[#4D9C81] dark:bg-[#2C3B4A] rounded-full cursor-pointer"
+                  className="relative h-3 w-40 bg-[#4D9C81] dark:bg-app-dk-panel rounded-full cursor-pointer"
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -3630,7 +3653,7 @@ function AppContent({
           )}
 
           {/* Right side control panel */}
-          <div className={`absolute top-0 right-0 h-full flex flex-col items-center justify-between py-3 px-3 z-10 w-28 transition-opacity bg-app-surface dark:bg-[#2C3B4A] border-l border-app-line/15 dark:border-l-0 select-none ${
+          <div className={`absolute top-0 right-0 h-full flex flex-col items-center justify-between py-3 px-3 z-10 w-28 transition-opacity bg-app-surface dark:bg-app-dk-panel border-l border-app-line/15 dark:border-l-0 select-none ${
             isLocked ? 'pointer-events-none opacity-50' : ''
           }`}>
             {/* Mute Alarm Button - shown after 5 seconds of alarm simulation */}
@@ -3656,7 +3679,7 @@ function AppContent({
               onTouchEnd={enableAlarm && cameraPaired ? handleAlarmPressEnd : undefined}
               className={`w-full px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center h-20 ${
                 !cameraPaired || !enableAlarm
-                  ? 'bg-white dark:bg-[#5B6C7E] text-app-content border-2 border-app-line/25 dark:border dark:border-transparent cursor-not-allowed'
+                  ? 'bg-white dark:bg-app-dk-track text-app-content border-2 border-app-line/25 dark:border dark:border-transparent cursor-not-allowed'
                   : isPaused
                     ? 'bg-[#FCEAAD] text-app-content border-2 border-app-line/15 dark:border dark:border-transparent'
                     : cameraOn
@@ -3671,15 +3694,15 @@ function AppContent({
                 </>
               ) : isPaused ? (
                 <>
-                  <span className="text-base font-bold text-[#293283] dark:text-[#2C3B4A]">Paused</span>
-                  <span className="text-xs mt-1 text-[#293283] dark:text-[#2C3B4A]">
+                  <span className="text-base font-bold text-[#293283] dark:text-app-dk-panel">Paused</span>
+                  <span className="text-xs mt-1 text-[#293283] dark:text-app-dk-panel">
                     {isWaitingForNoMotion ? 'Waiting for no motion' : `On in ${formatCountdown(countdown)}`}
                   </span>
                 </>
               ) : cameraOn ? (
                 <>
-                  <Bell className="w-8 h-8 mb-1 text-white dark:text-[#2C3B4A]" />
-                  <span className="text-base text-white dark:text-[#2C3B4A]">{isHoldingAlarm ? 'HOLD' : 'On'}</span>
+                  <Bell className="w-8 h-8 mb-1 text-white dark:text-app-dk-panel" />
+                  <span className="text-base text-white dark:text-app-dk-panel">{isHoldingAlarm ? 'HOLD' : 'On'}</span>
                 </>
               ) : (
                 <>
@@ -3693,7 +3716,7 @@ function AppContent({
             <div className="flex gap-6 items-center justify-center">
               {/* Movement Meter Slider (Green) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-[#C3C9DE] dark:bg-[#5B6C7E] border border-[#8089B3] dark:border-transparent rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-[#C3C9DE] dark:bg-app-dk-track border border-[#8089B3] dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div 
                     className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#4D9C81] dark:bg-[#BFE3D9]"
@@ -3724,10 +3747,10 @@ function AppContent({
 
               {/* Time Detection Slider (Coral Red) */}
               <div className="relative flex flex-col items-center">
-                <div className="relative w-2 h-72 bg-[#C3C9DE] dark:bg-[#5B6C7E] border border-[#8089B3] dark:border-transparent rounded-full overflow-hidden">
+                <div className="relative w-2 h-72 bg-[#C3C9DE] dark:bg-app-dk-track border border-[#8089B3] dark:border-transparent rounded-full overflow-hidden">
                   {/* Filled portion */}
                   <div
-                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#B15548] dark:bg-[#FFC7BD]"
+                    className="absolute bottom-0 left-0 right-0 rounded-full transition-all bg-[#B6594C] dark:bg-[#FFC7BD]"
                     style={{ height: `${sensitivityLevel}%` }}
                   />
                 </div>
@@ -3782,19 +3805,19 @@ function AppContent({
               disabled={!cameraPaired}
               className={`w-full h-20 px-3 rounded-xl transition-all flex flex-col items-center justify-center ${
                 !cameraPaired
-                  ? 'bg-white dark:bg-[#4b5563] text-app-content dark:text-white border-2 border-app-line/25 dark:border-0 cursor-not-allowed opacity-50'
-                  : micOn ? `text-white border-2 ${micVolume === 0 ? 'border-[#6B7280]' : 'border-app-line/15'} dark:border dark:border-transparent ${micVolume !== 0 ? 'bg-[#4D9C81] dark:bg-[#BFE3D9]' : 'bg-[#FCEAAD]'}` : 'bg-white dark:bg-[#5B6C7E] text-app-content dark:text-white border-2 border-app-line/25 dark:border dark:border-transparent'
+                  ? 'bg-white dark:bg-app-dk-border-strong text-app-content dark:text-white border-2 border-app-line/25 dark:border-0 cursor-not-allowed opacity-50'
+                  : micOn ? `text-white border-2 ${micVolume === 0 ? 'border-[#6B7280]' : 'border-app-line/15'} dark:border dark:border-transparent ${micVolume !== 0 ? 'bg-[#4D9C81] dark:bg-[#BFE3D9]' : 'bg-[#FCEAAD]'}` : 'bg-white dark:bg-app-dk-track text-app-content dark:text-white border-2 border-app-line/25 dark:border dark:border-transparent'
               }`}
               style={{}}
             >
               {!cameraPaired ? (
                 <MicOff className="w-8 h-8 mb-1" />
               ) : micOn ? (
-                <Mic className={`w-8 h-8 mb-1 ${micVolume === 0 ? 'text-[#2C3B4A]' : 'text-white dark:text-[#2C3B4A]'}`} />
+                <Mic className={`w-8 h-8 mb-1 ${micVolume === 0 ? 'text-app-gray-panel' : 'text-white dark:text-app-dk-panel'}`} />
               ) : (
                 <MicOff className="w-8 h-8 mb-1" />
               )}
-              <span className={`text-base ${cameraPaired && micOn ? (micVolume === 0 ? 'text-[#2C3B4A]' : 'text-white dark:text-[#2C3B4A]') : ''}`}>Mic</span>
+              <span className={`text-base ${cameraPaired && micOn ? (micVolume === 0 ? 'text-app-gray-panel' : 'text-white dark:text-app-dk-panel') : ''}`}>Mic</span>
             </button>
 
             {/* Settings button - triggers bottom panel */}
@@ -3814,13 +3837,13 @@ function AppContent({
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="absolute bottom-0 left-0 right-0 bg-app-surface dark:bg-[#2C3B4A] border-t border-app-line/15 dark:border-t-0 z-20"
+                className="absolute bottom-0 left-0 right-0 bg-app-surface dark:bg-app-dk-panel border-t border-app-line/15 dark:border-t-0 z-20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-around gap-3 py-3 px-3">
                   <button 
                     onClick={() => setShowClock(!showClock)}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Clock className="w-10 h-10 text-app-baby dark:text-white" />
                     <span className="text-sm text-app-baby/70 dark:text-white/80">Clock</span>
@@ -3848,14 +3871,14 @@ function AppContent({
                     disabled={!cameraPaired}
                     className={`w-36 h-[90px] rounded-xl flex flex-col items-center justify-center gap-2 transition-colors ${
                       !cameraPaired
-                        ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50'
+                        ? 'bg-app-content/10 dark:bg-app-dk-border-strong cursor-not-allowed opacity-50'
                         : borderActive
                           ? 'bg-app-cyan'
-                          : 'bg-app-navy dark:bg-[#5B6C7E]'
+                          : 'bg-app-navy dark:bg-app-dk-track'
                     }`}
                   >
-                    <ScanFace className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Border</span>
+                    <ScanFace className={`w-10 h-10 text-app-baby ${cameraPaired && borderActive ? 'dark:text-app-active-ink' : 'dark:text-white'}`} />
+                    <span className={`text-sm text-app-baby/70 dark:text-white/80 ${cameraPaired && borderActive ? 'main-active-label' : ''}`}>Border</span>
                   </button>
 
                   <button
@@ -3866,19 +3889,19 @@ function AppContent({
                     disabled={!cameraPaired}
                     className={`w-36 h-[90px] rounded-xl flex flex-col items-center justify-center gap-2 transition-colors ${
                       !cameraPaired
-                        ? 'bg-app-content/10 dark:bg-[#4b5563] cursor-not-allowed opacity-50'
+                        ? 'bg-app-content/10 dark:bg-app-dk-border-strong cursor-not-allowed opacity-50'
                         : motionActive
                           ? 'bg-app-cyan'
-                          : 'bg-app-navy dark:bg-[#5B6C7E]'
+                          : 'bg-app-navy dark:bg-app-dk-track'
                     }`}
                   >
-                    <MotionDetectionIcon className="w-10 h-10 text-app-baby dark:text-white" />
-                    <span className="text-sm text-app-baby/70 dark:text-white/80">Motion</span>
+                    <MotionDetectionIcon className={`w-10 h-10 text-app-baby ${cameraPaired && motionActive ? 'dark:text-app-active-ink' : 'dark:text-white'}`} />
+                    <span className={`text-sm text-app-baby/70 dark:text-white/80 ${cameraPaired && motionActive ? 'main-active-label' : ''}`}>Motion</span>
                   </button>
 
                   <button 
                     onClick={handleLockToggle}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Lock className="w-10 h-10 text-app-baby dark:text-white" />
                     <span className="text-sm text-app-baby/70 dark:text-white/80">Lock</span>
@@ -3886,7 +3909,7 @@ function AppContent({
 
                   <button 
                     onClick={() => setShowRecordings(!showRecordings)}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Video className="w-10 h-10 text-app-baby dark:text-white" />
                     <span className="text-sm text-app-baby/70 dark:text-white/80">Recordings</span>
@@ -3894,7 +3917,7 @@ function AppContent({
 
                   <button 
                     onClick={() => setShowHelp(!showHelp)}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <CircleHelp className="w-10 h-10 text-app-baby dark:text-white" />
                     <span className="text-sm text-app-baby/70 dark:text-white/80">Help</span>
@@ -3904,7 +3927,7 @@ function AppContent({
                     onClick={() => {
                       setShowSettings(!showSettings);
                     }}
-                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-[#5B6C7E] flex flex-col items-center justify-center gap-2 transition-colors"
+                    className="w-36 h-[90px] rounded-xl bg-app-navy dark:bg-app-dk-track flex flex-col items-center justify-center gap-2 transition-colors"
                   >
                     <Settings className="w-10 h-10 text-app-baby dark:text-white" />
                     <span className="text-sm text-app-baby/70 dark:text-white/80">Settings</span>
@@ -3956,7 +3979,7 @@ function PrototypeLogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className="fixed top-16 left-6 z-[9999] text-[#9ca3af] hover:text-white transition-colors text-lg disabled:opacity-60"
+      className="fixed top-16 left-6 z-[9999] text-app-gray-faint hover:text-white transition-colors text-lg disabled:opacity-60"
     >
       {isLoggingOut ? 'Saliendo...' : 'Logout'}
     </button>
@@ -3981,7 +4004,7 @@ function PrototypeRestartButton() {
   return (
     <button
       onClick={handleRestart}
-      className="fixed top-6 left-6 z-[9999] text-[#9ca3af] hover:text-white transition-colors text-lg"
+      className="fixed top-6 left-6 z-[9999] text-app-gray-faint hover:text-white transition-colors text-lg"
     >
       Restart
     </button>

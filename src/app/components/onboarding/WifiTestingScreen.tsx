@@ -29,7 +29,7 @@ export function WifiTestingScreen({ onComplete, onCancel, heading = 'Testing Wi-
         {onCancel && (
           <button
             onClick={onCancel}
-            className="mt-8 w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="mt-8 w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
           >
             Cancel
           </button>

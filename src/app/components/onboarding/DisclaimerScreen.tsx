@@ -79,12 +79,12 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                   id={`disclaimer-${index}`}
                   onClick={() => toggleDisclaimer(index)}
                   className={`mt-1 w-12 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-                    acceptedDisclaimers[index] ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-[#4b5563]'
+                    acceptedDisclaimers[index] ? 'bg-app-navy' : 'bg-[#8089B3] dark:bg-app-toggle-off'
                   }`}
                 >
                   <div
                     className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
-                      acceptedDisclaimers[index] ? 'translate-x-6' : 'translate-x-0.5'
+                      acceptedDisclaimers[index] ? 'dark:bg-app-on-navy translate-x-6' : 'dark:bg-white translate-x-0.5'
                     }`}
                   />
                 </button>
@@ -113,7 +113,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
               id="terms-agreement"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-2 border-app-line/20 dark:border-[#4b5563] bg-app-card checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
+              className="mt-1 w-5 h-5 rounded border-2 border-app-line/20 dark:border-app-dk-border-strong bg-app-card checked:bg-[#293283] checked:border-[#293283] cursor-pointer flex-shrink-0"
               style={{ accentColor: '#293283' }}
             />
             <label htmlFor="terms-agreement" className="text-sm text-app-content-soft text-left cursor-pointer">
@@ -122,7 +122,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                 href="https://www.samialert.com/policies/terms-of-service"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-app-link dark:text-[#5B8BBF] hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80 underline"
+                className="text-app-link dark:text-app-blue-accent-b hover:text-app-link/80 dark:hover:text-app-blue-accent-b/80 underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 Terms and Conditions
@@ -132,7 +132,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
                 href="https://www.samialert.com/policies/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-app-link dark:text-[#5B8BBF] hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80 underline"
+                className="text-app-link dark:text-app-blue-accent-b hover:text-app-link/80 dark:hover:text-app-blue-accent-b/80 underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 Privacy Policy
@@ -143,7 +143,7 @@ export function DisclaimerScreen({ onAccept, onCancel }: DisclaimerScreenProps) 
           <button
             onClick={onAccept}
             disabled={!allAccepted}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </button>

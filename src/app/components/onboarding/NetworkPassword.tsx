@@ -23,7 +23,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
 
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
-      <div className="bg-app-card rounded-2xl p-8 max-w-md w-full shadow-2xl border border-app-line/15 dark:border-[#374151]">
+      <div className="bg-app-card rounded-2xl p-8 max-w-md w-full shadow-2xl border border-app-line/15 dark:border-app-dk-sunken">
         <div className="flex items-center justify-center gap-3 mb-6">
           <Wifi className="w-6 h-6 text-app-content" />
           <h2 className="text-xl text-center text-app-content">{ssid}</h2>
@@ -52,7 +52,7 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
                 setShowError(false);
               }}
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-600 ${showError ? 'border-[#B15548] focus:border-[#B15548] dark:border-[#B85555] dark:focus:border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5B8BBF]'}`}
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-600 ${showError ? 'border-[#B6594C] focus:border-[#B6594C] dark:border-[#B85555] dark:focus:border-[#B85555]' : 'border-app-line/20 dark:border-app-dk-border-strong focus:border-app-blue-accent-b'}`}
               placeholder="Enter password"
               autoFocus
             />
@@ -63,13 +63,13 @@ export function NetworkPassword({ ssid, onSubmit, onCancel, showErrorOnMount = f
           <button
             onClick={handleSubmit}
             disabled={password.length === 0}
-            className="w-full bg-app-navy text-white py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-app-navy-700 transition-colors"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-app-navy-700 transition-colors"
           >
             Connect
           </button>
           <button
             onClick={onCancel}
-            className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
           >
             Back
           </button>

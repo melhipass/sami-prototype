@@ -21,7 +21,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
             className={`w-full bg-app-card rounded-xl p-5 border-2 transition-all text-left ${
               selectedConnection === 'hub'
                 ? 'border-app-amber'
-                : 'border-app-line/15 dark:border-[#374151] hover:border-app-line/20 dark:hover:border-[#4b5563]'
+                : 'border-app-line/15 dark:border-app-dk-sunken hover:border-app-line/20 dark:hover:border-app-dk-border-strong'
             }`}
           >
             <div className="flex items-start justify-between mb-3">
@@ -38,7 +38,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
               </div>
               {selectedConnection === 'hub' && (
                 <div className="w-6 h-6 bg-[#FCEAAD] rounded-full flex items-center justify-center flex-shrink-0">
-                  <Check className="w-4 h-4 text-[#2C3B4A]" />
+                  <Check className="w-4 h-4 text-app-gray-panel" />
                 </div>
               )}
             </div>
@@ -53,13 +53,13 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
             className={`w-full bg-app-card rounded-xl p-5 border-2 transition-all text-left ${
               selectedConnection === 'wifi'
                 ? 'border-app-amber'
-                : 'border-app-line/15 dark:border-[#374151] hover:border-app-line/20 dark:hover:border-[#4b5563]'
+                : 'border-app-line/15 dark:border-app-dk-sunken hover:border-app-line/20 dark:hover:border-app-dk-border-strong'
             }`}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-app-sunken rounded-full flex items-center justify-center flex-shrink-0">
-                  <Wifi className="w-6 h-6 text-[#5B8BBF]" />
+                  <Wifi className="w-6 h-6 text-app-blue-accent-b" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-app-content">Home Wi-Fi</h3>
@@ -67,7 +67,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
               </div>
               {selectedConnection === 'wifi' && (
                 <div className="w-6 h-6 bg-[#FCEAAD] rounded-full flex items-center justify-center flex-shrink-0">
-                  <Check className="w-4 h-4 text-[#2C3B4A]" />
+                  <Check className="w-4 h-4 text-app-gray-panel" />
                 </div>
               )}
             </div>
@@ -80,7 +80,7 @@ export function ConnectionChoice({ onContinue, onCancel }: ConnectionChoiceProps
         <div className="space-y-3 w-full">
           <button
             onClick={() => onContinue(selectedConnection)}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
           >
             Continue
           </button>

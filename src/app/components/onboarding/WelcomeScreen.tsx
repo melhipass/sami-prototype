@@ -1,4 +1,4 @@
-import { Camera, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onLearnMore: () => void;
@@ -13,9 +13,8 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
   return (
     <div className="flex flex-col items-center justify-center h-full bg-app-surface px-6">
       <div className="flex flex-col items-center max-w-md text-center">
-        <div className="w-32 h-32 bg-app-card rounded-3xl flex items-center justify-center mb-8 border-2 border-app-amber">
-          <Camera className="w-16 h-16 text-app-amber" />
-        </div>
+        <img src="/assets/Sami_symbol_blue.svg" alt="Sami" className="w-28 h-auto mb-8 dark:hidden" />
+        <img src="/assets/Sami_symbol_white.svg" alt="" aria-hidden="true" className="w-28 h-auto mb-8 hidden dark:block" />
 
         <h1 className="text-4xl mb-4 text-app-content">Welcome to Sami</h1>
 
@@ -38,7 +37,7 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
         <div className="space-y-3 w-full">
           <button
             onClick={onConfigure}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
           >
             Configure My Sami Camera
           </button>
@@ -46,7 +45,7 @@ export function WelcomeScreen({ onLearnMore, onConfigure, onSkip, platform = 'io
           {!isAndroid && (
             <button
               onClick={() => window.open('https://www.samialert.com/', '_blank')}
-              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
             >
               Learn More About Sami
             </button>

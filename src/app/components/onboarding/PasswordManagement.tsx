@@ -21,7 +21,7 @@ function generateRandomPassword(): string {
 }
 
 function getPasswordStrength(password: string): { label: string; color: string } {
-  if (password.length < 6) return { label: 'Weak', color: 'text-[#B15548] dark:text-red-500' };
+  if (password.length < 6) return { label: 'Weak', color: 'text-[#B6594C] dark:text-red-500' };
   if (password.length < 10) return { label: 'Medium', color: 'text-[#8C6C0F] dark:text-yellow-500' };
   return { label: 'Strong', color: 'text-green-500' };
 }
@@ -69,7 +69,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
               value={password}
               onChange={handlePasswordChange}
               className={`w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-card text-app-content placeholder-gray-500 ${
-                showError ? 'border-[#B15548] focus:border-[#B15548] dark:border-[#B85555] dark:focus:border-[#B85555]' : 'border-app-amber/30 focus:border-app-amber'
+                showError ? 'border-[#B6594C] focus:border-[#B6594C] dark:border-[#B85555] dark:focus:border-[#B85555]' : 'border-app-amber/30 focus:border-app-amber'
               }`}
               placeholder="Enter password"
             />
@@ -77,7 +77,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
 
           <button
             onClick={() => setShowForgotPasswordDialog(true)}
-            className="mt-2 text-sm text-app-link dark:text-[#5B8BBF] underline hover:text-app-link/80 dark:hover:text-[#5B8BBF]/80"
+            className="mt-2 text-sm text-app-link dark:text-app-blue-accent-b underline hover:text-app-link/80 dark:hover:text-app-blue-accent-b/80"
           >
             Forgot password?
           </button>
@@ -87,7 +87,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
           <button
             onClick={handleSubmit}
             disabled={password.length < 5}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </button>
@@ -129,7 +129,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
             <div className="space-y-3">
               <button
                 onClick={() => setShowForgotPasswordDialog(false)}
-                className="w-full bg-app-navy text-white py-3 rounded-xl hover:bg-app-navy-700 transition-colors"
+                className="w-full bg-app-navy text-white dark:text-app-on-navy py-3 rounded-xl hover:bg-app-navy-700 transition-colors"
               >
                 Try Again
               </button>
@@ -139,7 +139,7 @@ export function PasswordManagement({ passwordHint, showErrorOnMount = false, ini
                   // Open customer service link
                   window.open('https://support.samialert.com/hc/en-us/requests/new', '_blank');
                 }}
-                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
               >
                 Contact Customer Service
               </button>

@@ -33,7 +33,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
           <div className="w-20 h-20 bg-app-card rounded-2xl flex items-center justify-center mb-4 mt-16 relative border-2 border-app-amber">
             <Camera className="w-10 h-10 text-app-amber" />
             <div className="absolute -top-2 -right-2 bg-app-mint dark:bg-[#BFE3D9] rounded-full p-1 border-2 border-app-card dark:border-black">
-              <CheckCircle className="w-6 h-6 text-app-mint-ink dark:text-[#2C3B4A]" />
+              <CheckCircle className="w-6 h-6 text-app-mint-ink dark:text-app-dk-panel" />
             </div>
           </div>
         ) : (
@@ -57,7 +57,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
                 className={`w-full bg-app-card rounded-xl p-4 border-2 transition-all flex items-center justify-between ${
                   selectedCamera === camera.id
                     ? 'border-app-amber'
-                    : 'border-app-line/15 dark:border-[#374151] hover:border-app-line/20 dark:hover:border-[#4b5563]'
+                    : 'border-app-line/15 dark:border-app-dk-sunken hover:border-app-line/20 dark:hover:border-app-dk-border-strong'
                 }`}
               >
                 <div className="flex-1 text-left">
@@ -65,7 +65,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
                 </div>
                 {selectedCamera === camera.id && (
                   <div className="w-6 h-6 bg-app-cream rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-app-cream-ink dark:text-[#2C3B4A]" />
+                    <Check className="w-4 h-4 text-app-cream-ink dark:text-app-dk-panel" />
                   </div>
                 )}
               </button>
@@ -88,7 +88,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
             <button
               onClick={handleAdd}
               disabled={!selectedCamera}
-              className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Add Selected Camera
             </button>
@@ -96,7 +96,7 @@ export function CameraIdentified({ cameraName, cameras, onAdd, onSearchAgain, on
 
           <button
             onClick={onSearchAgain}
-            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
           >
             Search Again
           </button>

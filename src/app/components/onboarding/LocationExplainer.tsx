@@ -23,7 +23,7 @@ export function LocationExplainer({ onContinue, onCancel }: LocationExplainerPro
         <div className="w-full space-y-3">
           <button
             onClick={onContinue}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors"
           >
             Continue
           </button>

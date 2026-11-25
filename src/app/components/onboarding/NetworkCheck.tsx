@@ -91,7 +91,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
           <div className="space-y-3 w-full">
             <button
               onClick={onSearchAgain}
-              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
             >
               Search Again
             </button>
@@ -130,7 +130,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
               <button
                 onClick={onSearchAgain}
                 title="Opens the device's Wi-Fi settings (native app only)"
-                className="w-full text-white py-4 rounded-xl text-lg shadow-lg hover:opacity-90 transition-colors"
+                className="w-full text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:opacity-90 transition-colors"
                 style={{ backgroundColor: 'var(--app-navy)' }}
               >
                 Go to Settings
@@ -138,7 +138,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
             )}
             <button
               onClick={onSearchAgain}
-              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+              className="w-full bg-app-sunken text-app-content py-4 rounded-xl text-lg border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
             >
               Search Again
             </button>
@@ -174,7 +174,7 @@ export function NetworkCheck({ onComplete, onGoBack, isFirstAttempt = false, sel
         {onCancel && (
           <button
             onClick={onCancel}
-            className="mt-8 w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+            className="mt-8 w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
           >
             Cancel
           </button>

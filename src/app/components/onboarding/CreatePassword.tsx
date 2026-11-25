@@ -150,7 +150,7 @@ export function CreatePassword({ onSubmit, onCancel }: CreatePasswordProps) {
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="w-full bg-app-navy text-white py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-app-navy text-white dark:text-app-on-navy py-4 rounded-xl text-lg shadow-lg hover:bg-app-navy-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Confirm
           </button>

@@ -20,9 +20,9 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                     isCompleted
-                      ? 'bg-[#BFE3D9] text-[#2C3B4A]'
+                      ? 'bg-[#BFE3D9] text-app-gray-panel'
                       : isActive
-                      ? 'bg-app-navy text-white'
+                      ? 'bg-app-navy text-white dark:text-app-on-navy stepper-active-circle'
                       : 'bg-white dark:bg-app-sunken border border-app-line/25 dark:border-transparent text-app-content-faint'
                   }`}
                 >
@@ -34,7 +34,7 @@ export function OnboardingStepper({ currentIndex, labels }: OnboardingStepperPro
                 </div>
                 <span
                   className={`text-[14px] mt-1 font-medium whitespace-nowrap ${
-                    isActive ? 'text-[#5B8BBF]' : isCompleted ? 'text-app-quiet-text' : 'text-app-content-faint'
+                    isActive ? 'text-app-blue-accent-b stepper-active-label' : isCompleted ? 'text-app-quiet-text' : 'text-app-content-faint'
                   }`}
                 >
                   {label}

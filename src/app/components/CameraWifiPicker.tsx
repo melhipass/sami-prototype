@@ -87,8 +87,8 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
 
           {/* Step: Select network */}
           {step === 'select' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl">
-              <div className="p-6 border-b border-app-line/15 dark:border-[#374151] flex items-start justify-between">
+            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken shadow-2xl">
+              <div className="p-6 border-b border-app-line/15 dark:border-app-dk-sunken flex items-start justify-between">
                 <div>
                   <h2 className="text-2xl text-app-content">Select Camera Wi-Fi</h2>
                   <p className="text-sm text-app-content-faint mt-1">Choose the network for your camera</p>
@@ -97,7 +97,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 <button
                   onClick={() => { setIsRefreshing(true); setTimeout(() => setIsRefreshing(false), 1500); }}
                   disabled={isRefreshing}
-                  className="ml-4 mt-1 p-2 rounded-lg hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors disabled:opacity-50"
+                  className="ml-4 mt-1 p-2 rounded-lg hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors disabled:opacity-50"
                 >
                   <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} style={{ color: accentColor }} />
                 </button>
@@ -130,7 +130,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
               </div>
               {/* Hidden network entry — discreet, only when the list is shown */}
               {!isRefreshing && (
-                <div className="px-4 py-3 border-t border-app-line/15 dark:border-[#374151] text-center">
+                <div className="px-4 py-3 border-t border-app-line/15 dark:border-app-dk-sunken text-center">
                   <button
                     onClick={() => {
                       setHiddenSsid('');
@@ -144,10 +144,10 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                   >Join another network…</button>
                 </div>
               )}
-              <div className="p-4 border-t border-app-line/15 dark:border-[#374151] flex gap-3">
+              <div className="p-4 border-t border-app-line/15 dark:border-app-dk-sunken flex gap-3">
                 <button
                   onClick={onCancel}
-                  className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                  className="flex-1 bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
                 >Cancel</button>
                 <button
                   onClick={() => {
@@ -165,7 +165,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                       setStep('password');
                     }
                   }}
-                  className="flex-1 text-white py-3 rounded-xl hover:opacity-80 transition-colors font-semibold"
+                  className="flex-1 text-white dark:text-app-on-navy py-3 rounded-xl hover:opacity-80 transition-colors font-semibold"
                   style={{ backgroundColor: accentColor }}
                 >Select</button>
               </div>
@@ -174,7 +174,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
 
           {/* Step: Other network form — mirrors the password step layout */}
           {step === 'hidden' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl p-8">
+            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken shadow-2xl p-8">
               <div className="flex items-center justify-center gap-3 mb-6">
                 <Wifi className="w-6 h-6 text-app-content" />
                 <h2 className="text-xl text-center text-app-content">Other network</h2>
@@ -189,7 +189,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                   maxLength={32}
                   autoFocus
                   placeholder="Enter network name"
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface text-app-content placeholder-gray-600 border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none bg-app-surface text-app-content placeholder-gray-600 border-app-line/20 dark:border-app-dk-border-strong focus:border-app-blue-accent"
                 />
               </div>
               <div className="space-y-3">
@@ -205,12 +205,12 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                     setStep('password');
                   }}
                   disabled={hiddenSsid.trim().length === 0}
-                  className="w-full text-white py-3 rounded-xl hover:opacity-80 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full text-white dark:text-app-on-navy py-3 rounded-xl hover:opacity-80 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ backgroundColor: accentColor }}
                 >Next</button>
                 <button
                   onClick={() => { setHiddenSsid(''); setStep('select'); }}
-                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors"
+                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors"
                 >Back</button>
               </div>
             </div>
@@ -218,7 +218,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
 
           {/* Step: Password */}
           {step === 'password' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl p-8">
+            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken shadow-2xl p-8">
               <div className="flex items-center justify-center gap-3 mb-6">
                 <Wifi className="w-6 h-6 text-app-content" />
                 <h2 className="text-xl text-center text-app-content">{pendingSsid}</h2>
@@ -237,7 +237,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && password.length > 0) { setPendingPassword(password); setStep('warning'); } }}
-                    className={`w-full px-4 py-3 border rounded-xl pr-12 focus:outline-none bg-app-surface text-app-content placeholder-gray-600 ${pwError ? 'border-[#B15548] dark:border-[#B85555]' : 'border-app-line/20 dark:border-[#4b5563] focus:border-[#5A8BBF]'}`}
+                    className={`w-full px-4 py-3 border rounded-xl pr-12 focus:outline-none bg-app-surface text-app-content placeholder-gray-600 ${pwError ? 'border-[#B6594C] dark:border-[#B85555]' : 'border-app-line/20 dark:border-app-dk-border-strong focus:border-app-blue-accent'}`}
                     placeholder="Enter password"
                     autoFocus
                   />
@@ -250,18 +250,18 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 <button
                   onClick={() => { setPendingPassword(password); setStep('warning'); }}
                   disabled={password.length === 0}
-                  className="w-full text-white py-3 rounded-xl disabled:opacity-50 transition-colors font-semibold"
+                  className="w-full text-white dark:text-app-on-navy py-3 rounded-xl disabled:opacity-50 transition-colors font-semibold"
                   style={{ backgroundColor: accentColor }}
                 >Connect</button>
                 <button onClick={() => { setPwError(false); setStep('select'); }}
-                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-[#4b5563] transition-colors">Back</button>
+                  className="w-full bg-app-sunken text-app-content py-3 rounded-xl border border-app-line/15 dark:border-transparent hover:bg-app-content/10 dark:hover:bg-app-dk-border-strong transition-colors">Back</button>
               </div>
             </div>
           )}
 
           {/* Step: Warning */}
           {step === 'warning' && (
-            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151] shadow-2xl">
+            <div className="bg-app-card rounded-2xl w-[480px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken shadow-2xl">
               <div className="px-8 pt-6 pb-2">
                 <h2 className="text-app-content text-xl font-semibold text-center">Warning</h2>
               </div>
@@ -274,7 +274,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                   If this is incorrect you may need to connect the camera to a router with an Ethernet wire to recover.
                 </p>
               </div>
-              <div className="border-t border-app-line/15 dark:border-[#374151] flex flex-col">
+              <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex flex-col">
                 <button
                   onClick={() => {
                     setStep('testing');
@@ -290,18 +290,18 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                       }
                     }, 3000);
                   }}
-                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
+                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken"
                   style={{ color: accentColor }}
                 >Continue</button>
                 {!pendingIsOpen && (
                   <button onClick={() => setStep('password')}
-                    className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-[#374151]"
+                    className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold border-b border-app-line/15 dark:border-app-dk-sunken"
                     style={{ color: accentColor }}
                   >Edit password</button>
                 )}
                 <button
                   onClick={onCancel}
-                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B15548] dark:text-[#B95555]"
+                  className="w-full text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold text-[#B6594C] dark:text-[#B95555]"
                 >Cancel</button>
               </div>
             </div>
@@ -309,8 +309,8 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
 
           {/* Step: Connecting (testing) */}
           {step === 'testing' && (
-            <div className="bg-app-card rounded-lg w-[480px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
-              <div className="px-8 pt-6 pb-4 border-b border-app-line/15 dark:border-[#374151]">
+            <div className="bg-app-card rounded-lg w-[480px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken">
+              <div className="px-8 pt-6 pb-4 border-b border-app-line/15 dark:border-app-dk-sunken">
                 <h2 className="text-app-content text-xl font-semibold text-center">Connecting Camera to Wi-Fi</h2>
               </div>
               <div className="px-8 py-8 flex flex-col items-center gap-4">
@@ -328,7 +328,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
       {/* Success popup */}
       {showSuccess && (
         <div className="absolute inset-0 bg-black/70 z-50 flex items-center justify-center">
-          <div className="bg-app-card rounded-lg w-[520px] overflow-hidden border border-app-line/15 dark:border-[#374151]">
+          <div className="bg-app-card rounded-lg w-[520px] overflow-hidden border border-app-line/15 dark:border-app-dk-sunken">
             <div className="px-8 pt-6 pb-2">
               <h2 className="text-app-content text-xl font-semibold">Wi-Fi configured.</h2>
             </div>
@@ -340,7 +340,7 @@ export function CameraWifiPicker({ open, currentNetwork, isWired, accentColor = 
                 }
               </p>
             </div>
-            <div className="border-t border-app-line/15 dark:border-[#374151] flex">
+            <div className="border-t border-app-line/15 dark:border-app-dk-sunken flex">
               <button
                 onClick={() => { const ssid = successNetwork; setShowSuccess(false); onComplete(ssid); }}
                 className="flex-1 text-lg py-4 hover:bg-app-sunken transition-colors text-center font-semibold"
